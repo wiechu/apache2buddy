@@ -1,0 +1,78 @@
+NAME
+
+
+	apache2buddy.pl (perl script)
+
+	A Free and Open Source Project for apache webserver memory usage analysis.
+
+
+
+SYNOPSIS
+
+
+
+
+	curl -sL apache2buddy.pl | perl [-] [options]
+
+DESCRIPTION
+
+
+	A Free and Open Source Project for apache webserver memory usage analysis.
+
+
+	It is hosted on the domain of the same name.	
+
+
+
+OPTIONS
+
+
+        -h, --help              Print this help message
+        -p, --port=PORT         Specify an alternate port to check (default: 80)
+        -v, --verbose           Use verbose output (this is very noisy, only useful for debugging)
+        -n, --nocolor           Use default terminal color, dont try to be all fancy!
+        -H, --noheader          Do not show header title bar.
+        -N, --noinfo            Do not show informational messages.
+        -K, --no-ok             Do not show OK messages.
+        -W, --nowarn            Do not show warning messages.
+        -L, --light-term        Show colours for a light background terminal.
+        -r, --report            Implies -HNWK or --noinfo --nowarn --no-ok --noheader
+
+
+
+
+EXAMPLES
+
+
+	curl -sL apache2buddy.pl | perl
+	curl -sL apache2buddy.pl | perl - --help
+	curl -sL apache2buddy.pl | perl - --report
+
+
+
+ENVIRONMENT
+
+
+	No environment variables are used
+
+
+
+
+BUGS
+
+
+	No known bugs
+
+ISSUES
+	There is an issue with some parent PIDs consuming large amounts of RAM, child pids inherit this
+	but don't necessarily use it, which skews results. The current workaround is to check for PPID
+	which is less than 50MB, if over 50MB, the script aborts.
+
+
+
+AUTHOR
+
+
+    Richard A. Forth
+
+    richard DOT forth AT gmail DOT com
