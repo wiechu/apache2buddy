@@ -87,7 +87,7 @@ If no options are specified, the basic tests will be run.
 	-W, --nowarn		Do not show warning messages.
 	-L, --light-term	Show colours for a light background terminal.
 	-r, --report		Implies -HNWK or --noinfo --nowarn --no-ok --noheader
-	-P, --no-check-pid	Implies -HNWK or --noinfo --nowarn --no-ok --noheader
+	-P, --no-check-pid	DON'T Check the Parent Pid File Size (only use if desperate for more info, results may be skewed)
 
 More information (1990's style info pages):
 
