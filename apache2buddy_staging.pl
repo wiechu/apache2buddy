@@ -87,6 +87,7 @@ If no options are specified, the basic tests will be run.
 	-W, --nowarn		Do not show warning messages.
 	-L, --light-term	Show colours for a light background terminal.
 	-r, --report		Implies -HNWK or --noinfo --nowarn --no-ok --noheader
+	-P, --no-check-pid	Implies -HNWK or --noinfo --nowarn --no-ok --noheader
 
 More information (1990's style info pages):
 
@@ -140,6 +141,9 @@ our $REPORT = 0;
 # by default, show header 
 our $NOHEADER = 0;
 
+# by default, check pid size 
+our $NOCHKPID = 0;
+
 # grab the command line arguments
 GetOptions(
 	'help|h' => \$help,
@@ -152,6 +156,7 @@ GetOptions(
 	'light-term|L' => \$LIGHTBG,
 	'no-ok|K' => \$NOOK,
 	'noheader|H' => \$NOHEADER,
+	'no-check-pid|P' => \$NOCHKPID,
 	'nonews' => \$NONEWS
 );
 
@@ -1498,49 +1503,51 @@ sub preflight_checks {
 	# Check 13.1
 	# Determine the size of the parent process
 	# Bug Out if greater than 50MB
-	our $pidfile_cfv = find_master_value(\@config_array, $model, 'pidfile');
-	if ( ! $NOINFO ) { show_info_box; print "pidfile setting is ${CYAN}$pidfile_cfv${ENDC}.\n" } 
-	if ($pidfile_cfv eq "run/httpd.pid") {
-		# it could be in a couple of places, so lets test!
-		if (-f "/var/run/httpd/httpd.pid") {
-			our $pidfile = "/var/run/httpd/httpd.pid";
-		} elsif (-f "/var/run/httpd.pid") {
-			our $pidfile = "/var/run/httpd.pid";
+	if ( ! $NOCHKPID) {
+		our $pidfile_cfv = find_master_value(\@config_array, $model, 'pidfile');
+		if ( ! $NOINFO ) { show_info_box; print "pidfile setting is ${CYAN}$pidfile_cfv${ENDC}.\n" } 
+		if ($pidfile_cfv eq "run/httpd.pid") {
+			# it could be in a couple of places, so lets test!
+			if (-f "/var/run/httpd/httpd.pid") {
+				our $pidfile = "/var/run/httpd/httpd.pid";
+			} elsif (-f "/var/run/httpd.pid") {
+				our $pidfile = "/var/run/httpd.pid";
+			} else {
+				if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n" } 
+				exit;
+			}
+		} elsif ($pidfile_cfv eq "/var/run/apache2/apache2\$SUFFIX.pid") {
+			our $pidfile = "/var/run/apache2/apache2.pid";
+		} elsif ($pidfile_cfv eq "/var/run/apache2.pid") {
+			our $pidfile = "/var/run/apache2.pid";
+		} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX.pid") {
+			our $pidfile = "/var/run/apache2.pid";
 		} else {
-			if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n" } 
+			# set default (works on CentOS7)
+			our $pidfile = "/var/run/httpd/httpd.pid";
+		}
+	
+		our $pidfile;
+		if (-f $pidfile) {
+			if ( ! $NOINFO ) { show_info_box; print "Actual pidfile is ${CYAN}$pidfile${ENDC}.\n" } 
+		} else {
+			if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to open pid file $pidfile${ENDC}. Exiting.\n" } 
 			exit;
 		}
-	} elsif ($pidfile_cfv eq "/var/run/apache2/apache2\$SUFFIX.pid") {
-		our $pidfile = "/var/run/apache2/apache2.pid";
-	} elsif ($pidfile_cfv eq "/var/run/apache2.pid") {
-		our $pidfile = "/var/run/apache2.pid";
-	} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX.pid") {
-		our $pidfile = "/var/run/apache2.pid";
-	} else {
-		# set default (works on CentOS7)
-		our $pidfile = "/var/run/httpd/httpd.pid";
-	}
-	
-	our $pidfile;
-	if (-f $pidfile) {
-		if ( ! $NOINFO ) { show_info_box; print "Actual pidfile is ${CYAN}$pidfile${ENDC}.\n" } 
-	} else {
-		if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to open pid file $pidfile${ENDC}. Exiting.\n" } 
-		exit;
-	}
-	# get pid
-	our $pidfile;
-	our $parent_pid = `cat $pidfile`;
-	chomp($parent_pid);
-	if ( ! $NOINFO ) { show_info_box; print "Parent PID: ${CYAN}$parent_pid${ENDC}.\n" }
-	my $ppid_mem_usage = `pmap -d $parent_pid | egrep "writeable/private|privado" | awk \'{ print \$4 }\'`;
-	$ppid_mem_usage =~ s/K//;
-	chomp($ppid_mem_usage);
-	if ($ppid_mem_usage > 50000) {
-		show_crit_box; print "${RED}Memory usage of parent PID is greater than 50MB: $ppid_mem_usage Kilobytes${ENDC}. Exiting.\n";
-		exit;
-	} else {
-		if ( ! $NOOK ) { show_ok_box; print "Memory usage of parent PID is less than 50MB: ${CYAN}$ppid_mem_usage Kilobytes${ENDC}.\n" }
+		# get pid
+		our $pidfile;
+		our $parent_pid = `cat $pidfile`;
+		chomp($parent_pid);
+		if ( ! $NOINFO ) { show_info_box; print "Parent PID: ${CYAN}$parent_pid${ENDC}.\n" }
+		my $ppid_mem_usage = `pmap -d $parent_pid | egrep "writeable/private|privado" | awk \'{ print \$4 }\'`;
+		$ppid_mem_usage =~ s/K//;
+		chomp($ppid_mem_usage);
+		if ($ppid_mem_usage > 50000) {
+			show_crit_box; print "${RED}Memory usage of parent PID is greater than 50MB: $ppid_mem_usage Kilobytes${ENDC}. \n If you are desperate, try -P or --no-check-pid. Exiting.\n";
+			exit;
+		} else {
+			if ( ! $NOOK ) { show_ok_box; print "Memory usage of parent PID is less than 50MB: ${CYAN}$ppid_mem_usage Kilobytes${ENDC}.\n" }
+		}
 	}
 	
 	# figure out how much RAM is in the server
