@@ -1516,6 +1516,8 @@ sub preflight_checks {
 				if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n" } 
 				exit;
 			}
+		} elsif ($pidfile_cfv eq "/var/run/apache2/apache2.pid") {
+			our $pidfile = "/var/run/apache2/apache2.pid";
 		} elsif ($pidfile_cfv eq "/var/run/apache2/apache2\$SUFFIX.pid") {
 			our $pidfile = "/var/run/apache2/apache2.pid";
 		} elsif ($pidfile_cfv eq "/var/run/apache2.pid") {
