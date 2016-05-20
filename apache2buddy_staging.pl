@@ -68,7 +68,7 @@ use strict;
 ##########################################################################################################
 # Variable to hold the date / time stamp that this file was last changed
 #
-our $date_last_modified = "Thursday, March 3rd, 2016 @ 16:53";
+our $date_last_modified = "Friday, May 20th, 2016 @ 09:53";
 
 ## print usage
 sub usage {

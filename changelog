@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ==================================================================================================================
+2016-05-20 	Richard Forth   Fixed a bug with parent pid detected, reported by J. Ramsey - with thanks! 
 2016-03-03 	Richard Forth   Added MD5Sums + News Item. 
 2016-02-27 	Richard Forth   Added code to display verbose memory usage information, and then bug out with a 
 				critical error if ram is overbooked, before we even start (ie no ram left for apache)
