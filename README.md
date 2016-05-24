@@ -168,10 +168,10 @@ NEW:
 
 So as you may see, there are some similarities between the new and the old, but the NEW has undergone some incerdible changes and is an entirely new beast, one of the most killer featues is that it nows takes into consideration a nuumber of services BEFORE calculating a maxcients value, this includes:
 
-MySQL
-Java
-Varnish
-Redis
-Memcache
-PHP-FPM
-Gluster
+       - MySQL
+       - Java
+       - Varnish
+       - Redis
+       - Memcache
+       - PHP-FPM
+       - Gluster
