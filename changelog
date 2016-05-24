@@ -2,6 +2,10 @@ CHANGELOG
 
 When		Who		What
 ==================================================================================================================
+2016-05-24 	Richard Forth   Added INFO ITEM about sha256sums.
+2016-05-24 	Richard Forth   Added sha256sums => http://apache2buddy.pl/sha256sums.txt
+2016-05-24 	Richard Forth   Changed the way it handles nothing at all listening on port 80. It now falls back
+				to the process list as if somehing WAS listening on port 80 that was NOT apache.
 2016-05-20 	Richard Forth   Fixed a bug with parent pid detected, reported by J. Ramsey - with thanks! 
 2016-03-03 	Richard Forth   Added MD5Sums + News Item. 
 2016-02-27 	Richard Forth   Added code to display verbose memory usage information, and then bug out with a 
