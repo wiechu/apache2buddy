@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ==================================================================================================================
+2016-05-27 	Richard Forth   Emergency change due to unsafe execution when no apache process is found, this
+				change fixes a bug introduced in the change made on 2016-05-24
 2016-05-27 	Richard Forth   Added INFO ITEM about LICENSE.
 2016-05-27 	Richard Forth   Added LICENSE (Apache License Version 2.0). http://apache2buddy.pl/LICENSE
 2016-05-27 	Richard Forth   Added the notice in the source code as follows:

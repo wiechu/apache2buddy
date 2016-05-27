@@ -1407,36 +1407,41 @@ sub preflight_checks {
 		show_warn_box; print "${YELLOW}Nothing seems to be listening on port $port.${ENDC} Falling back to process list...\n";
 		my @process_info = split(' ', `ps -C 'httpd httpd.worker apache apache2' -f | grep '^root'`);
 		$pid = $process_info[1];
-		my $command = `netstat -plnt | egrep "httpd|apache2"`;
-		if ( $command =~ /:+(\d+)/ ) { our $real_port = $1 }
-		our $real_port;
-		our $process_name = get_process_name($pid);
-		our $apache_version = get_apache_version($process_name);
-		if ( ! $NOINFO ) { show_info_box; print "Apache is actually listening on port ${CYAN}$real_port${ENDC}\n" }
-		if ( ! $NOINFO ) { show_info_box; print "The process running on port ${CYAN}$real_port${ENDC} is ${CYAN}$apache_version${ENDC}.\n" }
-		#show_crit_box(); print "${RED}Unable to determine PID of the process.${ENDC} ${YELLOW}Is apache running on this server?${ENDC}\n";
-		#if ( $os_name eq "Ubuntu" or $os_name eq "Debian") {
-		#	show_info_box(); print "${YELLOW}Chances are you havent yet installed Apache, try the following command:${ENDC}\n";
-		#	show_info_box(); print "\n"; 
-		#	show_info_box(); print "                  ${GREEN}sudo apt-get install apache2${ENDC}\n";
-		#	show_info_box(); print "${YELLOW}Or try:${ENDC}\n"; 
-		#	show_info_box(); print "                  ${GREEN}apache2ctl start${ENDC}\n";
-		#	show_info_box(); print "\n"; 
-		#	show_info_box(); print "${YELLOW}Then try running this script again.${ENDC}\n"; 
-		#	exit;
-		#} else {
-		#	show_info_box(); print "${YELLOW}Chances are you havent yet installed Apache, try the following commands:${ENDC}\n";
-		#	show_info_box(); print "\n"; 
-		#	show_info_box(); print "                  ${GREEN}yum install httpd${ENDC}\n";
-		#	show_info_box(); print "                  ${GREEN}service httpd start${ENDC}\n";
-		#	show_info_box(); print "                  ${GREEN}chkconfig httpd on${ENDC}\n";
-		#	show_info_box(); print "${YELLOW}Or try:${ENDC}\n"; 
-		#	show_info_box(); print "                  ${GREEN}service httpd start${ENDC}\n";
-		#	show_info_box(); print "                  ${GREEN}chkconfig httpd on${ENDC}\n";
-		#	show_info_box(); print "\n"; 
-		#	show_info_box(); print "${YELLOW}Then try running this script again.${ENDC}\n"; 
-		#	exit;
-		#}
+		if ( not $pid ) {
+                        show_crit_box; print "apache process not found";
+                        exit;
+                } else {
+                        my $command = `netstat -plnt | egrep "httpd|apache2"`;
+                        if ( $command =~ /:+(\d+)/ ) { our $real_port = $1 }
+                        our $real_port;
+                        our $process_name = get_process_name($pid);
+                        our $apache_version = get_apache_version($process_name);
+                        if ( ! $NOINFO ) { show_info_box; print "Apache is actually listening on port ${CYAN}$real_port${ENDC}\n" }
+                        if ( ! $NOINFO ) { show_info_box; print "The process running on port ${CYAN}$real_port${ENDC} is ${CYAN}$apache_version${ENDC}.\n" }
+                        #show_crit_box(); print "${RED}Unable to determine PID of the process.${ENDC} ${YELLOW}Is apache running on this server?${ENDC}\n";
+                        #if ( $os_name eq "Ubuntu" or $os_name eq "Debian") {
+                        #       show_info_box(); print "${YELLOW}Chances are you havent yet installed Apache, try the following command:${ENDC}\n";
+                        #       show_info_box(); print "\n";
+                        #       show_info_box(); print "                  ${GREEN}sudo apt-get install apache2${ENDC}\n";
+                        #       show_info_box(); print "${YELLOW}Or try:${ENDC}\n";
+                        #       show_info_box(); print "                  ${GREEN}apache2ctl start${ENDC}\n";
+                        #       show_info_box(); print "\n";
+                        #       show_info_box(); print "${YELLOW}Then try running this script again.${ENDC}\n";
+                        #       exit;
+                        #} else {
+                        #       show_info_box(); print "${YELLOW}Chances are you havent yet installed Apache, try the following commands:${ENDC}\n";
+                        #       show_info_box(); print "\n";
+                        #       show_info_box(); print "                  ${GREEN}yum install httpd${ENDC}\n";
+                        #       show_info_box(); print "                  ${GREEN}service httpd start${ENDC}\n";
+                        #       show_info_box(); print "                  ${GREEN}chkconfig httpd on${ENDC}\n";
+                        #       show_info_box(); print "${YELLOW}Or try:${ENDC}\n";
+                        #       show_info_box(); print "                  ${GREEN}service httpd start${ENDC}\n";
+                        #       show_info_box(); print "                  ${GREEN}chkconfig httpd on${ENDC}\n";
+                        #       show_info_box(); print "\n";
+                        #       show_info_box(); print "${YELLOW}Then try running this script again.${ENDC}\n";
+                        #       exit;
+                        #}
+                }
 	} else {	
 		# now we get the name of the process running with the specified pid
 		our $process_name = get_process_name($pid);
