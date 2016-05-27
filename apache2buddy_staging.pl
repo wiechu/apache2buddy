@@ -15,11 +15,58 @@ use strict;
 ##                                                                                                        ##
 ############################################################################################################
 # author: richard forth
-# version: 0.1
+# version: 1.0
 # description: apache2buddy, a fork of apachebuddy that caters for apache2, obviously.
 #
 #            http://apache2buddy.pl/installation
 #            http://apache2buddy.pl/changelog
+#            http://apache2buddy.pl/LICENSE
+#
+###########################################################################################################
+#
+#                                           L I C E N S E
+#
+###########################################################################################################
+#
+#   Copyright 2016 Richard Forth
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#    
+#   The copyright line reads as my name, because I did a lot of work in making
+#   this fork a whole new beast, and the previous project was never distributed
+#   under any official license, I did get the blessing from Gus Maskowitz to
+#   publish it under the Apache License 2.0.
+#   
+#   The purpose of the license is to ensure that free software remains free, not
+#   as in "free beer" but in "freedom". The freedom to derive new software from
+#   this and to keep that software "free" too. 
+#   
+#   But it is important to acknowldege too, that this is a derivative work from 
+#   apachebuddy.pl. Even though it is not being maintained any more, I would like 
+#   to acknowledge the talents of a few people:
+#   
+#     Major Hayden - for his inspiring work on MySQLTuner.pl
+#     Jacob Walcik - who is the credited author of apache2buddy.pl (see the first
+#                    few lines of the original script code at http:// apachebuddy.pl)
+#     Gus Maskowitz - for his work on the script, though it is no longer maintained
+#     Will Parsons - for hosting the original script at http://apachebuddy.pl
+#   
+#   Here I note that I also do not maintain the old project, this is a complete
+#   fork and revamp of the original code, and is maintained separately.
+#   
+#  Please keep any and all credits in the source code, and if you derive a new
+#  software from it, by all means add your own credits.
+#
 #
 ############################################################################################################
 #                                           D I S C L A I M E R  
@@ -1098,6 +1145,7 @@ END_HEADER
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Ubuntu 12.04 / 14.04, Debian 6 / 7 / 8, CentOS / Scientific Linux / RHEL versions 5.x, 6.x, 7.x.${ENDC}\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "MD5SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/md5sums.txt${ENDC}\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "SHA256SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/sha256sums.txt${ENDC}\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now released under the Apache 2.0 License. See ${CYAN}http://apache2buddy.pl/LICENSE${ENDC}\n" }
 	}
 }
 
