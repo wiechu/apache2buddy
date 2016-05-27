@@ -1186,29 +1186,6 @@ sub show_shortcrit_box {
 	print "[ ${RED}!!${ENDC} ] ";
 }
 
-sub show_important_message {
-	if ( ! $NOINFO ) {
-		print "\n${YELLOW}*********************************************************************";
-		print "\n* IMPORTANT SERVICE ANNOUNCEMENT NOTICE                             *";
-		print "\n*********************************************************************";
-		print "\n*                                                                   *";
-		print "\n* apache2buddy.pl is moving to github, this is going to introduce   *";
-		print "\n* a 301 redirect for the domain apache2buddy.pl.                    *";
-		print "\n*                                                                   *";
-		print "\n* Please make sure you update any processes to ensure that they     *";
-		print "\n* can follow redirects.                                             *";
-		print "\n*                                                                   *";
-		print "\n* If you use the curl and perl method, please add the -L switch:    *";
-		print "\n*                                                                   *";
-		print "\n*    # curl -sL apache2buddy.pl | perl                              *";
-		print "\n*                                                                   *";
-		print "\n* Thanks,                                                           *";
-		print "\n* Richard                                                           *";
-		print "\n*********************************************************************${ENDC}\n";
-	}
-}
-
-
 sub insert_hrule() {
 	print "-" x 80;
 	print "\n";
@@ -2074,5 +2051,3 @@ if ( $model eq "worker") {
 
 if ( ! $NOINFO ) { print "\n${PURPLE}Generating reports...${ENDC}\n" }
 generate_standard_report($available_mem, $maxclients, $apache_proc_lowest, $apache_proc_average, $apache_proc_highest, $model, $threadsperchild, $mysql_memory_usage_mbytes, $java_memory_usage_mbytes, $redis_memory_usage_mbytes, $memcache_memory_usage_mbytes, $varnish_memory_usage_mbytes, $phpfpm_memory_usage_mbytes, $gluster_memory_usage_mbytes);
-
-show_important_message();

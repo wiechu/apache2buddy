@@ -1,2 +1,2 @@
-6797b034ec29e1880a96d6ca4c4412b1  apache2buddy.pl
-6797b034ec29e1880a96d6ca4c4412b1  apache2buddy_staging.pl
+304614b04fc2cff3ee866c4fb973cbfb  apache2buddy.pl
+304614b04fc2cff3ee866c4fb973cbfb  apache2buddy_staging.pl
