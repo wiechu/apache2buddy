@@ -175,3 +175,24 @@ So as you may see, there are some similarities between the new and the old, but 
        - Memcache
        - PHP-FPM
        - Gluster
+
+
+Please take note of the following service announcement:
+
+        *********************************************************************
+        * IMPORTANT SERVICE ANNOUNCEMENT NOTICE                             *
+        *********************************************************************
+        *                                                                   *
+        * apache2buddy.pl is moving to github, this is going to introduce   *
+        * a 301 redirect for the domain apache2buddy.pl.                    *
+        *                                                                   *
+        * Please make sure you update any processes to ensure that they     *
+        * can follow redirects.                                             *
+        *                                                                   *
+        * If you use the curl and perl method, please add the -L switch:    *
+        *                                                                   *
+        *    # curl -sL apache2buddy.pl | perl                              *
+        *                                                                   *
+        * Thanks,                                                           *
+        * Richard                                                           *
+        *********************************************************************
