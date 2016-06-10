@@ -153,8 +153,8 @@ NEW:
         [ INFO     ] OS Name: CentOS
         [ INFO     ] OS Release: 6.6
         [ OK       ] Apache2buddy supports this OS Release/Version.
-        [ INFO     ] Hostname: perl.richardforth.co.uk
-        [ INFO     ] Primary IP: 46.101.60.103
+        [ INFO     ] Hostname: server.hostname.com
+        [ INFO     ] Primary IP: X.X.X.X
         [ INFO     ] We are checking the service running on port 80...
         [ INFO     ] The process listening on port 80 is /usr/sbin/httpd
         [ INFO     ] The process running on port 80 is Apache/2.2.15 (Unix).
@@ -202,7 +202,7 @@ NEW:
         Generating reports...
         ### GENERAL FINDINGS & RECOMMENDATIONS ###
         --------------------------------------------------------------------------------
-        Apache2buddy.pl report for server: servername (IP ADDRESS):
+        Apache2buddy.pl report for server: server.hostname.com (X.X.X.X):
 
         Settings considered for this report:
 
