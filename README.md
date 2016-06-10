@@ -5,6 +5,7 @@ If any changes are made please update the md5sums and sha256sums or some automat
         # md5sum apache2buddy.pl > md5sums.txt
         # sha256sum apache2buddy.pl > sha256sums.txt
         
+# Best Practice
         
 Best Practice is to check the code against either the md5sums or sha256sums (or both) before execution of the code.
 
@@ -41,11 +42,25 @@ Example:
 
 If the md5sums or sha256sums do not match, then changes have been made and its untested, so do not proceed until they match.
 
+# Special Note
+
+Even if the md5sums and sha256sums match, remember youre still running arbitrary code on YOUR SERVER, AS ROOT, thats quite a dangerous proposition, so please do check the code, its YOUR responsibilty to make sure this doesnt break your systems, run it in a test environment first, sandbox it, test it thoroughly before you run it on your live systems, PLEASE!, I beg you!
+
+# Risk Factors
+
+- Running arbitrary code as root (Dangerous)
+- Compromised script could result in root level compromise of your server
+- Runaway processes doing not what they are supposed to (this actually happened in testing, thankfully all of the known exceptions have been caught)
+
+# The apache2buddy.pl domain
+
 This tool has its own domain, that redirects to the raw script in the master branch:
 
         apache2buddy.pl => https://raw.githubusercontent.com/richardforth/apache2buddy/master/apache2buddy.pl
 
 Be sure to specify the -L switch when curling and perling.
+
+# About, and heritage information
 
 apache2buddy.pl is a reporting tool and onetime run dashboard for assisting with tuning and troubleshooting apache webservers.
 
