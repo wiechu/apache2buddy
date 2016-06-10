@@ -4,6 +4,42 @@ If any changes are made please update the md5sums and sha256sums or some automat
 
         # md5sum apache2buddy.pl > md5sums.txt
         # sha256sum apache2buddy.pl > sha256sums.txt
+        
+        
+Best Practice is to check the code against either the md5sums or sha256sums (or both) before execution of the code.
+
+Example:
+
+        --- a2bchk.sh ---
+        #!/bin/bash
+        # example of testing md5sums prior to execution
+
+        # apache has its own domain 'apache2buddy.pl' this saves typing out 'https://raw.githubusercontent.com/richardforth/apache2buddy/master/apache2buddy.pl'
+        scriptmd5sum=`curl -sL apache2buddy.pl | md5sum | cut -d " " -f1`
+        originmd5sum=`curl -s https://raw.githubusercontent.com/richardforth/apache2buddy/master/md5sums.txt | cut -d " " -f1`
+        echo $scriptmd5sum
+        echo $originmd5sum
+        if [ $scriptmd5sum == $originmd5sum ]
+        then
+                scriptsha256sum=`curl -sL apache2buddy.pl | sha256sum | cut -d " " -f1`
+                originsha256sum=`curl -s https://raw.githubusercontent.com/richardforth/apache2buddy/master/sha256sums.txt | cut -d " " -f1`
+                echo $scriptsha256sum
+                echo $originsha256sum
+                if [ $scriptmd5sum == $originmd5sum ]
+                then
+                        # execute the code, its safe - we can assume
+                        curl -sL apache2buddy.pl | perl
+                else
+                        echo "Error: SHA256SUM mismatch, execution aborted."
+                fi
+        else
+                echo "Error: MD5SUM mismatch, execution aborted."
+        fi
+        --- end a2bchk.sh ---
+
+
+
+If the md5sums or sha256sums do not match, then changes have been made and its untested, so do not proceed until they match.
 
 This tool has its own domain, that redirects to the raw script in the master branch:
 
