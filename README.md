@@ -1,4 +1,16 @@
 # apache2buddy
+
+If any changes are made please update the md5sums and sha256sums or some automation fails:
+
+        # md5sum apache2buddy.pl > md5sums.txt
+        # sha256sum apache2buddy.pl > sha256sums.txt
+
+This tool has its own domain, that redirects to the raw script in the master branch:
+
+        apache2buddy.pl => https://raw.githubusercontent.com/richardforth/apache2buddy/master/apache2buddy.pl
+
+Be sure to specify the -L switch when curling and perling.
+
 apache2buddy.pl is a reporting tool and onetime run dashboard for assisting with tuning and troubleshooting apache webservers.
 
         # curl -sL apache2buddy.pl | perl
@@ -183,7 +195,7 @@ Please take note of the following service announcement:
         * IMPORTANT SERVICE ANNOUNCEMENT NOTICE                             *
         *********************************************************************
         *                                                                   *
-        * apache2buddy.pl is moving to github, this is going to introduce   *
+        * apache2buddy.pl HAS MOVED to github, this now introduces          *
         * a 301 redirect for the domain apache2buddy.pl.                    *
         *                                                                   *
         * Please make sure you update any processes to ensure that they     *
