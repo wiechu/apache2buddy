@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ==================================================================================================================
+2016-06-10 	Richard Forth   Cleaned up old code, fixed up old news items and information messages
+2016-06-10 	Richard Forth   Removed 'last modified item from script, as this should be handled by github and not hardcoded into the script'
 2016-05-27 	Richard Forth   Emergency change due to unsafe execution when no apache process is found, this
 				change fixes a bug introduced in the change made on 2016-05-24
 2016-05-27 	Richard Forth   Added INFO ITEM about LICENSE.
