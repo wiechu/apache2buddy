@@ -18,9 +18,8 @@ use strict;
 # version: 1.0
 # description: apache2buddy, a fork of apachebuddy that caters for apache2, obviously.
 #
-#            http://apache2buddy.pl/installation
-#            http://apache2buddy.pl/changelog
-#            http://apache2buddy.pl/LICENSE
+#  Github Page: https://github.com/richardforth/apache2buddy
+#  Please only make pull requests from staging branch.
 #
 ###########################################################################################################
 #
@@ -113,9 +112,6 @@ use strict;
 #  to be able to run, and it won't flow or make any sense until you start from the "start".
 #
 ##########################################################################################################
-# Variable to hold the date / time stamp that this file was last changed
-#
-our $date_last_modified = "Tuesday, May 24th, 2016 @ 14:36";
 
 ## print usage
 sub usage {
@@ -1138,14 +1134,11 @@ END_HEADER
 		print $header;
 		if ( ! $NOINFO ) { print "\n${PURPLE}About...${ENDC}\n" };
 		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is a fork of apachebuddy.pl.\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "Project status: ${GREEN}STABLE${ENDC}. Please report bugs, if you find any, so I can fix them!\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "Latest update: ${CYAN}$date_last_modified${ENDC}. Check ${CYAN}http://apache2buddy.pl/changelog${ENDC} for details.\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "Send bug reports / feature requests to ${BLUE}richard.forth AT gmail.com${ENDC}.\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "${GREEN}Support for the following systems has been added:${ENDC}.\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Ubuntu 12.04 / 14.04, Debian 6 / 7 / 8, CentOS / Scientific Linux / RHEL versions 5.x, 6.x, 7.x.${ENDC}\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "MD5SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/md5sums.txt${ENDC}\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "SHA256SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/sha256sums.txt${ENDC}\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now released under the Apache 2.0 License. See ${CYAN}http://apache2buddy.pl/LICENSE${ENDC}\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now released under the Apache 2.0 License. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/LICENSE${ENDC}\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now hosted from github. See ${CYAN}https://github.com/richardforth/apache2buddy${ENDC}\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "Changelogs and updates in github. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/changelog${ENDC}\n" }
 	}
 }
 
@@ -1188,23 +1181,7 @@ sub show_shortcrit_box {
 
 sub show_important_message {
 	if ( ! $NOINFO ) {
-		print "\n${YELLOW}*********************************************************************";
-		print "\n* IMPORTANT SERVICE ANNOUNCEMENT NOTICE                             *";
-		print "\n*********************************************************************";
-		print "\n*                                                                   *";
-		print "\n* apache2buddy.pl is moving to github, this is going to introduce   *";
-		print "\n* a 301 redirect for the domain apache2buddy.pl.                    *";
-		print "\n*                                                                   *";
-		print "\n* Please make sure you update any processes to ensure that they     *";
-		print "\n* can follow redirects.                                             *";
-		print "\n*                                                                   *";
-		print "\n* If you use the curl and perl method, please add the -L switch:    *";
-		print "\n*                                                                   *";
-		print "\n*    # curl -sL apache2buddy.pl | perl                              *";
-		print "\n*                                                                   *";
-		print "\n* Thanks,                                                           *";
-		print "\n* Richard                                                           *";
-		print "\n*********************************************************************${ENDC}\n";
+		print "\n${YELLOW}** IMPORTANT MESSAGE **\nImportant messages go here.${ENDC}\n";
 	}
 }
 
@@ -1441,29 +1418,6 @@ sub preflight_checks {
                         our $apache_version = get_apache_version($process_name);
                         if ( ! $NOINFO ) { show_info_box; print "Apache is actually listening on port ${CYAN}$real_port${ENDC}\n" }
                         if ( ! $NOINFO ) { show_info_box; print "The process running on port ${CYAN}$real_port${ENDC} is ${CYAN}$apache_version${ENDC}.\n" }
-                        #show_crit_box(); print "${RED}Unable to determine PID of the process.${ENDC} ${YELLOW}Is apache running on this server?${ENDC}\n";
-                        #if ( $os_name eq "Ubuntu" or $os_name eq "Debian") {
-                        #       show_info_box(); print "${YELLOW}Chances are you havent yet installed Apache, try the following command:${ENDC}\n";
-                        #       show_info_box(); print "\n";
-                        #       show_info_box(); print "                  ${GREEN}sudo apt-get install apache2${ENDC}\n";
-                        #       show_info_box(); print "${YELLOW}Or try:${ENDC}\n";
-                        #       show_info_box(); print "                  ${GREEN}apache2ctl start${ENDC}\n";
-                        #       show_info_box(); print "\n";
-                        #       show_info_box(); print "${YELLOW}Then try running this script again.${ENDC}\n";
-                        #       exit;
-                        #} else {
-                        #       show_info_box(); print "${YELLOW}Chances are you havent yet installed Apache, try the following commands:${ENDC}\n";
-                        #       show_info_box(); print "\n";
-                        #       show_info_box(); print "                  ${GREEN}yum install httpd${ENDC}\n";
-                        #       show_info_box(); print "                  ${GREEN}service httpd start${ENDC}\n";
-                        #       show_info_box(); print "                  ${GREEN}chkconfig httpd on${ENDC}\n";
-                        #       show_info_box(); print "${YELLOW}Or try:${ENDC}\n";
-                        #       show_info_box(); print "                  ${GREEN}service httpd start${ENDC}\n";
-                        #       show_info_box(); print "                  ${GREEN}chkconfig httpd on${ENDC}\n";
-                        #       show_info_box(); print "\n";
-                        #       show_info_box(); print "${YELLOW}Then try running this script again.${ENDC}\n";
-                        #       exit;
-                        #}
                 }
 	} else {	
 		# now we get the name of the process running with the specified pid
@@ -2075,4 +2029,4 @@ if ( $model eq "worker") {
 if ( ! $NOINFO ) { print "\n${PURPLE}Generating reports...${ENDC}\n" }
 generate_standard_report($available_mem, $maxclients, $apache_proc_lowest, $apache_proc_average, $apache_proc_highest, $model, $threadsperchild, $mysql_memory_usage_mbytes, $java_memory_usage_mbytes, $redis_memory_usage_mbytes, $memcache_memory_usage_mbytes, $varnish_memory_usage_mbytes, $phpfpm_memory_usage_mbytes, $gluster_memory_usage_mbytes);
 
-show_important_message();
+#show_important_message();
