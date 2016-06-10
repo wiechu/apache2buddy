@@ -240,6 +240,25 @@ So as you may see, there are some similarities between the new and the old, but 
        - Gluster
 
 
+# Logging
+
+On every execution, an entry is made in a log file: /var/log/apache2buddy.log on your server.
+
+Example log line:
+
+        2016/05/24 10:14:15 Model: "Prefork" Memory: "490 MB" Maxclients: "50" Recommended: "54" Smallest: "8.49 MB" Avg: "8.49 MB" Largest: "8.49 MB" Highest Pct Remaining RAM: "91.84%" (86.64% TOTAL RAM)
+
+
+This is to help you get an idea of changes over time to your apache tuning requirements. Maybe this will help you decide when you need more RAM, or when you need to start streamlining your code. Tracking when performace started degrading.
+
+Remember it only puts a new entry in the log file on each new execution. Its not designed to be run as a cron job or anything.
+
+# Log Rotation
+
+Log rotation should not be necessary because this script is NOT designed to be run as a cron job so it should never really fill your disks, if you ran this on your server a year or six months ago, maybe its just nice to see what the results were from back then? You get the idea.
+
+# Last but not least...
+
 Please take note of the following service announcement:
 
         *********************************************************************
