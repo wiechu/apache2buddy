@@ -1709,9 +1709,9 @@ sub detect_maxclients_hits {
 	}
 	our $hit = 0;
 	if ($process_name eq "/usr/sbin/httpd") {
-		our $maxclients_hits = `grep -i reached /var/log/httpd/error_log | tail -5`;
+		our $maxclients_hits = `grep -i reached /var/log/httpd/error_log | egrep -v "mod" | tail -5`;
 	} else {
-		our $maxclients_hits = `grep -i reached /var/log/apache2/error.log | tail -5`;
+		our $maxclients_hits = `grep -i reached /var/log/apache2/error.log | egrep -v "mod" | tail -5`;
 	}
 	our $maxclients_hits;
 	if ($maxclients_hits) {

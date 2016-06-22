@@ -1,13 +1,25 @@
 CHANGELOG
 
 When		Who		What
-==================================================================================================================
-2016-06-10 	Richard Forth   Cleaned up old code, fixed up old news items and information messages
-2016-06-10 	Richard Forth   Removed 'last modified item from script, as this should be handled by github and not hardcoded into the script'
-2016-05-27 	Richard Forth   Emergency change due to unsafe execution when no apache process is found, this
-				change fixes a bug introduced in the change made on 2016-05-24
+======================================================================================
+2016-06-22 	Richard Forth   Tidied up the changelog, lines overflowing corrected. 
+2016-06-22 	Richard Forth   Added exclusion for "mod" in grep for "reached" when 
+                                scanning log files for lines where MaxClients /
+				MaxRequestWorkers limit has been reached. 
+				Thanks to Kaz =) Change going into staging for
+				him to test.
+2016-06-10 	Richard Forth   Cleaned up old code, fixed up old news items and 
+				information messages.
+2016-06-10 	Richard Forth   Removed 'last modified item from script, as this
+				should be handled by github and not hardcoded into
+				the script'.
+2016-05-27 	Richard Forth   Emergency change due to unsafe execution when no
+				apache process is found, this change fixes a bug
+				that was introduced in the change made on
+				2016-05-24.
 2016-05-27 	Richard Forth   Added INFO ITEM about LICENSE.
-2016-05-27 	Richard Forth   Added LICENSE (Apache License Version 2.0). http://apache2buddy.pl/LICENSE
+2016-05-27 	Richard Forth   Added LICENSE (Apache License Version 2.0). 
+				http://apache2buddy.pl/LICENSE
 2016-05-27 	Richard Forth   Added the notice in the source code as follows:
 
 
@@ -56,125 +68,164 @@ Please keep any and all credits in the source code, and if you derive a new
 software from it, by all means add your own credits.
 
 2016-05-24 	Richard Forth   Added INFO ITEM about sha256sums.
-2016-05-24 	Richard Forth   Added sha256sums => http://apache2buddy.pl/sha256sums.txt
-2016-05-24 	Richard Forth   Changed the way it handles nothing at all listening on port 80. It now falls back
-				to the process list as if somehing WAS listening on port 80 that was NOT apache.
-2016-05-20 	Richard Forth   Fixed a bug with parent pid detected, reported by J. Ramsey - with thanks! 
+2016-05-24 	Richard Forth   Added sha256sums => 
+				http://apache2buddy.pl/sha256sums.txt
+2016-05-24 	Richard Forth   Changed the way it handles nothing at all 
+				listening on port 80. It now falls back
+				to the process list as if somehing WAS
+				listening on port 80 that was NOT apache.
+2016-05-20 	Richard Forth   Fixed a bug with parent pid detected,
+				reported by J. Ramsey - with thanks! 
 2016-03-03 	Richard Forth   Added MD5Sums + News Item. 
-2016-02-27 	Richard Forth   Added code to display verbose memory usage information, and then bug out with a 
-				critical error if ram is overbooked, before we even start (ie no ram left for apache)
-2016-02-27 	Richard Forth   Added code to display verbose memory usage information, prior to calculations, 
-				as I was trying to solve the mystery of negative percentages. 
-				Found that if ram is over booked, this skews the results massively.
-2016-02-24 	Richard Forth   Added code to display MaxRequestsPerChild information (prefork mode) 
-2016-02-24 	Richard Forth   Fixed bug out code in preflight checks if apache parent is greater than 50MB, as 
-				I was notified that this wasnt working on ubuntu 12.04 systems
-2016-02-16 	Richard Forth   Added bug out code in preflight checks if apache parent is greater than 50MB, as 
+2016-02-27 	Richard Forth   Added code to display verbose memory
+				usage information, and then bug out with a 
+				critical error if ram is overbooked, before
+				we even start (ie no ram left for apache)
+2016-02-27 	Richard Forth   Added code to display verbose memory usage
+				information, prior to calculations, as I was
+				trying to solve the mystery of negative
+				percentages. Found that if ram is over booked,
+				this skews the results massively.
+2016-02-24 	Richard Forth   Added code to display MaxRequestsPerChild
+				information (prefork mode) 
+2016-02-24 	Richard Forth   Fixed bug out code in preflight checks if
+				apache parent is greater than 50MB, as 
+				I was notified that this wasnt working on
+				ubuntu 12.04 systems.
+2016-02-16 	Richard Forth   Added bug out code in preflight checks if
+				apache parent is greater than 50MB, as 
 				this skews results and calculations.
 2015-10-18 	Richard Forth   Fixed some logic in the Results section. 
-2015-10-18 	Richard Forth   Dropped "new and improved!!!" from the logo. Updated the news items. 
-2015-10-03 	Richard Forth   Changed Recommendations based on an actual valid range (10% of max). 
-				Previously anything below the maximim was considered accpetable. 
-				Now there is a minimum (Max / .90) and Max, which is reported in the recommendations.
-2015-10-03 	Richard Forth   Changed layout of memory report, as requested by Luke H.
-2015-10-03 	Richard Forth   Added detection for if maxClients or MaxRequestWorkers has been hit 
-2015-09-25 	Richard Forth   Added Apache current memory consumption to 'Analysing apache memory usage' section 
-2015-09-23 	Richard Forth   Added Gluster Memory Detection - Feature Request from P. Steyn
-2015-09-08 	Richard Forth   Minor Cosmetic Changes and Spelling Corrections, Removed --PHP option, and included 
+2015-10-18 	Richard Forth   Dropped "new and improved!!!" from the logo.
+				Updated the news items. 
+2015-10-03 	Richard Forth   Changed Recommendations based on an actual
+				valid range (10% of max). Previously anything
+				below the maximim was considered accpetable. 
+				Now there is a minimum (Max / .90) and Max,
+				which is reported in the recommendations.
+2015-10-03 	Richard Forth   Changed layout of memory report, as requested
+				by Luke H.
+2015-10-03 	Richard Forth   Added detection for if maxClients or
+				MaxRequestWorkers has been hit. 
+2015-09-25 	Richard Forth   Added Apache current memory consumption to
+				'Analysing apache memory usage' section. 
+2015-09-23 	Richard Forth   Added Gluster Memory Detection 
+				- Feature Request from P. Steyn
+2015-09-08 	Richard Forth   Minor Cosmetic Changes and Spelling Corrections
+				Removed --PHP option, and included 
 				PHP Memory Limit in Discoveries.
 2015-09-03 	Richard Forth   Minor Cosmetic Changes and Spelling Corrections.
 2015-08-21 	Richard Forth   Minor Bug Fix - Lines 1497 and 1498 added.
-2015-08-06 	Richard Forth	Improvement to code:
-
-				1427                 	$pid = `ps aux | grep -v 	grep | egrep \'^root\.\*(httpd|apache2)\' | grep -v \"buddy\" | awk \'BEGIN {ORS=\"\"} {print \$2}\' `;
+2015-08-06 	Richard Forth	Improvement to code.
+2015-08-06 	Richard Forth	K. Geaney Reported a bug whereby the script
+				would detect itself in the processlist
+				apache2 portion of the script name 
+				apache2buddy.pl is picked up when the script
+				is wgetted and run locally rather than with
+				curl & perl.
+				Added a filter (grep -v "buddy") to prevent this
+				happening in the future.
+2015-08-03 	Richard Forth	L. Hanley Reported a bug whereby the script
+				would error if the apache process was 
+				running as a user that had more than 8 
+				characters. This has been fixed now.
+2015-06-06 	Richard Forth	G. John reported a bug whereby if a server
+				has a certain character set, the apache
+				user is shown as 'apache\x{d}' rather than 
+				'apache', which causes the ps aux line
+				to produce and empty data set which is passed
+				to pmap resulting in a division by
+				zero error, this was also present in the
+				maxclients and serverlimit variables.
 				
-				Changed to:
-				
-				1427			my @process_info = split(' ', `ps -C 'httpd apache apache2' -f | grep '^root'`);
-				1428		        $pid = $process_info[1];
-
-				Also changed logic from
-
-				1430			if ( $pid eq '' ) { 				
-				
-				to 
-
-				1430                 	if ( !$pid ) {
-
-				As $pid is uninitialised if the @process_info array is null / empty.
-				
-				Special thank you to D. Attar for this.
-
-2015-08-06 	Richard Forth	K. Geaney Reported a bug whereby the script would detect itself in the processlist
-				apache2 portion of the script name apache2buddy.pl is picked up when the script
-				is wgetted and run locally rather than with curl & perl.
-				Added a filter (grep -v "buddy") to prevent this happening in the future.
-2015-08-03 	Richard Forth	L. Hanley Reported a bug whereby the script would error if the apache process was 
-				running as a user that had more than 8 characters. This has been fixed now.
-2015-06-06 	Richard Forth	G. John reported a bug whereby if a server has a certain character set, the apache
-				user is shown as 'apache\x{d}' rather than 'apache', which causes the ps aux line
-				to produce and empty data set which is passed to pmap resulting in a division by
-				zero error, this was also present in the maxclients and serverlimit variables.
-				
-				To fix that I added the following lines of code in various places in the script:
+				To fix that I added the following lines of code
+				in various places in the script:
 
 				          # account for 'apache\x{d}' strangeness
 				          $variable =~ s/\x{d}//;
 
-				What this does is replace the control characters that cause this issue, preventing
-				the script from producing a list of PIDs. Better error handling if the list of PIDs
-				are still zero. Where $variable name was one of $apache_user, $maxclients, or
-				$serverlimit.
-2015-06-03 	Richard Forth	Switched the IP provider from curlmyip.com to myip.dnsomatic.com as curlmyip
-				was becoming very slow to respond, causing unnecessary lag.
-2015-05-27 	Richard Forth	Removed last 5 log entries from output if --report or --noinfo is specified. 
-2015-05-27 	Richard Forth	Removed calculations of maxclients for worker processes. Instead, I left a 
-				friendly message to go check manually for backend processes such as PHP-FPM
-				and its pm.max_children directive. There is no plan to add functionality to
+				What this does is replace the control characters
+				that cause this issue, preventing the script from
+				producing a list of PIDs. Better error handling if
+				the list of PIDs are still zero.
+				Where $variable name was one of $apache_user, 
+				$maxclients, or	$serverlimit.
+2015-06-03 	Richard Forth	Switched the IP provider from curlmyip.com to 
+				myip.dnsomatic.com as curlmyip	was becoming very
+				slow to respond, causing unnecessary lag.
+2015-05-27 	Richard Forth	Removed last 5 log entries from output
+				if --report or --noinfo is specified. 
+2015-05-27 	Richard Forth	Removed calculations of maxclients for 
+				worker processes. Instead, I left a 
+				friendly message to go check manually for 
+				backend processes such as PHP-FPM
+				and its pm.max_children directive. 
+				There is no plan to add functionality to
 				check this, as it will become a scope creep.
-2015-05-27 	Richard Forth	Bug Fix reported by C. Piper-Balta in which the script would produce errors if
-				the process name was /usr/sbin/httpd.worker or /usr/sbin/nginx. The test_process
-				subroutine had some flawed logic which has been fixed now.
-2015-04-23 	Richard Forth	Bug Fixes when selecting --lightbg / -L, not all colours were made bold.
-2015-04-23 	Richard Forth	Bug Fixes when falling back to process list, now picks up the correct port.
+2015-05-27 	Richard Forth	Bug Fix reported by C. Piper-Balta in which 
+				the script would produce errors if
+				the process name was /usr/sbin/httpd.worker
+				or /usr/sbin/nginx. The test_process
+				subroutine had some flawed logic which has
+				been fixed now.
+2015-04-23 	Richard Forth	Bug Fixes when selecting --lightbg / -L,
+				not all colours were made bold.
+2015-04-23 	Richard Forth	Bug Fixes when falling back to process list,
+				now picks up the correct port.
 2015-04-23 	Richard Forth	Minor cosmetic changes.
-2015-04-23 	Richard Forth	Added more graceful operation if Varnish is found on port 80 instead of apache, it
-				now is able to go away and find out what port apache is really listening on, eg 
-				port 8080, and reset itself to go ahead and continue the scan on the new port.
+2015-04-23 	Richard Forth	Added more graceful operation if Varnish is
+				found on port 80 instead of apache, it
+				now is able to go away and find out what 
+				port apache is really listening on, eg 
+				port 8080, and reset itself to go ahead and 
+				continue the scan on the new port.
 2015-04-17 	Richard Forth	Added support for RHEL 7 / Apache 2.4
 2015-04-17 	Richard Forth	Added support for CentOS 7 / Apache 2.4
-2015-04-17 	Richard Forth	Minor bugfixes, made enhancements to reporting, cleaned up the news items..
-2015-04-17 	Richard Forth	Minor bugfixes, added some missing carriage returns, nothing major.
+2015-04-17 	Richard Forth	Minor bugfixes, made enhancements to reporting, 
+				cleaned up the news items..
+2015-04-17 	Richard Forth	Minor bugfixes, added some missing carriage 
+				returns, nothing major.
 2015-04-16 	Richard Forth	Added support for Scientific Linux 6.6.
-2015-04-15 	Richard Forth	Change project status from UNSTABLE to STABLE. Please report any errors.
+2015-04-15 	Richard Forth	Change project status from UNSTABLE to 
+				STABLE. Please report any errors.
 2015-04-15 	Richard Forth	Added support for Debian 7.
-2015-04-15 	Richard Forth	Added helpful error messages when apache is not found to be started or installed.
+2015-04-15 	Richard Forth	Added helpful error messages when apache is not
+				found to be started or installed.
 2015-04-15 	Richard Forth	Added support for Debian 6.
-2015-04-15 	Richard Forth	Corrected an error on Ubuntu systems where it would incorrectly suggest
-				that 'worker' was not a supported MPM, it is, because sometimes people will
-				use worker when using php-fpm. 'event' however is not supported, but I added a
-				nice helpful message if event MPM is detected on how to switch to a 
-				supported MPM. 
-2015-04-15 	Richard Forth	Added better error-handling for missing php package on ubuntu and prints a
-				helpful message. 
-2015-04-15 	Richard Forth	Added better error-handling for missing modules on ubuntu 12.04 and prints 
-				a helpful message. 
-2015-04-14 	Richard Forth	Added NEWS item, plugging the new support for Ubuntu systems.
+2015-04-15 	Richard Forth	Corrected an error on Ubuntu systems where it 
+				would incorrectly suggest that 'worker' was not 
+				a supported MPM, it is, because sometimes people 
+				will use worker when using php-fpm. 'event' 
+				however is not supported, but I added a
+				nice helpful message if event MPM is detected on 
+				how to switch to a supported MPM. 
+2015-04-15 	Richard Forth	Added better error-handling for missing php package
+				on ubuntu and prints a	helpful message. 
+2015-04-15 	Richard Forth	Added better error-handling for missing modules 
+				on ubuntu 12.04 and prints a helpful message. 
+2015-04-14 	Richard Forth	Added NEWS item, plugging the new support for 
+				Ubuntu systems.
 2015-04-14 	Richard Forth	Removed support for the event MPM.
-2015-04-14 	Richard Forth	Added support for Ubuntu, requires further testing but looking good.
+2015-04-14 	Richard Forth	Added support for Ubuntu, requires further testing
+				but looking good.
 2015-04-14 	Richard Forth	Added MPM to report section.
-2015-04-13 	Richard Forth	Added hostname and IP address to report section, this makes a lot of sense
-				if we're looping through a server farm we need to identify each one, right?
-2015-04-13 	Richard Forth	Split "Analysing your memory usage" into 2 sections, the second section is
-				called "Results". 
-2015-04-13 	Richard Forth	Merged two sections "Pre-Flight Checks" and "Analysing your apache 
-				configuration", into "Performing Auto-Discovery and Pre-Flight Checks" 
-2015-04-13 	Richard Forth	Converting large blocks of print statements: header done. 
+2015-04-13 	Richard Forth	Added hostname and IP address to report section, 
+				this makes a lot of sense. If we're looping through 
+				a server farm we need toidentify each one, right?
+2015-04-13 	Richard Forth	Split "Analysing your memory usage" into 2 sections, 
+				the second section is called "Results". 
+2015-04-13 	Richard Forth	Merged two sections "Pre-Flight Checks" and 
+				"Analysing your apache 	configuration", into 
+				"Performing Auto-Discovery and Pre-Flight Checks" 
+2015-04-13 	Richard Forth	Converting large blocks of print statements: 
+				header done. 
 2015-04-12 	Richard Forth	Fixed some inconsistencies with heading colours. 
-2015-04-12 	Richard Forth	Converting large blocks of print statements into heredocs, to shave off 
-				more deadweight. Usage done so far.
-2015-04-12 	Richard Forth	Fixed a bug where it would display warnings about ThreadsPerChild
-				regardless of the model, I made it so it only displays the warning if 
+2015-04-12 	Richard Forth	Converting large blocks of print statements
+				into heredocs, to shave off more deadweight.
+				Usage done so far.
+2015-04-12 	Richard Forth	Fixed a bug where it would display warnings
+				about ThreadsPerChild regardless of the model, 
+				I made it so it only displays the warning if 
 				indeed the current model is worker.
 2015-04-12 	Richard Forth	- added --report|r option, awaiting feedback.
 ==================================================================================================================
