@@ -1,3 +1,18 @@
+# domain
+
+apache2buddy.pl is a polish domain which happens to be the extension of perl scripts, so registered it and pointed it here:
+
+apache2buddy.pl => https://raw.githubusercontent.com/richardforth/apache2buddy/master/apache2buddy.pl
+
+This allows one to execute it on the server easily with
+
+	# curl -sL apache2buddy.pl | perl
+
+Notes on the curl & perl method:
+
+	-s      silent (dont show the curl download header)
+        -L      follow redirects (very important as you get a 301)
+
 # apache2buddy
 
 If any changes are made please update the md5sums and sha256sums or some automation fails:
