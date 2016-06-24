@@ -1346,7 +1346,7 @@ sub preflight_checks {
 		}
 	} elsif ( $os_name eq "Debian" ) {
 		if ( $os_release <= 6.0 ) {
-			# as of current writing, 6.0 (Lenny) is the latest EOL version of Debian
+			# as of current writing, 6.0 (Squeeze) is the latest EOL version of Debian
 			# https://wiki.debian.org/DebianReleases
 			show_warn_box();
 			print $os_name." ".$os_release." is now end of life, its technically unsupported, we may get errors";

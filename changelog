@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2016-06-24 	Richard Forth   Corrected the codename for Debian 6.0 which is EOL. 
 2016-06-24 	Richard Forth   Tidied up the code for checking ubuntu LTS versions. 
 2016-06-22 	Richard Forth   Tidied up the changelog, lines overflowing corrected. 
 2016-06-22 	Richard Forth   Added exclusion for "mod" in grep for "reached" when 
