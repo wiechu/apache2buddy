@@ -22,7 +22,7 @@ You can also wget it but this is frowned upon (especially by me) however you can
 Reasons I frown when you do this wget method:
 
 	1. Youre downloading the file. This file is never going to get updated, unless you wget it again.
-	2. I do regular bugfixes, feature requestss and cleanups of code.
+	2. I do regular bugfixes, feature requests and cleanups of code.
 	3. With curl and perl, you always pull the latest version.
 
 # apache2buddy
