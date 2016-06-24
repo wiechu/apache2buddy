@@ -1335,21 +1335,18 @@ sub preflight_checks {
 			 if ( ! $NOOK ) { show_ok_box(); print "Apache2buddy supports this OS Release/Version.\n" }
 		}
 	} elsif ( $os_name eq "Ubuntu" ) {
-		if ( $os_release <= 13.10 ) {
-			# take into account 12.04 LTS which is supported until 2018
-			unless  ( $os_release == "12.04") {
-				# as of current writing, 13.10 is the latest EOL version of Ubuntu
-				# https://wiki.ubuntu.com/Releases
-				show_warn_box();
-				print $os_name." ".$os_release." is now end of life, its technically unsupported, we may get errors";
-				print ".\n";
-			}
+                # This code section is completely changing so that I only need to add/remove the LTS versions as they EOL
+		unless  ( $os_release == "12.04" or $os_release == "14.04" or $os_release == "16.04") {
+			# https://wiki.ubuntu.com/Releases
+			show_warn_box();
+			print $os_name." ".$os_release." is not supported, we may get errors.";
+			print ".\n";
 		} else {
 			if ( ! $NOOK ) { show_ok_box(); print "The operating system is supported.\n" }
 		}
 	} elsif ( $os_name eq "Debian" ) {
-		if ( $os_release <= 5.0 ) {
-			# as of current writing, 5.0 (Lenny) is the latest EOL version of Debian
+		if ( $os_release <= 6.0 ) {
+			# as of current writing, 6.0 (Lenny) is the latest EOL version of Debian
 			# https://wiki.debian.org/DebianReleases
 			show_warn_box();
 			print $os_name." ".$os_release." is now end of life, its technically unsupported, we may get errors";
