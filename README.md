@@ -11,7 +11,7 @@ This allows one to execute it on the server easily with
 Notes on the curl & perl method:
 
 	-s      silent (dont show the curl download header)
-        -L      follow redirects (very important as you get a 301)
+	-L      follow redirects (very important as you get a 301)
 
 # apache2buddy
 
