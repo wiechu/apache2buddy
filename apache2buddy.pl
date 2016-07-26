@@ -678,6 +678,11 @@ sub test_process {
 	} elsif ( $process_name eq '/usr/sbin/apache2' ) {
 		@output = `/usr/sbin/apache2ctl -V 2>&1 | grep "Server version"`;
 		print "VERBOSE: First line of output from \"/usr/sbin/apache2ctl -V\": $output[0]" if $main::VERBOSE;
+	} elsif ( $process_name eq '/usr/local/apache/bin/httpd' ) {
+		if ( ! $NOWARN ) { show_warn_box(); print "${RED}Apache seems to have been installed from source, its technically unsupported, we may get errors${ENDC}\n" }
+		show_warn_box(); print 
+		@output = `$process_name -V 2>&1 | grep "Server version"`;
+		print "VERBOSE: First line of output from \"/usr/local/apache/bin/httpd -V\": $output[0]" if $main::VERBOSE;
 	} else {
 		# this catchall should cover all other possibilities, such as
 		# nginx, varnish, etc. 
