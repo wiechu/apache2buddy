@@ -680,7 +680,6 @@ sub test_process {
 		print "VERBOSE: First line of output from \"/usr/sbin/apache2ctl -V\": $output[0]" if $main::VERBOSE;
 	} elsif ( $process_name eq '/usr/local/apache/bin/httpd' ) {
 		if ( ! $NOWARN ) { show_warn_box(); print "${RED}Apache seems to have been installed from source, its technically unsupported, we may get errors${ENDC}\n" }
-		show_warn_box(); print 
 		@output = `$process_name -V 2>&1 | grep "Server version"`;
 		print "VERBOSE: First line of output from \"/usr/local/apache/bin/httpd -V\": $output[0]" if $main::VERBOSE;
 	} else {
@@ -855,10 +854,14 @@ sub get_apache_version {
 		$version = `$process_name -V 2>&1 | grep "Server version"`;
 		chomp($version);
 		$version =~ s/.*:\s(.*)$/$1/;
-	}
-	# ubuntu has to be different, so...
-	if ( $process_name eq '/usr/sbin/apache2' ) {
+	} elsif ( $process_name eq '/usr/sbin/apache2' ) { 
+		# ubuntu has to be different, so...
                 $version = `/usr/sbin/apache2ctl -V 2>&1 | grep "Server version"`;
+                chomp($version);
+                $version =~ s/.*:\s(.*)$/$1/;
+        } else {
+		# check for compiled from source versions
+		$version = `$process_name -V 2>&1 | grep "Server version"`;
                 chomp($version);
                 $version =~ s/.*:\s(.*)$/$1/;
         }
@@ -980,7 +983,11 @@ sub generate_standard_report {
 	printf ("%-62s ${CYAN}%d %2s${CYAN}\n",   "\tYour server's physical RAM:", $available_mem, "MB"); # exempt from NOINFO directive.
 	my $memory_remaining = $available_mem - $mysql_memory_usage_mbytes - $java_memory_usage_mbytes - $redis_memory_usage_mbytes - $memcache_memory_usage_mbytes - $varnish_memory_usage_mbytes - $phpfpm_memory_usage_mbytes- $gluster_memory_usage_mbytes;
 	printf ("${BOLD}%-62s${ENDC} ${CYAN}%d %2s${ENDC}\n",   "\tRemaining Memory after other services considered:", $memory_remaining, "MB"); # exempt from NOINFO directive.
-	printf ("%-62s ${CYAN}%d${ENDC} %5s %-30s\n",   "\tApache's MaxClients directive:", $maxclients, " ", "<--------- Current Setting"); # exempt from NOINFO directive.
+	if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
+		printf ("%-62s ${CYAN}%d${ENDC} %5s %-30s\n",   "\tApache's MaxRequestWorkers directive:", $maxclients, " ", "<--------- Current Setting"); # exempt from NOINFO directive.
+	} else {	
+		printf ("%-62s ${CYAN}%d${ENDC} %5s %-30s\n",   "\tApache's MaxClients directive:", $maxclients, " ", "<--------- Current Setting"); # exempt from NOINFO directive.
+	}
 	printf ("%-62s ${CYAN}%s${ENDC}\n",   "\tApache MPM Model:", $model); # exempt from NOINFO directive.
 	if ( ! $NOINFO ) { printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tLargest Apache process (by memory):", $apache_proc_highest, "MB") }
 
