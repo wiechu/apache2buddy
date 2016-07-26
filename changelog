@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2016-07-26 	Richard Forth   Bugfix for Issue #11, testing #3. Snagging.
 2016-07-26 	Richard Forth   Bugfix for Issue #11, testing #2. To be confirmed.
 2016-07-26 	Richard Forth   Bugfix for Issue #11, testing. To be confirmed.
 2016-06-24 	Richard Forth   Corrected the codename for Debian 6.0 which is EOL. 

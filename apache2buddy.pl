@@ -1692,7 +1692,7 @@ sub preflight_checks {
 	# Check 16b
 	# Display the PHP Memory Limit
 	# Note that we do nothing with this in terms of calculations
-	# Use it as a conversation starter, esp if memoty_limit is 3GB! as this is a per-process setting!
+	# Use it as a conversation starter, esp if memory_limit is 3GB! as this is a per-process setting!
 	# get the PHP memory limit
 	# This has been abstracted to a separate subroutine
 	detect_php_memory_limit();
@@ -1719,6 +1719,8 @@ sub detect_maxclients_hits {
 	our $hit = 0;
 	if ($process_name eq "/usr/sbin/httpd") {
 		our $maxclients_hits = `grep -i reached /var/log/httpd/error_log | egrep -v "mod" | tail -5`;
+	} elseif ($process_name eq "/usr/local/apache/bin/httpd") {
+		our $maxclients_hits = `grep -i reached /usr/local/apache/logs/error_log | egrep -v "mod" | tail -5`;
 	} else {
 		our $maxclients_hits = `grep -i reached /var/log/apache2/error.log | egrep -v "mod" | tail -5`;
 	}
