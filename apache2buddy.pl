@@ -1650,9 +1650,9 @@ sub preflight_checks {
         our $maxclients;
         our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v apache2buddy | grep -v grep | wc -l`; 
         if ($current_proc_count >= $maxclients) {
-		if ( ! $NOINFO ) { show_info_box(); print "Current Apache Process Count is ${CYAN}$current_proc_count${ENDC} (including the parent pid).\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "Current Apache Process Count is ${RED}$current_proc_count${ENDC}, including the parent PID.\n" }
 	} else {
-		if ( ! $NOINFO ) { show_info_box(); print "Current Apache Process Count is ${RED}$current_proc_count${ENDC} (including the parent pid).\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "Current Apache Process Count is ${CYAN}$current_proc_count${ENDC}, including the parent PID.\n" }
 	}
 
 	
