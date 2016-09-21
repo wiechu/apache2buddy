@@ -1597,7 +1597,15 @@ sub preflight_checks {
 			if ( ! $NOOK ) { show_ok_box; print "Memory usage of parent PID is less than 50MB: ${CYAN}$ppid_mem_usage Kilobytes${ENDC}.\n" }
 		}
 	}
-	
+
+
+        # Check 13.2
+        # Get current number of running apache processes
+        # This resolves Issue #15: https://github.com/richardforth/apache2buddy/issues/15
+        our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v apache2buddy | grep -v grep | wc -l`; 
+	if ( ! $NOINFO ) { show_info_box(); print "Current Apache Process Count is $current_proc_count (including the parent pid).\n" }
+
+
 	# figure out how much RAM is in the server
 	our $available_mem = `free | grep \"Mem:\" | awk \'{ print \$2 }\'` / 1024;
 	$available_mem = floor($available_mem);
