@@ -1094,6 +1094,7 @@ sub generate_standard_report {
 	if ( $phpfpm_detected ) {
 		insert_hrule();
 		print "${RED}PHP-FPM DETECTED: The results shown may be skewed, check /etc/php-fpm.d/<pool>.conf\nfor and calculate pm.max_children separately.${ENDC}\n";
+		print "${RED}Check out Pieter's PHP-FPMPAL (at your own risk) at:\n https://github.com/pksteyn/php-fpmpal/. For advice on your PHP-FPM Pools.${ENDC}\n";
 	}
 
 	insert_hrule();
