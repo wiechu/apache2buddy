@@ -1649,6 +1649,7 @@ sub preflight_checks {
         # This resolves Issue #15: https://github.com/richardforth/apache2buddy/issues/15
         our $maxclients;
         our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v apache2buddy | grep -v grep | wc -l`; 
+        chomp ($current_proc_count);
         if ($current_proc_count >= $maxclients) {
 		if ( ! $NOINFO ) { show_info_box(); print "Current Apache Process Count is ${RED}$current_proc_count${ENDC}, including the parent PID.\n" }
 	} else {
