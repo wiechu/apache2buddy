@@ -1245,7 +1245,7 @@ sub preflight_checks {
 	# Check 2.1
 	# this script uses netstat to determine the port that apache is listening on
 	# process. make sure that netstat is available.
-	our $netstat `which netstat`;
+	our $netstat = `which netstat`;
 	chomp($netstat);
 
 	# make sure that netstat is available within our path
