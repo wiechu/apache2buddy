@@ -1256,6 +1256,7 @@ sub preflight_checks {
 		exit;
 	} else {
 		if ( ! $NOOK ) { show_ok_box(); print "The utility 'netstat' exists and is available for use: ${CYAN}$netstat${ENDC}\n" }
+        }
 
 	# Check 3
 	# make sure PHP is available before we proceed
