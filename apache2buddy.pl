@@ -1242,6 +1242,21 @@ sub preflight_checks {
 		if ( ! $NOOK ) { show_ok_box(); print "The utility 'pmap' exists and is available for use: ${CYAN}$pmap${ENDC}\n" }
 	}
 
+	# Check 2.1
+	# this script uses netstat to determine the port that apache is listening on
+	# process. make sure that netstat is available.
+	our $netstat `which netstat`;
+	chomp($netstat);
+
+	# make sure that netstat is available within our path
+	if ( $netstat !~ m/.*\/netstat/ ) { 
+		show_crit_box(); 
+		print "Unable to locate the netstat utility. This script requires netstat to determine the port that apache is listening on.\n";
+		print "To fix this make sure the net-tools package is installed.\n";
+		exit;
+	} else {
+		if ( ! $NOOK ) { show_ok_box(); print "The utility 'netstat' exists and is available for use: ${CYAN}$netstat${ENDC}\n" }
+
 	# Check 3
 	# make sure PHP is available before we proceed
 	# check to see if there is a binary called "php" in our path
