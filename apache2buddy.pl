@@ -1252,7 +1252,7 @@ sub preflight_checks {
 	if ( $netstat !~ m/.*\/netstat/ ) { 
 		show_crit_box(); 
 		print "Unable to locate the netstat utility. This script requires netstat to determine the port that apache is listening on.\n";
-		print "To fix this make sure the net-tools package is installed.\n";
+		show_info_box(); print "${YELLOW}To fix this make sure the net-tools package is installed.${ENDC}\n";
 		exit;
 	} else {
 		if ( ! $NOOK ) { show_ok_box(); print "The utility 'netstat' exists and is available for use: ${CYAN}$netstat${ENDC}\n" }
