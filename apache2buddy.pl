@@ -1548,7 +1548,7 @@ sub preflight_checks {
 	our $apache_user = find_master_value(\@config_array, $model, 'user');
         # account for 'apache\x{d}' strangeness
         $apache_user =~ s/\x{d}//;
-        $apache_user =~ s/^\s*(.*?)\s*$/$1/;; # address issue #18, strip whitespace from both sides.
+        $apache_user =~ s/^\s*(.*?)\s*$/$1/; # address issue #18, strip whitespace from both sides.
 	unless ($apache_user eq "apache" or $apache_user eq "www-data") {
                 my $apache_userid = `id -u $apache_user`;
                 chomp($apache_userid);
