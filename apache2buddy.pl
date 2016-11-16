@@ -1623,7 +1623,41 @@ sub preflight_checks {
 
 	if ( ! $NOINFO ) { show_info_box(); print "Your server has ${CYAN}$available_mem MB${ENDC} of PHYSICAL memory.\n" }
 
-	# check 14
+	# Check 14
+	# Get serverlimit value
+	our $serverlimit = find_master_value(\@config_array, $model, 'serverlimit');
+	if($serverlimit eq 'CONFIG NOT FOUND') {
+		if ( ! $NOWARN ) { show_warn_box; print "ServerLimit directive not found, assuming default values.\n" }
+			our $model;
+			if ( $model eq "prefork") {
+				# Default for prefork - see http://httpd.apache.org/docs/current/mod/mpm_common.html#serverlimit
+				$serverlimit = 256; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
+			} else {
+				# Default for Worker
+				$serverlimit = 16; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
+			}
+	}
+	# account for '\x{d}' strangeness
+	$serverlimit =~ s/\x{d}//;
+	if ( ! $NOINFO ) { show_info_box();  print "Your ServerLimit setting is ${CYAN}$serverlimit${ENDC}.\n" }
+
+	# Check 15
+	# calculate ThreadsPerChild. This is useful for the worker MPM calculations
+	if ( $model eq "worker" || $model eq "event" ) {
+		our $threadsperchild = find_master_value(\@config_array, $model, 'threadsperchild');
+		if($threadsperchild eq 'CONFIG NOT FOUND') {
+			if ( ! $NOWARN ) { show_warn_box; print "ThreadsPerChild directive not found, assuming default values.\n" }
+			$threadsperchild = 25;
+		}
+		if ( ! $NOINFO ) { show_info_box();  print "Your ThreadsPerChild setting is ${CYAN}$threadsperchild${ENDC}.\n" }
+	}
+	our $threadsperchild;
+	if ($model eq "worker" || $model eq "event" ) {
+		if ( ! $NOINFO ) { show_info_box(); print "Your ThreadsPerChild setting for worker MPM is  ".$threadsperchild."\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "Your ServerLimit setting for worker MPM is  ".$serverlimit."\n" }
+	}
+
+	# Check 16
 	# determine what the max clients setting is 
 	# if apache2.4 get maxrequestworkers 
 	if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
@@ -1631,11 +1665,11 @@ sub preflight_checks {
 		if($maxclients eq 'CONFIG NOT FOUND') {
 			if ( ! $NOWARN ) { show_warn_box; print "MaxRequestWorkers directive not found, assuming default values.\n" }
 			if ( $model eq "prefork") {
-				# Default for prefork - see http://httpd.apache.org/docs/current/mod/mpm_common.html#maxrequestworkers 
+				# Default for prefork - see http://httpd.apache.org/docs/2.4/mod/mpm_common.html#maxrequestworkers
 				$maxclients = 256; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
 			} else {
 				# Default for Worker
-				$maxclients = 16; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
+				$maxclients = $serverlimit * $threadsperchild; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
 			}
 				
 		}
@@ -1649,11 +1683,11 @@ sub preflight_checks {
 		if($maxclients eq 'CONFIG NOT FOUND') {
 			if ( ! $NOWARN ) { show_warn_box; print "MaxClients directive not found, assuming default values.\n" }
 			if ( $model eq "prefork") {
-				# Default for prefork - see http://httpd.apache.org/docs/current/mod/mpm_common.html#maxrequestworkers 
+				# Default for prefork - see https://httpd.apache.org/docs/2.2/en/mod/mpm_common.html#maxclients
 				$maxclients = 256; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
 			} else {
 				# Default for Worker
-				$maxclients = 16; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
+				$maxclients = $serverlimit * $threadsperchild; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
 			}
 		}
 		# account for '\x{d}' strangeness
@@ -1662,53 +1696,18 @@ sub preflight_checks {
 		if ( ! $NOINFO ) { show_info_box();  print "Your MaxClients setting is ${CYAN}$maxclients${ENDC}.\n" }
 	}
 
-        # Check 14.1
-        # Get current number of running apache processes
-        # This resolves Issue #15: https://github.com/richardforth/apache2buddy/issues/15
-        our $maxclients;
-        our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v apache2buddy | grep -v grep | wc -l`; 
-        chomp ($current_proc_count);
-        if ($current_proc_count >= $maxclients) {
+	# Check 16.1
+	# Get current number of running apache processes
+	# This resolves Issue #15: https://github.com/richardforth/apache2buddy/issues/15
+	our $maxclients;
+	our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v apache2buddy | grep -v grep | wc -l`;
+	chomp ($current_proc_count);
+	if ($current_proc_count >= $maxclients) {
 		show_warn_box(); print "Current Apache Process Count is ${RED}$current_proc_count${ENDC}, including the parent PID.\n";
 	} else {
 		show_ok_box(); print "Current Apache Process Count is ${CYAN}$current_proc_count${ENDC}, including the parent PID.\n"; 
 	}
 
-	
-	# Check 15
-	# Get serverlimit value	
-	our $serverlimit = find_master_value(\@config_array, $model, 'serverlimit');
-	if($serverlimit eq 'CONFIG NOT FOUND') {
-		if ( ! $NOWARN ) { show_warn_box; print "ServerLimit directive not found, assuming default values.\n" }
-			our $model;
-			if ( $model eq "prefork") {
-				# Default for prefork - see http://httpd.apache.org/docs/current/mod/mpm_common.html#maxrequestworkers 
-				$serverlimit = 256; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
-			} else {
-				# Default for Worker
-				$serverlimit = 16; # yes, yes I know, but keeping the variable name saves a whole bunch of code just for semantics.
-			}
-	}
-	# account for '\x{d}' strangeness
-	$serverlimit =~ s/\x{d}//;
-	if ( ! $NOINFO ) { show_info_box();  print "Your ServerLimit setting is ${CYAN}$serverlimit${ENDC}.\n" }
-	
-	# Check 16
-	#calculate ThreadsPerChild. This is useful for the worker MPM calculations
-	if ( $model eq "worker") {
-		our $threadsperchild = find_master_value(\@config_array, $model, 'threadsperchild');
-		if($threadsperchild eq 'CONFIG NOT FOUND') {
-			if ( ! $NOWARN ) { show_warn_box; print "ThreadsPerChild directive not found, assuming default values.\n" }
-			$threadsperchild = 25;
-		}
-		if ( ! $NOINFO ) { show_info_box();  print "Your ThreadsPerChild setting is ${CYAN}$threadsperchild${ENDC}.\n" }
-	}
-	our $threadsperchild;
-	if ($model eq "worker") {
-		if ( ! $NOINFO ) { show_info_box(); print "Your ThreadsPerChild setting for worker MPM is  ".$threadsperchild."\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "Your ServerLimit setting for worker MPM is  ".$serverlimit."\n" }
-	}
-	
 	# Check 17 
 	# show MaxRequestsPerChild (applies only to PreFork model
 	if ( $model eq "prefork") {
