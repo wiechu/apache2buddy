@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 c42d320151b86589bd49085c6d1b0451  apache2buddy.pl
+=======
+4dfa105992ac42836a995cad89446f9d  apache2buddy.pl
+>>>>>>> 5a85b67902bd0a1e3ea43939714a370e042d085f

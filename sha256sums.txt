@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 f5da492517e8cd216332efe66f8080a86bfe5f910a9fbea82072beccfc65efd8  apache2buddy.pl
+=======
+712f3f39a7784fcbe581c5e89ea4a24d64315d7e69b3379842d0d49ee58cd1f9  apache2buddy.pl
+>>>>>>> 5a85b67902bd0a1e3ea43939714a370e042d085f
