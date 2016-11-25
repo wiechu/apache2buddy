@@ -1760,7 +1760,7 @@ sub preflight_checks {
 			}
 		}
 	} else {
-		show_warn_box(); print "Skipping vHost Count, this check isnt currently working on Ubuntu or Debian based systems.";
+		show_warn_box(); print "Skipping vHost Count, this check isnt currently working on Ubuntu or Debian based systems.\n";
 	}	
 
 	# Check 17 
