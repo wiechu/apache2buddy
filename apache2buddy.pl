@@ -1262,7 +1262,8 @@ sub preflight_checks {
 	# make sure PHP is available before we proceed
 	# check to see if there is a binary called "php" in our path
 	my $check = `which php`;
-	if ( $check eq '' ) {
+	chomp ($check);
+	if ( $check !~ m/.*\/php/ ) {
 		show_crit_box();
 		print "Unable to locate the PHP binary.\n";
 		my $path = `echo \$PATH`;
@@ -1272,6 +1273,34 @@ sub preflight_checks {
 	} else {	
 		if ( ! $NOOK ) { show_ok_box(); print "'php' exists and is available for use: ${CYAN}$check${ENDC}\n" }
 	}
+
+	# check 3.1 
+	# Check for which apachectl we are to use
+	# check to see if there is a binary called "apachectl" in our path
+	our $apachectl= `which apachectl`;
+	chomp($apachectl);
+
+	if ( $apachectl !~ m/.*\/apachectl/ ) {
+                show_info_box();
+                print "Unable to locate the apachectl utility. This script requires apachectl to analyze Apache's vhost configurations.\n";
+                show_info_box();
+                print "Not fatal yet, trying to locate the apache2ctl utility instead.\n";
+		# check to see if there is a binary called "apache2ctl" in our path
+		our $apachectl= `which apache2ctl`;
+		chomp($apachectl);
+	
+		if ( $apachectl !~ m/.*\/apache2ctl/ ) {
+       		        show_info_box();
+              		print "Unable to locate the apache2ctl utility. This script requires apache2ctl to analyze Apache's vhost configurations.\n";
+			exit;
+        	} else {
+                	if ( ! $NOOK ) { show_ok_box(); print "The utility 'apache2ctl' exists and is available for use: ${CYAN}$apachectl${ENDC}\n" }
+        	}
+
+        } else {
+                if ( ! $NOOK ) { show_ok_box(); print "The utility 'apachectl' exists and is available for use: ${CYAN}$apachectl${ENDC}\n" }
+        }
+
 	
 	# Check 4
 	# Check for valid port
@@ -1434,7 +1463,7 @@ sub preflight_checks {
 		my @process_info = split(' ', `ps -C 'httpd httpd.worker apache apache2' -f | grep '^root'`);
 		$pid = $process_info[1];
 		if ( not $pid ) {
-                        show_crit_box; print "apache process not found";
+                        show_crit_box; print "apache process not found.\n";
                         exit;
                 } else {
                         my $command = `netstat -plnt | egrep "httpd|apache2"`;
@@ -1708,8 +1737,30 @@ sub preflight_checks {
 		show_ok_box(); print "Current Apache Process Count is ${CYAN}$current_proc_count${ENDC}, including the parent PID.\n"; 
 	}
 
+	# Check 16.2
+	# Get current number of vhosts
+	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
+	our $vhost_count = `$apachectl -S 2>&1 | grep -c port`;
+	# in case apache2ctl not working, try apachectl
+	chomp ($vhost_count);
+	show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n";
+	if ($vhost_count >= $maxclients) {
+		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
+			show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n";
+		} else {
+			show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxclients${ENDC}.\n";
+		}
+	} else {
+		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
+			show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxrequestworkers${ENDC}.\n"; 
+		} else {
+			show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxclients${ENDC}.\n"; 
+		}
+	}
+	
+
 	# Check 17 
-	# show MaxRequestsPerChild (applies only to PreFork model
+	# show MaxRequestsPerChild (applies only to PreFork model)
 	if ( $model eq "prefork") {
 		our $maxrequestsperchild = find_master_value(\@config_array, $model, 'MaxRequestsPerChild');
 		if($maxrequestsperchild eq 'CONFIG NOT FOUND') {
@@ -1720,7 +1771,7 @@ sub preflight_checks {
 	}		
 	
 
-	# Check 16b
+	# Check 17b
 	# Display the PHP Memory Limit
 	# Note that we do nothing with this in terms of calculations
 	# Use it as a conversation starter, esp if memory_limit is 3GB! as this is a per-process setting!
@@ -1728,7 +1779,7 @@ sub preflight_checks {
 	# This has been abstracted to a separate subroutine
 	detect_php_memory_limit();
 
-	# Check 17 : Other Services
+	# Check 17b : Other Services
 	# This has been abstracted out into a separate subroutine
 	detect_additional_services();
 
