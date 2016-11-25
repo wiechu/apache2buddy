@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2016-11-25 	Richard Forth   Addressed issue #6 'Check for and report on
+				PHP Fatal Errors in the logs'
 2016-11-25 	Richard Forth   Merged pull request #20 "fix issues around 
 				maxrequestworkers value" by jboulen.
 2016-11-25 	Richard Forth   Addressed Issue #5, May need further testing
