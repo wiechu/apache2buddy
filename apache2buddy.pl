@@ -1758,6 +1758,9 @@ sub preflight_checks {
 			show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxclients${ENDC}.\n"; 
 		}
 	}
+	if ( $vhost_count == 0 ) {
+		show_advisory_box(); print "${YELLOW}vHost Count works only when we have NameVirtualHosting enabled, check config manually, they may only have the default vhost.${ENDC}\n";
+	}
 
 	# Check 17 
 	# show MaxRequestsPerChild (applies only to PreFork model)
