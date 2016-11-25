@@ -1811,7 +1811,7 @@ sub detect_php_fatal_errors {
         } elsif ($process_name eq "/usr/local/apache/bin/httpd") {
                 our $phpfatalerr_hits = `grep -Hi fatal /usr/local/apache/logs/* | grep -i php | grep -i error | tail -5`;
         } else {
-                our $phpfatalerr_hits = `grep -Hi fatal /var/log/apache2/* grep -i php | grep -i error | tail -5`;
+                our $phpfatalerr_hits = `grep -Hi fatal /var/log/apache2/* | grep -i php | grep -i error | tail -5`;
         }
         our $phpfatalerr_hits;
 	if ($phpfatalerr_hits) {
