@@ -1740,24 +1740,28 @@ sub preflight_checks {
 	# Check 16.2
 	# Get current number of vhosts
 	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
-	our $vhost_count = `$apachectl -S 2>&1 | grep -c port`;
-	# in case apache2ctl not working, try apachectl
-	chomp ($vhost_count);
-	show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n";
-	if ($vhost_count >= $maxclients) {
-		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-			show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n";
+	# only works on redhat based systems, because ubuntu.
+	if ( $os_name eq "Red Hat Enterprise Linux" or $os_name eq "CentOS" ) {
+		our $vhost_count = `$apachectl -S 2>&1 | grep -c port`;
+		# in case apache2ctl not working, try apachectl
+		chomp ($vhost_count);
+		show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n";
+		if ($vhost_count >= $maxclients) {
+			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
+				show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n";
+			} else {
+				show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxclients${ENDC}.\n";
+			}
 		} else {
-			show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxclients${ENDC}.\n";
+			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
+				show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxrequestworkers${ENDC}.\n"; 
+			} else {
+				show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxclients${ENDC}.\n"; 
+			}
 		}
 	} else {
-		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-			show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxrequestworkers${ENDC}.\n"; 
-		} else {
-			show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxclients${ENDC}.\n"; 
-		}
-	}
-	
+		show_warn_box(); print "Skipping vHost Count, this check isnt currently working on Ubuntu or Debian based systems.";
+	}	
 
 	# Check 17 
 	# show MaxRequestsPerChild (applies only to PreFork model)
