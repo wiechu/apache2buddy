@@ -1788,7 +1788,53 @@ sub preflight_checks {
 	# Check 18 : Maxclients Hits
 	# This has been abstracted out into a separate subroutine
 	detect_maxclients_hits($model, $process_name);
+
+	# Check 19 : PHP Fatal Errors
+	# This has been abstracted out into a separate subroutine
+	# This addresses issue #6 'Check for and report on PHP Fatal Errors in the logs'
+	detect_php_fatal_errors($model, $process_name);
 }
+
+sub detect_php_fatal_errors {
+	our ($model, $process_name) = @_;
+	if ($model eq "worker") {
+		return;
+	} else {
+		if ( ! $NOINFO ) {
+			print "\n${PURPLE}Detecting PHP Fatal Errors....${ENDC}\n";
+			print "\n${CYAN}PRO TIP: If this process appears to hang, press CTRL + c to exit the program, and then\ngo check for a large error log file in /var/log/httpd or /var/log/apache2.${ENDC}\n\n";
+		}
+	}
+	our $phpfatalerr = 0;
+	if ($process_name eq "/usr/sbin/httpd") {
+                our $phpfatalerr_hits = `grep -i fatal /var/log/httpd/error_log | tail -5`;
+        } elsif ($process_name eq "/usr/local/apache/bin/httpd") {
+                our $phpfatalerr_hits = `grep -i fatal /usr/local/apache/logs/error_log | tail -5`;
+        } else {
+                our $phpfatalerr_hits = `grep -i fatal /var/log/apache2/error.log | tail -5`;
+        }
+        our $phpfatalerr_hits;
+	if ($phpfatalerr_hits) {
+		$phpfatalerr = 1;
+	}
+	our $phpfatalerr;
+	if ($phpfatalerr) {
+		if ( ! $NOWARN ) {
+			show_warn_box();
+			print "${RED}PHP Fatal errors were found, see the last 5 entries below${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}Check the logs, there may be much more.${ENDC}\n";
+			print $phpfatalerr_hits;
+		}
+	} else {
+		if ( ! $NOOK ) {
+			show_ok_box();
+			print "${GREEN}No PHP Fatal errors were found.${ENDC}\n";
+			return;
+		}
+	}
+}
+
+
 
 sub detect_maxclients_hits {
 	our ($model, $process_name) = @_;
