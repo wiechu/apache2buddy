@@ -1807,11 +1807,11 @@ sub detect_php_fatal_errors {
 	}
 	our $phpfatalerr = 0;
 	if ($process_name eq "/usr/sbin/httpd") {
-                our $phpfatalerr_hits = `grep -i fatal /var/log/httpd/error_log | tail -5`;
+                our $phpfatalerr_hits = `grep -Hi fatal /var/log/httpd/* | grep -i php | grep -i error | tail -5`;
         } elsif ($process_name eq "/usr/local/apache/bin/httpd") {
-                our $phpfatalerr_hits = `grep -i fatal /usr/local/apache/logs/error_log | tail -5`;
+                our $phpfatalerr_hits = `grep -Hi fatal /usr/local/apache/logs/* | grep -i php | grep -i error | tail -5`;
         } else {
-                our $phpfatalerr_hits = `grep -i fatal /var/log/apache2/error.log | tail -5`;
+                our $phpfatalerr_hits = `grep -Hi fatal /var/log/apache2/* grep -i php | grep -i error | tail -5`;
         }
         our $phpfatalerr_hits;
 	if ($phpfatalerr_hits) {
@@ -1828,7 +1828,7 @@ sub detect_php_fatal_errors {
 	} else {
 		if ( ! $NOOK ) {
 			show_ok_box();
-			print "${GREEN}No PHP Fatal errors were found.${ENDC}\n";
+			print "${GREEN}No PHP Fatal Errors were found.${ENDC}\n";
 			return;
 		}
 	}
