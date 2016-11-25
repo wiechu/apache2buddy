@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2016-11-25 	Richard Forth   Merged pull request #20 "fix issues around 
+				maxrequestworkers value" by jboulen.
+2016-11-25 	Richard Forth   Addressed Issue #5, May need further testing
 2016-11-15 	Richard Forth   Addressed Issue #19, Confirmed Fixed.
 2016-09-21 	Richard Forth   Addressed Issue #8, Confirmed Fixed.
 2016-09-21 	Richard Forth   Addressed Issue #15, Confirmed Fixed.
