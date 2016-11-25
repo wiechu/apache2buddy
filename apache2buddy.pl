@@ -1740,7 +1740,6 @@ sub preflight_checks {
 	# Check 16.2
 	# Get current number of vhosts
 	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
-	# only works on redhat based systems, because ubuntu.
 	our $vhost_count = `$apachectl -S 2>&1 | grep -c port`;
 	# in case apache2ctl not working, try apachectl
 	chomp ($vhost_count);
