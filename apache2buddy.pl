@@ -1774,7 +1774,7 @@ sub preflight_checks {
 	
 
 	# Check 17b
-	# Display the PHP Memory Limit
+	# Display the}
 	# Note that we do nothing with this in terms of calculations
 	# Use it as a conversation starter, esp if memory_limit is 3GB! as this is a per-process setting!
 	# get the PHP memory limit
@@ -1882,6 +1882,9 @@ sub detect_php_memory_limit {
 	
 		our $apache_proc_php = get_php_setting('/usr/bin/php', 'memory_limit');
 		show_info_box(); print "Your PHP Memory Limit (Per-Process) is ${CYAN}".$apache_proc_php." MB${ENDC}.\n";
+		if ($apache_proc_php eq "-1") {
+			show_advisory_box(); print "You should set a PHP Memory Limit (-1 is ${CYAN}UNLIMITED${ENDC}) which is not recommended.\n";
+		}
 	}
 }
 
