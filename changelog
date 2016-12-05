@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2016-12-05 	Richard Forth   Addressed issue #22 Add advisory message for
+				php memory limit of -1
 2016-11-25 	Richard Forth   Addressed issue #6 'Check for and report on
 				PHP Fatal Errors in the logs'
 2016-11-25 	Richard Forth   Merged pull request #20 "fix issues around 
