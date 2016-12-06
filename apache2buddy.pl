@@ -971,6 +971,13 @@ sub generate_standard_report {
 		$gluster_memory_usage_mbytes) = @_;
 
 
+	our @apache_uptime;
+	
+	if ( $apache_uptime[0] == "0" ) { 
+		show_warn_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
+		show_advisory_box(); print "The following recommendations may be misleading - apache has been restarted within the last 24 hours.\n";
+	}
+
 	# print a report header
 	if ( ! $NOINFO ) { print "${BOLD}### GENERAL FINDINGS & RECOMMENDATIONS ###${ENDC}\n" } 
 	insert_hrule();
@@ -1525,10 +1532,14 @@ sub preflight_checks {
 
 	# Check 8
 	# determine the Apache uptime
-	my @apache_uptime = get_apache_uptime($pid);
+	our @apache_uptime = get_apache_uptime($pid);
 	
 	if ( ! $NOINFO ) { show_info_box(); print "Apache has been running ${CYAN}$apache_uptime[0]${ENDC}d ${CYAN}$apache_uptime[1]${ENDC}h ${CYAN}$apache_uptime[2]${ENDC}m ${CYAN}$apache_uptime[3]${ENDC}s.\n" }
-	
+	if ( $apache_uptime[0] == "0" ) { 
+		show_warn_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
+		show_advisory_box(); print "The following recommendations may be misleading - apache has been restarted within the last 24 hours.\n";
+	}
+
 	# Check 9
 	# find the apache root	
 	our $process_name;
