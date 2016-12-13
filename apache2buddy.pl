@@ -710,7 +710,7 @@ sub get_pid {
 
 	# find the pid for the software listening on the specified port. this
 	# might return multiple values depending on Apache's listen directives
-	my @pids = `netstat -ntap | egrep "LISTEN|OUÃ‡A" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
+	my @pids = `netstat -ntap | egrep "LISTEN|OUÇA" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
 
 	print "VERBOSE: ".@pids." found listening on port 80\n" if $main::VERBOSE;
 
