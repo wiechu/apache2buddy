@@ -521,6 +521,7 @@ sub find_master_value {
 				if ( $_ =~ m/^\s*$config_element\s+.*/i ) {
 					chomp($_);
 					$_ =~ s/^\s*$config_element\s+(.*)/$1/i;
+					$_ =~ =~ s/\r//g;
 					push(@results,$_);
 				}
 			}
