@@ -1827,6 +1827,9 @@ sub preflight_checks {
 	systemcheck_large_logs("/var/log/httpd");
 	systemcheck_large_logs("/var/log/apache2");
 	systemcheck_large_logs("/var/log/php-fpm");
+	systemcheck_large_logs("/usr/local/apache/logs");
+	systemcheck_large_logs("/usr/local/apache2/logs");
+	systemcheck_large_logs("/usr/local/httpd/logs");
 
 	# Check 19 : Maxclients Hits
 	# This has been abstracted out into a separate subroutine

@@ -15,6 +15,13 @@ When		Who		What
 				 on debian and ubuntu systems
 				 - Addressed issue #55 bug in package updates
 				 - Addressed issue #56 Detect PHP Updates
+				 - Added more directories to check for large
+				 log files:
+				 	- /usr/local/httpd/logs
+					- /usr/local/apache/logs
+					- /usr/local/apache2/logs
+				Will silently continue if these folders dont
+				exist.
 2017-01-13 	Richard Forth   Addressed issue #34 Added more graceful
 				message when apache[2]ctl is not found.
 2017-01-13 	Richard Forth   Addressed issue #33 Removed Version Number
