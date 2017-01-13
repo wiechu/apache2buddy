@@ -11,6 +11,8 @@ When		Who		What
 				 - Addressed issue #50 Detect icPanel
 				 - Code cleanup and output polishing
 				 - Addressed issue #3 Detect Package Updates
+				 - Addressed issue #55 bug in package updates
+				 on debian and ubuntu systems
 2017-01-13 	Richard Forth   Addressed issue #34 Added more graceful
 				message when apache[2]ctl is not found.
 2017-01-13 	Richard Forth   Addressed issue #33 Removed Version Number

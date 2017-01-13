@@ -1847,7 +1847,7 @@ sub detect_package_updates {
 	my ($os_name) = @_;
 	our $package_update = 0;
 	if ($os_name eq "Ubuntu" or $os_name eq "Debian" ) {
-		$package_update = `apt-get update && dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | grep apache2`;
+		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | grep apache2`;
 	} else {
 		$package_update = `yum check-update httpd | grep ^httpd`;
 	}
