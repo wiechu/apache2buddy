@@ -1033,9 +1033,9 @@ sub generate_standard_report {
 				if ( ! $NOOK ) { show_shortok_box(); print "\t${GREEN}Your MaxClients setting is within an acceptable range.${ENDC}\n" } 
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				print "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.\t\t<------- Acceptable Range (10% of MAX)\n";
+				print "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}. <------- Acceptable Range (10% of MAX)\n";
 			} else {
-				print "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.\t\t<------- Acceptable Range (10% of MAX)\n";
+				print "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}. <------- Acceptable Range (10% of MAX)\n";
 			}
 			printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1047,9 +1047,9 @@ sub generate_standard_report {
 				show_shortcrit_box(); print "\t${RED}Your MaxClients setting is too low.${ENDC}\n"; # exempt from NOINFO directive.
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				print "\t${YELLOW}Your recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC}\t\t<------- Acceptable Range (10% of MAX)\n";
+				print "\t${YELLOW}Your recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC} <------- Acceptable Range (10% of MAX)\n";
 			} else {
-				print "\t${YELLOW}Your recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC}\t\t<------- Acceptable Range (10% of MAX)\n";
+				print "\t${YELLOW}Your recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC} <------- Acceptable Range (10% of MAX)\n";
 			}
 			printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1061,9 +1061,9 @@ sub generate_standard_report {
 				show_shortcrit_box(); print "\t${RED}Your MaxClients setting is too high.${ENDC}\n"; # exempt from NOINFO directive.
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				print "\t${YELLOW}Your recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC}\t\t<------- Acceptable Range (10% of MAX)\n";
+				print "\t${YELLOW}Your recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC} <------- Acceptable Range (10% of MAX)\n";
 			} else {
-				print "\t${YELLOW}Your recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC}\t\t<------- Acceptable Range (10% of MAX)\n";
+				print "\t${YELLOW}Your recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC} <------- Acceptable Range (10% of MAX)\n";
 			}
 			printf ("%-62s ${RED}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf ("%-62s ${RED}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1827,6 +1827,9 @@ sub preflight_checks {
 	systemcheck_large_logs("/var/log/httpd");
 	systemcheck_large_logs("/var/log/apache2");
 	systemcheck_large_logs("/var/log/php-fpm");
+	systemcheck_large_logs("/usr/local/apache/logs");
+	systemcheck_large_logs("/usr/local/apache2/logs");
+	systemcheck_large_logs("/usr/local/httpd/logs");
 
 	# Check 19 : Maxclients Hits
 	# This has been abstracted out into a separate subroutine
@@ -1843,22 +1846,24 @@ sub preflight_checks {
 }
 
 sub detect_package_updates {
-	print "\n${PURPLE}Detecting Package Updates for Apache...${ENDC}\n";
+	print "\n${PURPLE}Detecting Package Updates for Apache or PHP...${ENDC}\n";
 	my ($os_name) = @_;
 	our $package_update = 0;
 	if ($os_name eq "Ubuntu" or $os_name eq "Debian" ) {
-		$package_update = `apt-get update && dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | grep apache2`;
+		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | egrep "^php|^apache2"`;
 	} else {
-		$package_update = `yum check-update httpd | grep ^httpd`;
+		$package_update = `yum check-update | egrep "^httpd|^php"`;
 	}
 	if ($package_update) {
-		show_warn_box(); print "${RED}Apache has a pending package update.${ENDC}\n";
+		show_warn_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
+		show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
 		print $package_update;
 	} else {
 		if (-d "/usr/local/httpd" or -d "/usr/local/apache" or -d "/usr/local/apache2") {
-			show_warn_box(); print "${RED}It looks like apache was installed from sources.${ENDC}\n";
+			show_warn_box(); print "${RED}It looks like apache was installed from sources. Skipping.${ENDC}\n";
 		} else {
 			show_ok_box(); print "${GREEN}No package updates found.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
 		}
 	}
 
