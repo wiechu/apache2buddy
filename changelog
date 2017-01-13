@@ -5,6 +5,10 @@ When		Who		What
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..
+				 - Addressed issue #25 PHP-FPM Logs
+				 - Addressed issue #48 Plesk logs (warning)
+				 - Addressed issue #49 Detect Plesk
+				 - Addressed issue #50 Detect icPanel
 2017-01-13 	Richard Forth   Addressed issue #34 Added more graceful
 				message when apache[2]ctl is not found.
 2017-01-13 	Richard Forth   Addressed issue #33 Removed Version Number
