@@ -15,7 +15,6 @@ use strict;
 ##                                                                                                        ##
 ############################################################################################################
 # author: richard forth
-# version: 1.0
 # description: apache2buddy, a fork of apachebuddy that caters for apache2, obviously.
 #
 #  Github Page: https://github.com/richardforth/apache2buddy
@@ -131,13 +130,6 @@ If no options are specified, the basic tests will be run.
 	-L, --light-term	Show colours for a light background terminal.
 	-r, --report		Implies -HNWK or --noinfo --nowarn --no-ok --noheader
 	-P, --no-check-pid	DON'T Check the Parent Pid File Size (only use if desperate for more info, results may be skewed)
-
-More information (1990's style info pages):
-
-		http://apache2buddy.pl/installation
-		http://apache2buddy.pl/changelog
-		http://apache2buddy.pl/md5sums.txt
-		http://apache2buddy.pl/sha256sums.txt
 
 END_USAGE
 
@@ -258,7 +250,6 @@ if ( ! $NOCOLOR ) {
 	$PURPLE = ""; # SUPPRESS COLORS
 	$CYAN = ""; # SUPPRESS COLORS
 	$ENDC = ""; # SUPPRESS COLORS
-	$UNDERLINE = ""; # SUPPRESS COLORS
 	$BOLD = ""; # SUPPRESS COLORS
 	$UNDERLINE = ""; # SUPPRESS COLORS
 }
@@ -530,6 +521,7 @@ sub find_master_value {
 				if ( $_ =~ m/^\s*$config_element\s+.*/i ) {
 					chomp($_);
 					$_ =~ s/^\s*$config_element\s+(.*)/$1/i;
+					$_ =~ s/\r//g;
 					push(@results,$_);
 				}
 			}
@@ -1297,8 +1289,10 @@ sub preflight_checks {
 		chomp($apachectl);
 	
 		if ( $apachectl !~ m/.*\/apache2ctl/ ) {
+       		        show_crit_box();
+              		print "Unable to locate the apache2ctl utility. This script now requires apache2ctl to analyze Apache's vhost configurations.\n";
        		        show_info_box();
-              		print "Unable to locate the apache2ctl utility. This script requires apache2ctl to analyze Apache's vhost configurations.\n";
+              		print "It looks like you might be running something else, other than apache..\n";
 			exit;
         	} else {
                 	if ( ! $NOOK ) { show_ok_box(); print "The utility 'apache2ctl' exists and is available for use: ${CYAN}$apachectl${ENDC}\n" }
