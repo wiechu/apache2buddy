@@ -1800,6 +1800,12 @@ sub preflight_checks {
 			if ( ! $NOINFO ) { show_info_box();  print "Your MaxRequestsPerChild setting is ${CYAN}$maxrequestsperchild${ENDC}.\n" }
 		}
 	}		
+
+	# check #17a-1 detect plesk version
+	detect_plesk_version();
+	
+	# check #17a-2 detect cpanel version
+	detect_cpanel_version();
 	
 
 	# Check 17b
@@ -1816,7 +1822,7 @@ sub preflight_checks {
 
 	# Check 17d : Large Logs in /var/log
 	if ( ! $NOINFO ) {
-		print "${PURPLE}Detecting Large Log Files....${ENDC}\n";
+		print "${PURPLE}Detecting Large Log Files...${ENDC}\n";
 		print "${CYAN}PRO TIP: This is a precursor to the following  2 checks that may appear to hang if there are very large error logs.${ENDC}\n";
 		print "${CYAN}PRO TIP: If those process do appear to hang, press CTRL + c to exit the program, and then go check the logs we report below, if any.${ENDC}\n";
 	}
@@ -1834,7 +1840,47 @@ sub preflight_checks {
 	detect_php_fatal_errors($model, $process_name);
 }
 
+sub detect_cpanel_version {
+	our $cpanel = 0;
+	our $cpanel = 1 if -d "/usr/local/cpanel";
+	if ($cpanel) {
+		show_info_box(); print "${GREEN}This is a cPanel / WHM Server.${ENDC}\n";
+		my $plesk_version = 0;
+		$plesk_version = `cat /usr/local/cpanel/version` if -f "/usr/local/cpanel/version";
+		chomp($plesk_version);
+		if ($plesk_version) {
+			show_info_box(); print "cPanel Version: ${CYAN}$plesk_version${ENDC}\n";
+		} else {
+			show_info_box(); print "cPanel Version: ${CYAN}NOT FOUND${ENDC}\n";
+		}
+			
+	} else {
+		show_info_box(); print "This server is NOT running cPanel.\n";
+	}
+}
+
+sub detect_plesk_version {
+	our $plesk = 0;
+	our $plesk = 1 if -d "/usr/local/psa";
+	if ($plesk) {
+		show_info_box(); print "${GREEN}This is a Plesk Server.${ENDC}\n";
+		my $plesk_version = 0;
+		$plesk_version = `cat /usr/local/psa/version` if -f "/usr/local/psa/version";
+		chomp($plesk_version);
+		if ($plesk_version) {
+			show_info_box(); print "Plesk Version: ${CYAN}$plesk_version${ENDC}\n";
+		} else {
+			show_info_box(); print "Plesk Version: ${CYAN}NOT FOUND${ENDC}\n";
+		}
+			
+	} else {
+		show_info_box(); print "This server is NOT running Plesk.\n";
+	}
+}
+
+
 sub detect_php_fatal_errors {
+	our $phpfpm_detected;
 	our ($model, $process_name) = @_;
 	if ($model eq "worker") {
 		return;
@@ -1844,6 +1890,7 @@ sub detect_php_fatal_errors {
 		}
 	}
 	our $phpfatalerr = 0;
+	our $phpfpmfatalerr_hits = 0;
 	if ($process_name eq "/usr/sbin/httpd") {
                 our $phpfatalerr_hits = `grep -Hi fatal /var/log/httpd/* | grep -i php | grep -i error | tail -5`;
         } elsif ($process_name eq "/usr/local/apache/bin/httpd") {
@@ -1851,17 +1898,35 @@ sub detect_php_fatal_errors {
         } else {
                 our $phpfatalerr_hits = `grep -Hi fatal /var/log/apache2/* | grep -i php | grep -i error | tail -5`;
         }
+	
+	if ($phpfpm_detected) {
+		our $phpfpmfatalerr_hits = `grep -Hi fatal /var/log/php-fpm/* | grep -i php | grep -i error | tail -5`;
+	}
+
         our $phpfatalerr_hits;
-	if ($phpfatalerr_hits) {
+        our $phpfpmfatalerr_hits;
+	if ($phpfatalerr_hits or $phpfpmfatalerr_hits) {
 		$phpfatalerr = 1;
 	}
 	our $phpfatalerr;
 	if ($phpfatalerr) {
 		if ( ! $NOWARN ) {
 			show_warn_box();
-			print "${RED}PHP Fatal errors were found, see the last 5 entries below${ENDC}\n";
-			show_advisory_box(); print "${YELLOW}Check the logs, there may be much more.${ENDC}\n";
+			print "${RED}PHP Fatal errors were found, see the most recent entries below (CHECK THE DATESTAMPS!)${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}Check the logs manually, there may be much more.${ENDC}\n";
+			print "\n${CYAN}Apache Logs (LAST 5 ENTRIES):${ENDC}\n";
 			print $phpfatalerr_hits;
+			if ($phpfpm_detected) {
+				print "\n${CYAN}PHP-FPM Logs (LAST 5 ENTRIES):${ENDC}\n";
+				print $phpfpmfatalerr_hits;
+			}
+			our $plesk;
+			if ($plesk) {
+				print "\n";
+				show_warn_box(); print "${YELLOW}Note: Plesk logs are NOT checked, as 100+ domains would generate 500+ lines of output, this is too much, so please check this manually:${ENDC}\n";
+				show_advisory_box(); print "Use this command to check ALL domains: ${CYAN}grep -Hi fatal /var/www/vhosts/*/statistics/logs/*${ENDC}\n";
+				show_advisory_box(); print "Use this command to check ONLY \"example.com\": ${CYAN}grep -Hi fatal /var/www/vhosts/example.com/statistics/logs/*${ENDC}\n";
+			}
 		}
 	} else {
 		if ( ! $NOOK ) {
@@ -2047,6 +2112,8 @@ sub detect_additional_services() {
 	}
 	if ( $servicefound_flag == 0 ) {
 		show_ok_box(); print "${GREEN}No additional services were detected.${ENDC}\n\n";
+	} else {
+		print "\n"; # add a aseparator before the next section
 	}
 }
 
