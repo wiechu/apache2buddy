@@ -1843,22 +1843,24 @@ sub preflight_checks {
 }
 
 sub detect_package_updates {
-	print "\n${PURPLE}Detecting Package Updates for Apache...${ENDC}\n";
+	print "\n${PURPLE}Detecting Package Updates for Apache or PHP...${ENDC}\n";
 	my ($os_name) = @_;
 	our $package_update = 0;
 	if ($os_name eq "Ubuntu" or $os_name eq "Debian" ) {
-		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | grep apache2`;
+		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | egrep "^php|^apache2"`;
 	} else {
-		$package_update = `yum check-update httpd | grep ^httpd`;
+		$package_update = `yum check-update | egrep "^httpd|^php"`;
 	}
 	if ($package_update) {
-		show_warn_box(); print "${RED}Apache has a pending package update.${ENDC}\n";
+		show_warn_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
+		show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
 		print $package_update;
 	} else {
 		if (-d "/usr/local/httpd" or -d "/usr/local/apache" or -d "/usr/local/apache2") {
-			show_warn_box(); print "${RED}It looks like apache was installed from sources.${ENDC}\n";
+			show_warn_box(); print "${RED}It looks like apache was installed from sources. Skipping.${ENDC}\n";
 		} else {
 			show_ok_box(); print "${GREEN}No package updates found.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
 		}
 	}
 
