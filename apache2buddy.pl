@@ -1801,12 +1801,10 @@ sub preflight_checks {
 		}
 	}		
 
-	# check #17a-1 detect plesk version
+	# check #17a-1 detect control panels 
+	print "\n${PURPLE}Detecting Control Panels...${ENDC}\n";
 	detect_plesk_version();
-	
-	# check #17a-2 detect cpanel version
 	detect_cpanel_version();
-	
 
 	# Check 17b
 	# Display the php memory limit
@@ -1844,12 +1842,11 @@ sub detect_cpanel_version {
 	our $cpanel = 0;
 	our $cpanel = 1 if -d "/usr/local/cpanel";
 	if ($cpanel) {
-		show_info_box(); print "${GREEN}This is a cPanel / WHM Server.${ENDC}\n";
-		my $plesk_version = 0;
-		$plesk_version = `cat /usr/local/cpanel/version` if -f "/usr/local/cpanel/version";
-		chomp($plesk_version);
-		if ($plesk_version) {
-			show_info_box(); print "cPanel Version: ${CYAN}$plesk_version${ENDC}\n";
+		my $cpanel_version = 0;
+		$cpanel_version = `cat /usr/local/cpanel/version` if (-f "/usr/local/cpanel/version");
+		chomp($cpanel_version);
+		if ($cpanel_version) {
+			show_info_box(); print "cPanel Version: ${CYAN}$cpanel_version${ENDC}\n";
 		} else {
 			show_info_box(); print "cPanel Version: ${CYAN}NOT FOUND${ENDC}\n";
 		}
@@ -1863,9 +1860,8 @@ sub detect_plesk_version {
 	our $plesk = 0;
 	our $plesk = 1 if -d "/usr/local/psa";
 	if ($plesk) {
-		show_info_box(); print "${GREEN}This is a Plesk Server.${ENDC}\n";
 		my $plesk_version = 0;
-		$plesk_version = `cat /usr/local/psa/version` if -f "/usr/local/psa/version";
+		$plesk_version = `cat /usr/local/psa/version` if (-f "/usr/local/psa/version");
 		chomp($plesk_version);
 		if ($plesk_version) {
 			show_info_box(); print "Plesk Version: ${CYAN}$plesk_version${ENDC}\n";
