@@ -1836,6 +1836,32 @@ sub preflight_checks {
 	# This has been abstracted out into a separate subroutine
 	# This addresses issue #6 'Check for and report on PHP Fatal Errors in the logs'
 	detect_php_fatal_errors($model, $process_name);
+
+	# Check 21 : Apache updates
+	our $os_name;
+	detect_package_updates($os_name);
+}
+
+sub detect_package_updates {
+	print "\n${PURPLE}Detecting Package Updates for Apache...${ENDC}\n";
+	my ($os_name) = @_;
+	our $package_update = 0;
+	if ($os_name eq "Ubuntu" or $os_name eq "Debian" ) {
+		$package_update = `apt-get update && dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | grep apache2`;
+	} else {
+		$package_update = `yum check-update httpd | grep ^httpd`;
+	}
+	if ($package_update) {
+		show_warn_box(); print "${RED}Apache has a pending package update.${ENDC}\n";
+		print $package_update;
+	} else {
+		if (-d "/usr/local/httpd" or -d "/usr/local/apache" or -d "/usr/local/apache2") {
+			show_warn_box(); print "${RED}It looks like apache was installed from sources.${ENDC}\n";
+		} else {
+			show_ok_box(); print "${GREEN}No package updates found.${ENDC}\n";
+		}
+	}
+
 }
 
 sub detect_cpanel_version {
@@ -1998,7 +2024,7 @@ sub get_service_memory_usage_mbytes {
 }
 
 
-sub detect_additional_services() {
+sub detect_additional_services {
 	
 	if ( ! $NOINFO ) { print "\n${PURPLE}Detecting additional services for consideration...${ENDC}\n" }
 	
