@@ -15,7 +15,6 @@ use strict;
 ##                                                                                                        ##
 ############################################################################################################
 # author: richard forth
-# version: 1.0
 # description: apache2buddy, a fork of apachebuddy that caters for apache2, obviously.
 #
 #  Github Page: https://github.com/richardforth/apache2buddy
@@ -131,13 +130,6 @@ If no options are specified, the basic tests will be run.
 	-L, --light-term	Show colours for a light background terminal.
 	-r, --report		Implies -HNWK or --noinfo --nowarn --no-ok --noheader
 	-P, --no-check-pid	DON'T Check the Parent Pid File Size (only use if desperate for more info, results may be skewed)
-
-More information (1990's style info pages):
-
-		http://apache2buddy.pl/installation
-		http://apache2buddy.pl/changelog
-		http://apache2buddy.pl/md5sums.txt
-		http://apache2buddy.pl/sha256sums.txt
 
 END_USAGE
 
