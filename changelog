@@ -9,6 +9,7 @@ When		Who		What
 				 - Addressed issue #48 Plesk logs (warning)
 				 - Addressed issue #49 Detect Plesk
 				 - Addressed issue #50 Detect icPanel
+				 - Code cleanup and output polishing
 2017-01-13 	Richard Forth   Addressed issue #34 Added more graceful
 				message when apache[2]ctl is not found.
 2017-01-13 	Richard Forth   Addressed issue #33 Removed Version Number
