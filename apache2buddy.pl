@@ -1289,8 +1289,10 @@ sub preflight_checks {
 		chomp($apachectl);
 	
 		if ( $apachectl !~ m/.*\/apache2ctl/ ) {
+       		        show_crit_box();
+              		print "Unable to locate the apache2ctl utility. This script now requires apache2ctl to analyze Apache's vhost configurations.\n";
        		        show_info_box();
-              		print "Unable to locate the apache2ctl utility. This script requires apache2ctl to analyze Apache's vhost configurations.\n";
+              		print "It looks like you might be running something else, other than apache..\n";
 			exit;
         	} else {
                 	if ( ! $NOOK ) { show_ok_box(); print "The utility 'apache2ctl' exists and is available for use: ${CYAN}$apachectl${ENDC}\n" }
