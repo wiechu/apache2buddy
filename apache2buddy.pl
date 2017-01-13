@@ -4,6 +4,7 @@ eval "use diagnostics; 1"  or die("\n[ FATAL ] Could not load the Diagnostics mo
 use Getopt::Long qw(:config no_ignore_case bundling pass_through);
 use POSIX;
 use strict;
+use File::Find;
 
 ############################################################################################################
 ##       ___                     __        ___      ____            __    __                              ##
@@ -252,6 +253,29 @@ if ( ! $NOCOLOR ) {
 	$ENDC = ""; # SUPPRESS COLORS
 	$BOLD = ""; # SUPPRESS COLORS
 	$UNDERLINE = ""; # SUPPRESS COLORS
+}
+
+
+sub systemcheck_large_logs {
+	my ($logdir) = @_;
+	if ( -d $logdir ) {
+		my @logs;
+		my $logfiles_raw = find(sub {push @logs, $File::Find::name  if -s >= 1024000000;},  $logdir);
+		foreach my $log (@logs) {
+			chomp($log);
+			my $size = -s $log;
+			my $humansize = sprintf "%.2f", $size/1024/1024/1024;
+			show_crit_box(); print $log . " --> " . $humansize . "GB\b";
+		}
+		if (@logs == 0) {
+			show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n";
+		} else {
+			show_crit_box(); print "${RED}Consider setting up a log rotation policy.${ENDC}\n";
+			show_crit_box(); print "${RED}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
+			show_crit_box(); print "${RED}large error logs can indicate a fundmeneal issue with the website / web application.${ENDC}\n";
+		}
+	} 
+	# silently proceed if the folder doesnt exist
 }
 
 # here we're going to build a list of the files included by the Apache 
@@ -1779,22 +1803,32 @@ sub preflight_checks {
 	
 
 	# Check 17b
-	# Display the}
+	# Display the php memory limit
 	# Note that we do nothing with this in terms of calculations
 	# Use it as a conversation starter, esp if memory_limit is 3GB! as this is a per-process setting!
 	# get the PHP memory limit
 	# This has been abstracted to a separate subroutine
 	detect_php_memory_limit();
 
-	# Check 17b : Other Services
+	# Check 17c : Other Services
 	# This has been abstracted out into a separate subroutine
 	detect_additional_services();
 
-	# Check 18 : Maxclients Hits
+	# Check 17d : Large Logs in /var/log
+	if ( ! $NOINFO ) {
+		print "${PURPLE}Detecting Large Log Files....${ENDC}\n";
+		print "${CYAN}PRO TIP: This is a precursor to the following  2 checks that may appear to hang if there are very large error logs.${ENDC}\n";
+		print "${CYAN}PRO TIP: If those process do appear to hang, press CTRL + c to exit the program, and then go check the logs we report below, if any.${ENDC}\n";
+	}
+	systemcheck_large_logs("/var/log/httpd");
+	systemcheck_large_logs("/var/log/apache2");
+	systemcheck_large_logs("/var/log/php-fpm");
+
+	# Check 19 : Maxclients Hits
 	# This has been abstracted out into a separate subroutine
 	detect_maxclients_hits($model, $process_name);
 
-	# Check 19 : PHP Fatal Errors
+	# Check 20 : PHP Fatal Errors
 	# This has been abstracted out into a separate subroutine
 	# This addresses issue #6 'Check for and report on PHP Fatal Errors in the logs'
 	detect_php_fatal_errors($model, $process_name);
@@ -1807,7 +1841,6 @@ sub detect_php_fatal_errors {
 	} else {
 		if ( ! $NOINFO ) {
 			print "\n${PURPLE}Detecting PHP Fatal Errors....${ENDC}\n";
-			print "\n${CYAN}PRO TIP: If this process appears to hang, press CTRL + c to exit the program, and then\ngo check for a large error log file in /var/log/httpd or /var/log/apache2.${ENDC}\n\n";
 		}
 	}
 	our $phpfatalerr = 0;
@@ -1848,7 +1881,6 @@ sub detect_maxclients_hits {
 	} else {
 		if ( ! $NOINFO ) {
 			print "\n${PURPLE}Detecting If Maxclients or MaxRequestWorkers has been hit recently....${ENDC}\n";
-			print "\n${CYAN}PRO TIP: If this process appears to hang, press CTRL + c to exit the program, and then\ngo check for a large error log file in /var/log/httpd or /var/log/apache2.${ENDC}\n\n";
 		}
 	}
 	our $hit = 0;
@@ -1909,10 +1941,12 @@ sub detect_additional_services() {
 	
 	if ( ! $NOINFO ) { print "\n${PURPLE}Detecting additional services for consideration...${ENDC}\n" }
 	
+	our $servicefound_flag = 0; # we need this to give a message  if nothing was found, otherwise it looks silly.
 	# Detect Mysql
 	our $mysql_detected = 0;
 	our $mysql_detected = `ps -C mysqld -o rss | grep -v RSS`;
 	if ( $mysql_detected ) {
+		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}MySQL${ENDC} Detected => " } 
 		# Get MySQL Memory Usage
 		our $mysql_memory_usage_mbytes = get_service_memory_usage_mbytes("mysqld");
@@ -1924,9 +1958,9 @@ sub detect_additional_services() {
 	# Detect Java
 	our $java_detected = 0;
 	$java_detected = `ps -C java -o rss | grep -v RSS`;
-	if ( $java_detected ) { if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Java${ENDC} Detected => " } }
-	# Get Java Memory Usage
 	if ( $java_detected ) {
+		our $servicefound_flag = 1;
+		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Java${ENDC} Detected => " } 
 		our $java_memory_usage_mbytes = get_service_memory_usage_mbytes("java");
 		if ( ! $NOINFO ) { print "Using ${CYAN}$java_memory_usage_mbytes MB${ENDC} of memory.\n" }
 	} else {
@@ -1937,6 +1971,7 @@ sub detect_additional_services() {
 	our $varnish_detected = 0;
 	$varnish_detected = `ps -C varnishd -o rss | grep -v RSS`;
 	if ( $varnish_detected ) { 
+		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Varnish${ENDC} Detected => " }
 		# Get varnish Memory Usage
 		our $varnish_memory_usage_mbytes = get_service_memory_usage_mbytes("varnishd");
@@ -1949,6 +1984,7 @@ sub detect_additional_services() {
 	our $redis_detected = 0;
 	$redis_detected = `ps -C redis-server -o rss | grep -v RSS`;
 	if ( $redis_detected ) { 
+		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Redis${ENDC} Detected => " }
 		# Get Redis Memory Usage
 		our $redis_memory_usage_mbytes = get_service_memory_usage_mbytes("redis-server");
@@ -1961,6 +1997,7 @@ sub detect_additional_services() {
 	our $memcache_detected = 0;
 	$memcache_detected = `ps -C memcached -o rss | grep -v RSS`;
 	if ( $memcache_detected ) { 
+		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Memcache${ENDC} Detected => " }
 		# Get Memcache Memory Usage
 		our $memcache_memory_usage_mbytes = get_service_memory_usage_mbytes("memcached");
@@ -1974,6 +2011,7 @@ sub detect_additional_services() {
 	# Get PHP-FPM Memory Usage
 	$phpfpm_detected = `ps -C php-fpm -o rss | grep -v RSS` || `ps -C php5-fpm -o rss | grep -v RSS` || 0;
 	if ( $phpfpm_detected ) { 
+		our $servicefound_flag = 1;
 		# Get PHP-FPM Memory Usage
 		our $phpfpm = 0;
 		our $phpfpm = `ps -C php-fpm -o rss | grep -v RSS`; 
@@ -1996,6 +2034,7 @@ sub detect_additional_services() {
 	our $gluster_detected = 0;
 	$gluster_detected = `ps -C glusterd -o rss | grep -v RSS`;
 	if ( $gluster_detected ) { 
+		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Gluster${ENDC} Detected => " }
 		# Get Gluster Memory Usage
 		our $glusterd_memory_usage_mbytes = get_service_memory_usage_mbytes("glusterd");
@@ -2006,7 +2045,9 @@ sub detect_additional_services() {
 	} else {
 		our $gluster_memory_usage_mbytes = 0;
 	}
-
+	if ( $servicefound_flag == 0 ) {
+		show_ok_box(); print "${GREEN}No additional services were detected.${ENDC}\n\n";
+	}
 }
 
 ########################
