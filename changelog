@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-01-13 	Richard Forth   Addressed issue #34 Added more graceful
+				message when apache[2]ctl is not found.
+2017-01-13 	Richard Forth   Addressed issue #33 Removed Version Number
 2016-12-06 	Richard Forth   Addressed issue #23 Low Uptime Warnings
 2016-12-05 	Richard Forth   Addressed issue #22 Add advisory message for
 				php memory limit of -1
