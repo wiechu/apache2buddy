@@ -19,7 +19,7 @@ When		Who		What
 				emulation as it breaks on Red Hat based
 				systems less than CentOS7
 				- Fixed #70 missing newline in large log
-				checks 
+				- Fixed #77 CRITICAL should be ADVISORY
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..
