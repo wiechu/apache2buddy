@@ -272,9 +272,9 @@ sub systemcheck_large_logs {
 		if (@logs == 0) {
 			if ( ! $NOINFO ) { show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n"; }
 		} else {
-			show_advisory_box(); print "${RED}Consider setting up a log rotation policy.${ENDC}\n";
-			show_advisory_box(); print "${RED}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
-			show_advisory_box(); print "${RED}large error logs can indicate a fundmeneal issue with the website / web application.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}Consider setting up a log rotation policy.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}large error logs can indicate a fundmeneal issue with the website / web application.${ENDC}\n";
 		}
 	} 
 	# silently proceed if the folder doesnt exist
