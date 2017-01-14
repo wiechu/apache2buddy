@@ -2,7 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
-2017-01-143 	Richard Forth   Updated logo
+2017-01-14 	Richard Forth   Updated logo
 				- updated tagline
 				- added a cool intro
 				- Fixed issue #62 MariaDB wrongly detected as
@@ -14,6 +14,13 @@ When		Who		What
 				information in --report output
 				- Fixed futher issues relating to the #66 issue
 				regarding extraneous information in --report output
+				- Added a temp workaround for #69
+				- Fixed #69 by ripping out the cool typing
+				emulation as it breaks on Red Hat based
+				systems less than CentOS7
+				- Fixed #70 missing newline in large log
+				- Fixed #77 CRITICAL should be ADVISORY
+				- Fixed color problems related to #77
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..

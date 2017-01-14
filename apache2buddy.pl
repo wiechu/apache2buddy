@@ -5,8 +5,6 @@ use Getopt::Long qw(:config no_ignore_case bundling pass_through);
 use POSIX;
 use strict;
 use File::Find;
-use Time::HiRes qw(usleep);
-$| = 1;
 ############################################################################################################
 #
 #                             |           ___ \   |                 |      |                   |     
@@ -257,7 +255,6 @@ if ( ! $NOCOLOR ) {
 	$ENDC = ""; # SUPPRESS COLORS
 	$BOLD = ""; # SUPPRESS COLORS
 	$UNDERLINE = ""; # SUPPRESS COLORS
-	$MILITARY = 0;
 }
 
 
@@ -270,14 +267,14 @@ sub systemcheck_large_logs {
 			chomp($log);
 			my $size = -s $log;
 			my $humansize = sprintf "%.2f", $size/1024/1024/1024;
-			show_crit_box(); print $log . " --> " . $humansize . "GB\b";
+			show_crit_box(); print $log . " --> " . $humansize . "GB\b\n";
 		}
 		if (@logs == 0) {
 			if ( ! $NOINFO ) { show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n"; }
 		} else {
-			show_crit_box(); print "${RED}Consider setting up a log rotation policy.${ENDC}\n";
-			show_crit_box(); print "${RED}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
-			show_crit_box(); print "${RED}large error logs can indicate a fundmeneal issue with the website / web application.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}Consider setting up a log rotation policy.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}large error logs can indicate a fundmeneal issue with the website / web application.${ENDC}\n";
 		}
 	} 
 	# silently proceed if the folder doesnt exist
@@ -1181,35 +1178,7 @@ END_HEADER
 		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now hosted from github. See ${CYAN}https://github.com/richardforth/apache2buddy${ENDC}\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "Changelogs and updates in github. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/changelog${ENDC}\n" }
 	}
-	print_message("\nWelcome to apache2buddy...");
-	print_message("Stand by for launch...");
 }
-
-sub print_message {
-	my ($message) = @_;
-	if ($MILITARY) {
-	        emulate_military_terminal($message);
-	} else {
-    	    print($message . "\n");
-	}
-}
-
-sub emulate_military_terminal {
-	my ($string) = @_;
-	{
-		local $/ = undef;
-	}
-	
-	$string =~ s/(.)/typeout($1)/esg;
-	print "\n";
-}
-
-sub typeout {
-	print "${GREEN}$_[0]${ENDC}";
-	usleep int rand(75_000);
-}
-
-
 
 sub show_debug_box {
 	print "[ ${GREEN}DeBuG${ENDC} ] "; 
