@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-01-143 	Richard Forth   Updated logo
+				- updated tagline
+				- added a cool intro
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..
