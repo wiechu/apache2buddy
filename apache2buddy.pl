@@ -272,9 +272,9 @@ sub systemcheck_large_logs {
 		if (@logs == 0) {
 			if ( ! $NOINFO ) { show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n"; }
 		} else {
-			show_crit_box(); print "${RED}Consider setting up a log rotation policy.${ENDC}\n";
-			show_crit_box(); print "${RED}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
-			show_crit_box(); print "${RED}large error logs can indicate a fundmeneal issue with the website / web application.${ENDC}\n";
+			show_advisory_box(); print "${RED}Consider setting up a log rotation policy.${ENDC}\n";
+			show_advisory_box(); print "${RED}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
+			show_advisory_box(); print "${RED}large error logs can indicate a fundmeneal issue with the website / web application.${ENDC}\n";
 		}
 	} 
 	# silently proceed if the folder doesnt exist
@@ -1178,11 +1178,6 @@ END_HEADER
 		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now hosted from github. See ${CYAN}https://github.com/richardforth/apache2buddy${ENDC}\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "Changelogs and updates in github. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/changelog${ENDC}\n" }
 	}
-}
-
-sub print_message {
-	my ($message) = @_;
-    	print(${GREEN}$message . "${ENDC}\n");
 }
 
 sub show_debug_box {
