@@ -1453,9 +1453,11 @@ sub preflight_checks {
                 # This code section is completely changing so that I only need to add/remove the LTS versions as they EOL
 		unless  ( $os_release == "12.04" or $os_release == "14.04" or $os_release == "16.04") {
 			# https://wiki.ubuntu.com/Releases
-			show_warn_box();
-			print $os_name." ".$os_release." is not supported, we may get errors.";
-			print ".\n";
+			if ( ! $NOWARN ) {
+				show_warn_box();
+				print $os_name." ".$os_release." is not supported, we may get errors.";
+				print ".\n";
+			}
 		} else {
 			if ( ! $NOOK ) { show_ok_box(); print "The operating system is supported.\n" }
 		}
@@ -1463,12 +1465,16 @@ sub preflight_checks {
 		if ( $os_release <= 6.0 ) {
 			# as of current writing, 6.0 (Squeeze) is the latest EOL version of Debian
 			# https://wiki.debian.org/DebianReleases
-			show_warn_box();
-			print $os_name." ".$os_release." is now end of life, its technically unsupported, we may get errors";
-			print ".\n";
+			if ( ! $NOWARN ) {
+				show_warn_box();
+				print $os_name." ".$os_release." is now end of life, its technically unsupported, we may get errors";
+				print ".\n";
+			}
 		} else {
-			show_ok_box;
-			print "The operating system is supported.\n"
+			if ( ! $NOOK ) {
+				show_ok_box;
+				print "The operating system is supported.\n"
+			}
 		}
 		
 	}
@@ -2177,7 +2183,7 @@ sub detect_additional_services {
 		our $gluster_memory_usage_mbytes = 0;
 	}
 	if ( $servicefound_flag == 0 ) {
-		show_ok_box(); print "${GREEN}No additional services were detected.${ENDC}\n\n";
+		if ( ! $NOOK ) { show_ok_box(); print "${GREEN}No additional services were detected.${ENDC}\n\n" }
 	} else {
 		print "\n"; # add a aseparator before the next section
 	}
