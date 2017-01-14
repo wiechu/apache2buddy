@@ -273,7 +273,7 @@ sub systemcheck_large_logs {
 			show_crit_box(); print $log . " --> " . $humansize . "GB\b";
 		}
 		if (@logs == 0) {
-			show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n";
+			if ( ! $NOINFO ) { show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n"; }
 		} else {
 			show_crit_box(); print "${RED}Consider setting up a log rotation policy.${ENDC}\n";
 			show_crit_box(); print "${RED}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
@@ -995,7 +995,7 @@ sub generate_standard_report {
 	our @apache_uptime;
 	
 	# print a report header
-	if ( ! $NOINFO ) { print "${BOLD}### GENERAL FINDINGS & RECOMMENDATIONS ###${ENDC}\n" } 
+	print "${BOLD}### GENERAL FINDINGS & RECOMMENDATIONS ###${ENDC}\n"; 
 	insert_hrule();
  	our $servername;
 	our $public_ip_address;
@@ -1004,8 +1004,10 @@ sub generate_standard_report {
 	# show what we're going to use to generate our numbers
 	print "\nSettings considered for this report:\n"; # exempt from NOINFO directive. 
 	if ( $apache_uptime[0] == "0" ) { 
-		show_warn_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
-		show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n\n";
+		if ( ! $NOWARN ) {
+			show_warn_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
+			show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n\n";
+		}
 	}
 
 	printf ("%-62s ${CYAN}%d %2s${CYAN}\n",   "\tYour server's physical RAM:", $available_mem, "MB"); # exempt from NOINFO directive.
@@ -1171,8 +1173,6 @@ ${ENDC}
 END_HEADER
 
 		print $header;
-		print_message("Welcome to apache2buddy...");
-		print_message("Stand by for launch...");
 		if ( ! $NOINFO ) { print "\n${PURPLE}About...${ENDC}\n" };
 		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is a fork of apachebuddy.pl.\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "MD5SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/md5sums.txt${ENDC}\n" }
@@ -1181,6 +1181,8 @@ END_HEADER
 		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now hosted from github. See ${CYAN}https://github.com/richardforth/apache2buddy${ENDC}\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "Changelogs and updates in github. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/changelog${ENDC}\n" }
 	}
+	print_message("\nWelcome to apache2buddy...");
+	print_message("Stand by for launch...");
 }
 
 sub print_message {
@@ -1584,8 +1586,10 @@ sub preflight_checks {
 	
 	if ( ! $NOINFO ) { show_info_box(); print "Apache has been running ${CYAN}$apache_uptime[0]${ENDC}d ${CYAN}$apache_uptime[1]${ENDC}h ${CYAN}$apache_uptime[2]${ENDC}m ${CYAN}$apache_uptime[3]${ENDC}s.\n" }
 	if ( $apache_uptime[0] == "0" ) { 
-		show_warn_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
-		show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n";
+		if ( ! $NOWARN ) { 
+			show_warn_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
+			show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n";
+		}
 	}
 
 	# Check 9
@@ -1791,9 +1795,9 @@ sub preflight_checks {
 	our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v apache2buddy | grep -v grep | wc -l`;
 	chomp ($current_proc_count);
 	if ($current_proc_count >= $maxclients) {
-		show_warn_box(); print "Current Apache Process Count is ${RED}$current_proc_count${ENDC}, including the parent PID.\n";
+		if ( ! $NOWARN ) { show_warn_box(); print "Current Apache Process Count is ${RED}$current_proc_count${ENDC}, including the parent PID.\n" }
 	} else {
-		show_ok_box(); print "Current Apache Process Count is ${CYAN}$current_proc_count${ENDC}, including the parent PID.\n"; 
+		if ( ! $NOOK ) { show_ok_box(); print "Current Apache Process Count is ${CYAN}$current_proc_count${ENDC}, including the parent PID.\n"} 
 	}
 
 	# Check 16.2
@@ -1802,22 +1806,22 @@ sub preflight_checks {
 	our $vhost_count = `$apachectl -S 2>&1 | grep -c port`;
 	# in case apache2ctl not working, try apachectl
 	chomp ($vhost_count);
-	show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n";
+	if ( ! $NOINFO ) { show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n" }
 	if ($vhost_count >= $maxclients) {
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-			show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n";
+			if ( ! $NOWARN ) { show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n" }
 		} else {
-			show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxclients${ENDC}.\n";
+			if ( ! $NOWARN ) { show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxclients${ENDC}.\n" }
 		}
 	} else {
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-			show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxrequestworkers${ENDC}.\n"; 
+			if ( ! $NOOK ) { show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxrequestworkers${ENDC}.\n" } 
 		} else {
-			show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxclients${ENDC}.\n"; 
+			if ( ! $NOOK ) { show_ok_box(); print "Current Apache vHost Count is ${CYAN}less than maxclients${ENDC}.\n" }
 		}
 	}
 	if ( $vhost_count == 0 ) {
-		show_advisory_box(); print "${YELLOW}vHost Count works only when we have NameVirtualHosting enabled, check config manually, they may only have the default vhost.${ENDC}\n";
+		if ( ! $NOWARN ) { show_advisory_box(); print "${YELLOW}vHost Count works only when we have NameVirtualHosting enabled, check config manually, they may only have the default vhost.${ENDC}\n" }
 	}
 
 	# Check 17 
@@ -1832,7 +1836,7 @@ sub preflight_checks {
 	}		
 
 	# check #17a-1 detect control panels 
-	print "\n${PURPLE}Detecting Control Panels...${ENDC}\n";
+	if ( ! $NOINFO ) { print "\n${PURPLE}Detecting Control Panels...${ENDC}\n" }
 	detect_plesk_version();
 	detect_cpanel_version();
 
@@ -1876,7 +1880,7 @@ sub preflight_checks {
 }
 
 sub detect_package_updates {
-	print "\n${PURPLE}Detecting Package Updates for Apache or PHP...${ENDC}\n";
+	if ( ! $NOINFO ) { print "\n${PURPLE}Detecting Package Updates for Apache or PHP...${ENDC}\n" }
 	my ($os_name) = @_;
 	our $package_update = 0;
 	if ($os_name eq "Ubuntu" or $os_name eq "Debian" ) {
@@ -1885,15 +1889,17 @@ sub detect_package_updates {
 		$package_update = `yum check-update | egrep "^httpd|^php"`;
 	}
 	if ($package_update) {
-		show_warn_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
-		show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
-		print $package_update;
+		if ( ! $NOWARN ) {
+			show_warn_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
+			print $package_update;
+		}
 	} else {
 		if (-d "/usr/local/httpd" or -d "/usr/local/apache" or -d "/usr/local/apache2") {
-			show_warn_box(); print "${RED}It looks like apache was installed from sources. Skipping.${ENDC}\n";
+			if ( ! $NOWARN ) { show_warn_box(); print "${RED}It looks like apache was installed from sources. Skipping.${ENDC}\n" }
 		} else {
-			show_ok_box(); print "${GREEN}No package updates found.${ENDC}\n";
-			show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
+			if ( ! $NOOK ) { show_ok_box(); print "${GREEN}No package updates found.${ENDC}\n" }
+			if ( ! $NOWARN ) { show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n" }
 		}
 	}
 
@@ -1907,13 +1913,13 @@ sub detect_cpanel_version {
 		$cpanel_version = `cat /usr/local/cpanel/version` if (-f "/usr/local/cpanel/version");
 		chomp($cpanel_version);
 		if ($cpanel_version) {
-			show_info_box(); print "cPanel Version: ${CYAN}$cpanel_version${ENDC}\n";
+			if ( ! $NOINFO ) { show_info_box(); print "cPanel Version: ${CYAN}$cpanel_version${ENDC}\n" }
 		} else {
-			show_info_box(); print "cPanel Version: ${CYAN}NOT FOUND${ENDC}\n";
+			if ( ! $NOINFO ) { show_info_box(); print "cPanel Version: ${CYAN}NOT FOUND${ENDC}\n" }
 		}
 			
 	} else {
-		show_info_box(); print "This server is NOT running cPanel.\n";
+		if ( ! $NOINFO ) { show_info_box(); print "This server is NOT running cPanel.\n" }
 	}
 }
 
@@ -1925,13 +1931,13 @@ sub detect_plesk_version {
 		$plesk_version = `cat /usr/local/psa/version` if (-f "/usr/local/psa/version");
 		chomp($plesk_version);
 		if ($plesk_version) {
-			show_info_box(); print "Plesk Version: ${CYAN}$plesk_version${ENDC}\n";
+			if ( ! $NOINFO ) { show_info_box(); print "Plesk Version: ${CYAN}$plesk_version${ENDC}\n" }
 		} else {
-			show_info_box(); print "Plesk Version: ${CYAN}NOT FOUND${ENDC}\n";
+			if ( ! $NOINFO ) { show_info_box(); print "Plesk Version: ${CYAN}NOT FOUND${ENDC}\n" }
 		}
 			
 	} else {
-		show_info_box(); print "This server is NOT running Plesk.\n";
+		if ( ! $NOINFO ) { show_info_box(); print "This server is NOT running Plesk.\n" }
 	}
 }
 
