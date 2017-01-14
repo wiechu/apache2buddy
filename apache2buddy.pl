@@ -1012,9 +1012,9 @@ sub generate_standard_report {
 	my $memory_remaining = $available_mem - $mysql_memory_usage_mbytes - $java_memory_usage_mbytes - $redis_memory_usage_mbytes - $memcache_memory_usage_mbytes - $varnish_memory_usage_mbytes - $phpfpm_memory_usage_mbytes- $gluster_memory_usage_mbytes;
 	printf ("${BOLD}%-62s${ENDC} ${CYAN}%d %2s${ENDC}\n",   "\tRemaining Memory after other services considered:", $memory_remaining, "MB"); # exempt from NOINFO directive.
 	if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-		printf ("%-62s ${CYAN}%d${ENDC} %5s %-30s\n",   "\tApache's MaxRequestWorkers directive:", $maxclients, " ", "<--------- Current Setting"); # exempt from NOINFO directive.
+		printf ("%-62s ${CYAN}%-8d${ENDC} %-30s\n",   "\tApache's MaxRequestWorkers directive:", $maxclients, "<--------- Current Setting"); # exempt from NOINFO directive.
 	} else {	
-		printf ("%-62s ${CYAN}%d${ENDC} %5s %-30s\n",   "\tApache's MaxClients directive:", $maxclients, " ", "<--------- Current Setting"); # exempt from NOINFO directive.
+		printf ("%-62s ${CYAN}%-8d${ENDC} %-30s\n",   "\tApache's MaxClients directive:", $maxclients, "<--------- Current Setting"); # exempt from NOINFO directive.
 	}
 	printf ("%-62s ${CYAN}%s${ENDC}\n",   "\tApache MPM Model:", $model); # exempt from NOINFO directive.
 	if ( ! $NOINFO ) { printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tLargest Apache process (by memory):", $apache_proc_highest, "MB") }
@@ -1038,9 +1038,9 @@ sub generate_standard_report {
 				if ( ! $NOOK ) { show_shortok_box(); print "\t${GREEN}Your MaxClients setting is within an acceptable range.${ENDC}\n" } 
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				print "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}. <------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			} else {
-				print "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}. <------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			}
 			printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1052,9 +1052,9 @@ sub generate_standard_report {
 				show_shortcrit_box(); print "\t${RED}Your MaxClients setting is too low.${ENDC}\n"; # exempt from NOINFO directive.
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				print "\t${YELLOW}Your recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC} <------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			} else {
-				print "\t${YELLOW}Your recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC} <------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			}
 			printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1066,9 +1066,9 @@ sub generate_standard_report {
 				show_shortcrit_box(); print "\t${RED}Your MaxClients setting is too high.${ENDC}\n"; # exempt from NOINFO directive.
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				print "\t${YELLOW}Your recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC} <------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			} else {
-				print "\t${YELLOW}Your recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC} <------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			}
 			printf ("%-62s ${RED}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf ("%-62s ${RED}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
