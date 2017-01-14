@@ -15,7 +15,7 @@ This is to reflect the maturity of the project, and to give it a more profession
 I hope you find it as refreshing as the new features that have been added:
 
 	 - Detecting cPanel version
-	 - Detecting Olesk Version
+	 - Detecting Plesk Version
 	 - Detecting PHP and aapache package updates that may be pending
 	 - Large Log File detection in common locations
 	 - Some major bug fixes and improvements to layout
