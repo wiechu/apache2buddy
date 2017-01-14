@@ -5,7 +5,7 @@ use Getopt::Long qw(:config no_ignore_case bundling pass_through);
 use POSIX;
 use strict;
 use File::Find;
-use Time::HiRes qw(usleep);
+eval "use Time::HiRes qw(usleep); 1" or die("\n[ FATAL ] Could not load the Time::HiRes module. \n\nTry:\n\n     yum install perl-Time-HiRes\n\nThen try running this script again.\n\n"); 
 $| = 1;
 ############################################################################################################
 #
