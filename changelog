@@ -5,6 +5,9 @@ When		Who		What
 2017-01-143 	Richard Forth   Updated logo
 				- updated tagline
 				- added a cool intro
+				- Fixed issue #62 MariaDB wrongly detected as
+				MySQL, this also detects percona correctly
+				too.
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..
