@@ -5,15 +5,16 @@ use Getopt::Long qw(:config no_ignore_case bundling pass_through);
 use POSIX;
 use strict;
 use File::Find;
-
+use Time::HiRes qw(usleep);
+$| = 1;
 ############################################################################################################
-##       ___                     __        ___      ____            __    __                              ##
-##      /   |  ____  ____ ______/ /_  ___ |__ \    / __ )__  ______/ /___/ /_  __                         ##
-##     / /| | / __ \/ __ `/ ___/ __ \/ _ \__/ /   / __  / / / / __  / __  / / / /                         ##
-##    / ___ |/ /_/ / /_/ / /__/ / / /  __/ __/   / /_/ / /_/ / /_/ / /_/ / /_/ /                          ##
-##   /_/  |_/ .___/\__,_/\___/_/ /_/\___/____/  /_____/\__,_/\__,_/\__,_/\__, /    ...new & improved!!!   ##
-##         /_/ apache2buddy.pl                                          /____/                            ##
-##                                                                                                        ##
+#
+#                             |           ___ \   |                 |      |                   |     
+#   _` |  __ \    _` |   __|  __ \    _ \    ) |  __ \   |   |   _` |   _` |  |   |     __ \   |     
+#  (   |  |   |  (   |  (     | | |   __/   __/   |   |  |   |  (   |  (   |  |   |     |   |  |     
+# \__,_|  .__/  \__,_| \___| _| |_| \___| _____| _.__/  \__,_| \__,_| \__,_| \__, | _)  .__/  _|     
+#        _| Apache Tuning and Advisories for Professional Administrators.    ____/     _|            
+#        
 ############################################################################################################
 # author: richard forth
 # description: apache2buddy, a fork of apachebuddy that caters for apache2, obviously.
@@ -176,6 +177,9 @@ our $NOHEADER = 0;
 # by default, check pid size 
 our $NOCHKPID = 0;
 
+# by default print out a cool message, in a miltray sytle
+our $MILITARY = 1;
+
 # grab the command line arguments
 GetOptions(
 	'help|h' => \$help,
@@ -253,6 +257,7 @@ if ( ! $NOCOLOR ) {
 	$ENDC = ""; # SUPPRESS COLORS
 	$BOLD = ""; # SUPPRESS COLORS
 	$UNDERLINE = ""; # SUPPRESS COLORS
+	$MILITARY = 0;
 }
 
 
@@ -1156,18 +1161,18 @@ sub get_cores {
 sub print_header {
 	if ( ! $NOHEADER ) {
 		my $header = <<"END_HEADER";
-${BLUE}########################################################################################${ENDC}
-${CYAN}##       ___                     __        ___      ____            __    __          ##${ENDC}
-${GREEN}##      /   |  ____  ____ ______/ /_  ___ |__ \\    / __ )__  ______/ /___/ /_  __     ##${ENDC}
-${PURPLE}##     / /| | / __ \\/ __ `/ ___/ __ \\/ _ \\__/ /   / __  / / / / __  / __  / / / /     ##${ENDC}
-${BLUE}##    / ___ |/ /_/ / /_/ / /__/ / / /  __/ __/   / /_/ / /_/ / /_/ / /_/ / /_/ /      ##${ENDC}
-${CYAN}##   /_/  |_/ .___/\\__,_/\\___/_/ /_/\\___/____/  /_____/\\__,_/\\__,_/\\__,_/\\__, /       ##${ENDC}
-${GREEN}##         /_/ apache2buddy.pl                                          /____/        ##${ENDC}
-${PURPLE}##                                                                                    ##${ENDC}
-${BLUE}########################################################################################${ENDC}
+${GREEN}
+                             |           ___ \\   |                 |      |                   |     
+   _` |  __ \\    _` |   __|  __ \\    _ \\    ) |  __ \\   |   |   _` |   _` |  |   |     __ \\   |     
+  (   |  |   |  (   |  (     | | |   __/   __/   |   |  |   |  (   |  (   |  |   |     |   |  |     
+ \\__,_|  .__/  \\__,_| \\___| _| |_| \\___| _____| _.__/  \\__,_| \\__,_| \\__,_| \\__, | _)  .__/  _|     
+        _| Apache Tuning and Advisories for Professional Administrators.    ____/     _|            
+${ENDC}
 END_HEADER
 
 		print $header;
+		print_message("Welcome to apache2buddy...");
+		print_message("Stand by for launch...");
 		if ( ! $NOINFO ) { print "\n${PURPLE}About...${ENDC}\n" };
 		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is a fork of apachebuddy.pl.\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "MD5SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/md5sums.txt${ENDC}\n" }
@@ -1177,6 +1182,31 @@ END_HEADER
 		if ( ! $NOINFO ) { show_info_box(); print "Changelogs and updates in github. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/changelog${ENDC}\n" }
 	}
 }
+
+sub print_message {
+	my ($message) = @_;
+	if ($MILITARY) {
+	        emulate_military_terminal($message);
+	} else {
+    	    print($message . "\n");
+	}
+}
+
+sub emulate_military_terminal {
+	my ($string) = @_;
+	{
+		local $/ = undef;
+	}
+	
+	$string =~ s/(.)/typeout($1)/esg;
+	print "\n";
+}
+
+sub typeout {
+	print "${GREEN}$_[0]${ENDC}";
+	usleep int rand(75_000);
+}
+
 
 
 sub show_debug_box {
