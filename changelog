@@ -12,6 +12,8 @@ When		Who		What
 				arrows in the report
 				- Fixed the #66 issue regarding extraneous
 				information in --report output
+				- Fixed futher issues relating to the #66 issue
+				regarding extraneous information in --report output
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..
