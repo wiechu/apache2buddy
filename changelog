@@ -15,6 +15,9 @@ When		Who		What
 				- Fixed futher issues relating to the #66 issue
 				regarding extraneous information in --report output
 				- Added a temp workaround for #69
+				- Fixed #69 by ripping out the cool typing
+				emulation as it breaks on Red Hat based
+				systems less than CentOS7
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..

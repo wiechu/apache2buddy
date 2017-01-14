@@ -5,8 +5,6 @@ use Getopt::Long qw(:config no_ignore_case bundling pass_through);
 use POSIX;
 use strict;
 use File::Find;
-eval "use Time::HiRes qw(usleep); 1" or die("\n[ FATAL ] Could not load the Time::HiRes module. \n\nTry:\n\n     yum install perl-Time-HiRes\n\nThen try running this script again.\n\n"); 
-$| = 1;
 ############################################################################################################
 #
 #                             |           ___ \   |                 |      |                   |     
@@ -257,7 +255,6 @@ if ( ! $NOCOLOR ) {
 	$ENDC = ""; # SUPPRESS COLORS
 	$BOLD = ""; # SUPPRESS COLORS
 	$UNDERLINE = ""; # SUPPRESS COLORS
-	$MILITARY = 0;
 }
 
 
@@ -1187,29 +1184,8 @@ END_HEADER
 
 sub print_message {
 	my ($message) = @_;
-	if ($MILITARY) {
-	        emulate_military_terminal($message);
-	} else {
-    	    print($message . "\n");
-	}
+    	print(${GREEN}$message . "${ENDC}\n");
 }
-
-sub emulate_military_terminal {
-	my ($string) = @_;
-	{
-		local $/ = undef;
-	}
-	
-	$string =~ s/(.)/typeout($1)/esg;
-	print "\n";
-}
-
-sub typeout {
-	print "${GREEN}$_[0]${ENDC}";
-	usleep int rand(75_000);
-}
-
-
 
 sub show_debug_box {
 	print "[ ${GREEN}DeBuG${ENDC} ] "; 
