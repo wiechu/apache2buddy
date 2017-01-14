@@ -20,6 +20,7 @@ When		Who		What
 				systems less than CentOS7
 				- Fixed #70 missing newline in large log
 				- Fixed #77 CRITICAL should be ADVISORY
+				- Fixed color problems related to #77
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..
