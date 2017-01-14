@@ -5,15 +5,16 @@ use Getopt::Long qw(:config no_ignore_case bundling pass_through);
 use POSIX;
 use strict;
 use File::Find;
-
+use Time::HiRes qw(usleep);
+$| = 1;
 ############################################################################################################
-##       ___                     __        ___      ____            __    __                              ##
-##      /   |  ____  ____ ______/ /_  ___ |__ \    / __ )__  ______/ /___/ /_  __                         ##
-##     / /| | / __ \/ __ `/ ___/ __ \/ _ \__/ /   / __  / / / / __  / __  / / / /                         ##
-##    / ___ |/ /_/ / /_/ / /__/ / / /  __/ __/   / /_/ / /_/ / /_/ / /_/ / /_/ /                          ##
-##   /_/  |_/ .___/\__,_/\___/_/ /_/\___/____/  /_____/\__,_/\__,_/\__,_/\__, /    ...new & improved!!!   ##
-##         /_/ apache2buddy.pl                                          /____/                            ##
-##                                                                                                        ##
+#
+#                             |           ___ \   |                 |      |                   |     
+#   _` |  __ \    _` |   __|  __ \    _ \    ) |  __ \   |   |   _` |   _` |  |   |     __ \   |     
+#  (   |  |   |  (   |  (     | | |   __/   __/   |   |  |   |  (   |  (   |  |   |     |   |  |     
+# \__,_|  .__/  \__,_| \___| _| |_| \___| _____| _.__/  \__,_| \__,_| \__,_| \__, | _)  .__/  _|     
+#        _| Apache Tuning and Advisories for Professional Administrators.    ____/     _|            
+#        
 ############################################################################################################
 # author: richard forth
 # description: apache2buddy, a fork of apachebuddy that caters for apache2, obviously.
@@ -176,6 +177,9 @@ our $NOHEADER = 0;
 # by default, check pid size 
 our $NOCHKPID = 0;
 
+# by default print out a cool message, in a miltray sytle
+our $MILITARY = 1;
+
 # grab the command line arguments
 GetOptions(
 	'help|h' => \$help,
@@ -253,6 +257,7 @@ if ( ! $NOCOLOR ) {
 	$ENDC = ""; # SUPPRESS COLORS
 	$BOLD = ""; # SUPPRESS COLORS
 	$UNDERLINE = ""; # SUPPRESS COLORS
+	$MILITARY = 0;
 }
 
 
@@ -1007,9 +1012,9 @@ sub generate_standard_report {
 	my $memory_remaining = $available_mem - $mysql_memory_usage_mbytes - $java_memory_usage_mbytes - $redis_memory_usage_mbytes - $memcache_memory_usage_mbytes - $varnish_memory_usage_mbytes - $phpfpm_memory_usage_mbytes- $gluster_memory_usage_mbytes;
 	printf ("${BOLD}%-62s${ENDC} ${CYAN}%d %2s${ENDC}\n",   "\tRemaining Memory after other services considered:", $memory_remaining, "MB"); # exempt from NOINFO directive.
 	if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-		printf ("%-62s ${CYAN}%d${ENDC} %5s %-30s\n",   "\tApache's MaxRequestWorkers directive:", $maxclients, " ", "<--------- Current Setting"); # exempt from NOINFO directive.
+		printf ("%-62s ${CYAN}%-8d${ENDC} %-30s\n",   "\tApache's MaxRequestWorkers directive:", $maxclients, "<--------- Current Setting"); # exempt from NOINFO directive.
 	} else {	
-		printf ("%-62s ${CYAN}%d${ENDC} %5s %-30s\n",   "\tApache's MaxClients directive:", $maxclients, " ", "<--------- Current Setting"); # exempt from NOINFO directive.
+		printf ("%-62s ${CYAN}%-8d${ENDC} %-30s\n",   "\tApache's MaxClients directive:", $maxclients, "<--------- Current Setting"); # exempt from NOINFO directive.
 	}
 	printf ("%-62s ${CYAN}%s${ENDC}\n",   "\tApache MPM Model:", $model); # exempt from NOINFO directive.
 	if ( ! $NOINFO ) { printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tLargest Apache process (by memory):", $apache_proc_highest, "MB") }
@@ -1033,9 +1038,9 @@ sub generate_standard_report {
 				if ( ! $NOOK ) { show_shortok_box(); print "\t${GREEN}Your MaxClients setting is within an acceptable range.${ENDC}\n" } 
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				print "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.\t\t<------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			} else {
-				print "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.\t\t<------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			}
 			printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1047,9 +1052,9 @@ sub generate_standard_report {
 				show_shortcrit_box(); print "\t${RED}Your MaxClients setting is too low.${ENDC}\n"; # exempt from NOINFO directive.
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				print "\t${YELLOW}Your recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC}\t\t<------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			} else {
-				print "\t${YELLOW}Your recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC}\t\t<------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			}
 			printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1061,9 +1066,9 @@ sub generate_standard_report {
 				show_shortcrit_box(); print "\t${RED}Your MaxClients setting is too high.${ENDC}\n"; # exempt from NOINFO directive.
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				print "\t${YELLOW}Your recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC}\t\t<------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			} else {
-				print "\t${YELLOW}Your recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients.${ENDC}\t\t<------- Acceptable Range (10% of MAX)\n";
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)\n");
 			}
 			printf ("%-62s ${RED}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf ("%-62s ${RED}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1156,18 +1161,18 @@ sub get_cores {
 sub print_header {
 	if ( ! $NOHEADER ) {
 		my $header = <<"END_HEADER";
-${BLUE}########################################################################################${ENDC}
-${CYAN}##       ___                     __        ___      ____            __    __          ##${ENDC}
-${GREEN}##      /   |  ____  ____ ______/ /_  ___ |__ \\    / __ )__  ______/ /___/ /_  __     ##${ENDC}
-${PURPLE}##     / /| | / __ \\/ __ `/ ___/ __ \\/ _ \\__/ /   / __  / / / / __  / __  / / / /     ##${ENDC}
-${BLUE}##    / ___ |/ /_/ / /_/ / /__/ / / /  __/ __/   / /_/ / /_/ / /_/ / /_/ / /_/ /      ##${ENDC}
-${CYAN}##   /_/  |_/ .___/\\__,_/\\___/_/ /_/\\___/____/  /_____/\\__,_/\\__,_/\\__,_/\\__, /       ##${ENDC}
-${GREEN}##         /_/ apache2buddy.pl                                          /____/        ##${ENDC}
-${PURPLE}##                                                                                    ##${ENDC}
-${BLUE}########################################################################################${ENDC}
+${GREEN}
+                             |           ___ \\   |                 |      |                   |     
+   _` |  __ \\    _` |   __|  __ \\    _ \\    ) |  __ \\   |   |   _` |   _` |  |   |     __ \\   |     
+  (   |  |   |  (   |  (     | | |   __/   __/   |   |  |   |  (   |  (   |  |   |     |   |  |     
+ \\__,_|  .__/  \\__,_| \\___| _| |_| \\___| _____| _.__/  \\__,_| \\__,_| \\__,_| \\__, | _)  .__/  _|     
+        _| Apache Tuning and Advisories for Professional Administrators.    ____/     _|            
+${ENDC}
 END_HEADER
 
 		print $header;
+		print_message("Welcome to apache2buddy...");
+		print_message("Stand by for launch...");
 		if ( ! $NOINFO ) { print "\n${PURPLE}About...${ENDC}\n" };
 		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is a fork of apachebuddy.pl.\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "MD5SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/md5sums.txt${ENDC}\n" }
@@ -1177,6 +1182,31 @@ END_HEADER
 		if ( ! $NOINFO ) { show_info_box(); print "Changelogs and updates in github. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/changelog${ENDC}\n" }
 	}
 }
+
+sub print_message {
+	my ($message) = @_;
+	if ($MILITARY) {
+	        emulate_military_terminal($message);
+	} else {
+    	    print($message . "\n");
+	}
+}
+
+sub emulate_military_terminal {
+	my ($string) = @_;
+	{
+		local $/ = undef;
+	}
+	
+	$string =~ s/(.)/typeout($1)/esg;
+	print "\n";
+}
+
+sub typeout {
+	print "${GREEN}$_[0]${ENDC}";
+	usleep int rand(75_000);
+}
+
 
 
 sub show_debug_box {
@@ -1800,7 +1830,11 @@ sub preflight_checks {
 			if ( ! $NOINFO ) { show_info_box();  print "Your MaxRequestsPerChild setting is ${CYAN}$maxrequestsperchild${ENDC}.\n" }
 		}
 	}		
-	
+
+	# check #17a-1 detect control panels 
+	print "\n${PURPLE}Detecting Control Panels...${ENDC}\n";
+	detect_plesk_version();
+	detect_cpanel_version();
 
 	# Check 17b
 	# Display the php memory limit
@@ -1816,13 +1850,16 @@ sub preflight_checks {
 
 	# Check 17d : Large Logs in /var/log
 	if ( ! $NOINFO ) {
-		print "${PURPLE}Detecting Large Log Files....${ENDC}\n";
+		print "${PURPLE}Detecting Large Log Files...${ENDC}\n";
 		print "${CYAN}PRO TIP: This is a precursor to the following  2 checks that may appear to hang if there are very large error logs.${ENDC}\n";
 		print "${CYAN}PRO TIP: If those process do appear to hang, press CTRL + c to exit the program, and then go check the logs we report below, if any.${ENDC}\n";
 	}
 	systemcheck_large_logs("/var/log/httpd");
 	systemcheck_large_logs("/var/log/apache2");
 	systemcheck_large_logs("/var/log/php-fpm");
+	systemcheck_large_logs("/usr/local/apache/logs");
+	systemcheck_large_logs("/usr/local/apache2/logs");
+	systemcheck_large_logs("/usr/local/httpd/logs");
 
 	# Check 19 : Maxclients Hits
 	# This has been abstracted out into a separate subroutine
@@ -1832,9 +1869,75 @@ sub preflight_checks {
 	# This has been abstracted out into a separate subroutine
 	# This addresses issue #6 'Check for and report on PHP Fatal Errors in the logs'
 	detect_php_fatal_errors($model, $process_name);
+
+	# Check 21 : Apache updates
+	our $os_name;
+	detect_package_updates($os_name);
 }
 
+sub detect_package_updates {
+	print "\n${PURPLE}Detecting Package Updates for Apache or PHP...${ENDC}\n";
+	my ($os_name) = @_;
+	our $package_update = 0;
+	if ($os_name eq "Ubuntu" or $os_name eq "Debian" ) {
+		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | egrep "^php|^apache2"`;
+	} else {
+		$package_update = `yum check-update | egrep "^httpd|^php"`;
+	}
+	if ($package_update) {
+		show_warn_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
+		show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
+		print $package_update;
+	} else {
+		if (-d "/usr/local/httpd" or -d "/usr/local/apache" or -d "/usr/local/apache2") {
+			show_warn_box(); print "${RED}It looks like apache was installed from sources. Skipping.${ENDC}\n";
+		} else {
+			show_ok_box(); print "${GREEN}No package updates found.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
+		}
+	}
+
+}
+
+sub detect_cpanel_version {
+	our $cpanel = 0;
+	our $cpanel = 1 if -d "/usr/local/cpanel";
+	if ($cpanel) {
+		my $cpanel_version = 0;
+		$cpanel_version = `cat /usr/local/cpanel/version` if (-f "/usr/local/cpanel/version");
+		chomp($cpanel_version);
+		if ($cpanel_version) {
+			show_info_box(); print "cPanel Version: ${CYAN}$cpanel_version${ENDC}\n";
+		} else {
+			show_info_box(); print "cPanel Version: ${CYAN}NOT FOUND${ENDC}\n";
+		}
+			
+	} else {
+		show_info_box(); print "This server is NOT running cPanel.\n";
+	}
+}
+
+sub detect_plesk_version {
+	our $plesk = 0;
+	our $plesk = 1 if -d "/usr/local/psa";
+	if ($plesk) {
+		my $plesk_version = 0;
+		$plesk_version = `cat /usr/local/psa/version` if (-f "/usr/local/psa/version");
+		chomp($plesk_version);
+		if ($plesk_version) {
+			show_info_box(); print "Plesk Version: ${CYAN}$plesk_version${ENDC}\n";
+		} else {
+			show_info_box(); print "Plesk Version: ${CYAN}NOT FOUND${ENDC}\n";
+		}
+			
+	} else {
+		show_info_box(); print "This server is NOT running Plesk.\n";
+	}
+}
+
+
 sub detect_php_fatal_errors {
+	our $phpfpm_detected;
 	our ($model, $process_name) = @_;
 	if ($model eq "worker") {
 		return;
@@ -1844,6 +1947,7 @@ sub detect_php_fatal_errors {
 		}
 	}
 	our $phpfatalerr = 0;
+	our $phpfpmfatalerr_hits = 0;
 	if ($process_name eq "/usr/sbin/httpd") {
                 our $phpfatalerr_hits = `grep -Hi fatal /var/log/httpd/* | grep -i php | grep -i error | tail -5`;
         } elsif ($process_name eq "/usr/local/apache/bin/httpd") {
@@ -1851,17 +1955,35 @@ sub detect_php_fatal_errors {
         } else {
                 our $phpfatalerr_hits = `grep -Hi fatal /var/log/apache2/* | grep -i php | grep -i error | tail -5`;
         }
+	
+	if ($phpfpm_detected) {
+		our $phpfpmfatalerr_hits = `grep -Hi fatal /var/log/php-fpm/* | grep -i php | grep -i error | tail -5`;
+	}
+
         our $phpfatalerr_hits;
-	if ($phpfatalerr_hits) {
+        our $phpfpmfatalerr_hits;
+	if ($phpfatalerr_hits or $phpfpmfatalerr_hits) {
 		$phpfatalerr = 1;
 	}
 	our $phpfatalerr;
 	if ($phpfatalerr) {
 		if ( ! $NOWARN ) {
 			show_warn_box();
-			print "${RED}PHP Fatal errors were found, see the last 5 entries below${ENDC}\n";
-			show_advisory_box(); print "${YELLOW}Check the logs, there may be much more.${ENDC}\n";
+			print "${RED}PHP Fatal errors were found, see the most recent entries below (CHECK THE DATESTAMPS!)${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}Check the logs manually, there may be much more.${ENDC}\n";
+			print "\n${CYAN}Apache Logs (LAST 5 ENTRIES):${ENDC}\n";
 			print $phpfatalerr_hits;
+			if ($phpfpm_detected) {
+				print "\n${CYAN}PHP-FPM Logs (LAST 5 ENTRIES):${ENDC}\n";
+				print $phpfpmfatalerr_hits;
+			}
+			our $plesk;
+			if ($plesk) {
+				print "\n";
+				show_warn_box(); print "${YELLOW}Note: Plesk logs are NOT checked, as 100+ domains would generate 500+ lines of output, this is too much, so please check this manually:${ENDC}\n";
+				show_advisory_box(); print "Use this command to check ALL domains: ${CYAN}grep -Hi fatal /var/www/vhosts/*/statistics/logs/*${ENDC}\n";
+				show_advisory_box(); print "Use this command to check ONLY \"example.com\": ${CYAN}grep -Hi fatal /var/www/vhosts/example.com/statistics/logs/*${ENDC}\n";
+			}
 		}
 	} else {
 		if ( ! $NOOK ) {
@@ -1937,7 +2059,7 @@ sub get_service_memory_usage_mbytes {
 }
 
 
-sub detect_additional_services() {
+sub detect_additional_services {
 	
 	if ( ! $NOINFO ) { print "\n${PURPLE}Detecting additional services for consideration...${ENDC}\n" }
 	
@@ -1947,7 +2069,10 @@ sub detect_additional_services() {
 	our $mysql_detected = `ps -C mysqld -o rss | grep -v RSS`;
 	if ( $mysql_detected ) {
 		our $servicefound_flag = 1;
-		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}MySQL${ENDC} Detected => " } 
+		# This bit of code I changed  isnt strictly necessary but it soothes my OCD headache seeing MySQL where I expect to see MariaDB or Percona
+		my $flavour = `rpm -qa | egrep "^mariadb-server|^mysql-server|^percona-server" | awk -F"-" '{ print \$1}'`;
+		chomp ($flavour);
+		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}" . ucfirst($flavour) . "${ENDC} Detected => " } 
 		# Get MySQL Memory Usage
 		our $mysql_memory_usage_mbytes = get_service_memory_usage_mbytes("mysqld");
 		if ( ! $NOINFO ) { print "Using ${CYAN}$mysql_memory_usage_mbytes MB${ENDC} of memory.\n" }
@@ -2047,6 +2172,8 @@ sub detect_additional_services() {
 	}
 	if ( $servicefound_flag == 0 ) {
 		show_ok_box(); print "${GREEN}No additional services were detected.${ENDC}\n\n";
+	} else {
+		print "\n"; # add a aseparator before the next section
 	}
 }
 

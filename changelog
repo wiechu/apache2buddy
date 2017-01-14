@@ -2,9 +2,38 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-01-143 	Richard Forth   Updated logo
+				- updated tagline
+				- added a cool intro
+				- Fixed issue #62 MariaDB wrongly detected as
+				MySQL, this also detects percona correctly
+				too.
+				- Finally fixed the #57 issue regarding wonky
+				arrows in the report
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..
+				 - Addressed issue #25 PHP-FPM Logs
+				 - Addressed issue #48 Plesk logs (warning)
+				 - Addressed issue #49 Detect Plesk
+				 - Addressed issue #50 Detect icPanel
+				 - Code cleanup and output polishing
+				 - Addressed issue #3 Detect Package Updates
+				 - Addressed issue #55 bug in package updates
+				 on debian and ubuntu systems
+				 - Addressed issue #55 bug in package updates
+				 - Addressed issue #56 Detect PHP Updates
+				 - Added more directories to check for large
+				 log files:
+				 	- /usr/local/httpd/logs
+					- /usr/local/apache/logs
+					- /usr/local/apache2/logs
+				Will silently continue if these folders dont
+				exist.
+				- Addressed Issue with wonky arrows, still
+				not happy with it though, columns are out of
+				whack. #OCD, will raise issue and work it
+				proper.
 2017-01-13 	Richard Forth   Addressed issue #34 Added more graceful
 				message when apache[2]ctl is not found.
 2017-01-13 	Richard Forth   Addressed issue #33 Removed Version Number
