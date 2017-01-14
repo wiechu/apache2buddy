@@ -1178,7 +1178,7 @@ END_HEADER
 		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now hosted from github. See ${CYAN}https://github.com/richardforth/apache2buddy${ENDC}\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "Changelogs and updates in github. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/changelog${ENDC}\n" }
 	}
-	print_message("\nWelcome to apache2buddy...");
+	print_message("Welcome to apache2buddy...");
 	print_message("Stand by for launch...");
 }
 
