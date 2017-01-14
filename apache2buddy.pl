@@ -2069,7 +2069,10 @@ sub detect_additional_services {
 	our $mysql_detected = `ps -C mysqld -o rss | grep -v RSS`;
 	if ( $mysql_detected ) {
 		our $servicefound_flag = 1;
-		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}MySQL${ENDC} Detected => " } 
+		# This bit of code I changed  isnt strictly necessary but it soothes my OCD headache seeing MySQL where I expect to see MariaDB or Percona
+		my $flavour = `rpm -qa | egrep "^mariadb-server|^mysql-server|^percona-server" | awk -F"-" '{ print \$1}'`;
+		chomp ($flavour);
+		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}" . ucfirst($flavour) . "${ENDC} Detected => " } 
 		# Get MySQL Memory Usage
 		our $mysql_memory_usage_mbytes = get_service_memory_usage_mbytes("mysqld");
 		if ( ! $NOINFO ) { print "Using ${CYAN}$mysql_memory_usage_mbytes MB${ENDC} of memory.\n" }
