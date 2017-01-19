@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-01-19 	Richard Forth   Fixed #82 bug with calculations displaying wrong
+				colours
 2017-01-14 	Richard Forth   Updated logo
 				- updated tagline
 				- added a cool intro

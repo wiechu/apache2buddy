@@ -2299,12 +2299,12 @@ if ( $model eq "prefork") {
 	if ( $highest_potential_use_pct > 100  or $highest_potential_use_pct_remain > 100 ) {
 		show_crit_box();
 		print "Going by the largest Apache process, Apache can potentially use ${RED}$highest_potential_use MB${ENDC} RAM:\n";
-		if ( $average_potential_use_pct > 100 ) {
+		if ( $highest_potential_use_pct > 100 ) {
 			print "\t\tWithout considering services: ${RED}$highest_potential_use_pct \%${ENDC} of total installed RAM\n";
 		} else {
 			print "\t\tWithout considering services: ${CYAN}$highest_potential_use_pct \%${ENDC} of total installed RAM\n";
 		}
-		if ( $average_potential_use_pct_remain > 100 ) {
+		if ( $highest_potential_use_pct_remain > 100 ) {
 			print "\t\tConsidering extra services: ${RED}$highest_potential_use_pct_remain \%${ENDC} of remaining RAM\n";
 		} else {
 			print "\t\tConsidering extra services: ${CYAN}$highest_potential_use_pct_remain \%${ENDC} of remaining RAM\n";
