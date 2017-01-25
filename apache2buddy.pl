@@ -500,21 +500,26 @@ sub find_master_value {
 	my $ignore_by_model = 0;
 	my $ifmodule_count = 0;
 
-	# apache has two available models - prefork and worker. only one can be
-	# in use at a time. we have already determined which model is being 
-	# used
+	# apache has four available models - prefork, worker, event, and itk. only one can be
+	# in use at a time. we have already determined which model is being used. We also only
+	# support PreFork, any any one time three MPM's will need to be ignored.
 	my $ignore_model1;
 	my $ignore_model2;
+	my $ignore_model3; # always ignore MPM ITK
 	
 	if ( $model =~ m/.*worker.*/i ) {
 		$ignore_model1 = "prefork";
 		$ignore_model2 = "event";
+		$ignore_model3 = "itk";
 	} elsif ( $model =~ m/.*event.*/i )  {
 		$ignore_model1 = "worker";
 		$ignore_model2 = "prefork";
+		$ignore_model3 = "itk";
 	} else {
+		# default to prefork
 		$ignore_model1 = "worker";
 		$ignore_model2 = "event";
+		$ignore_model3 = "itk";
 	}
 
 	print "VERBOSE: Searching Apache configuration for the ".$config_element." directive\n" if $main::VERBOSE;
@@ -530,7 +535,7 @@ sub find_master_value {
 		
 			# check to see if we have an opening tag for one of the 
 			# block types listed above
-			if ( $_ =~ m/^\s*<(directory|location|files|virtualhost|ifmodule\s.*$ignore_model1|ifmodule\s.*$ignore_model2)/i ) {
+			if ( $_ =~ m/^\s*<(directory|location|files|virtualhost|ifmodule\s.*$ignore_model1|ifmodule\s.*$ignore_model2|ifmodule\s.*$ignore_model3)/i ) {
 				#print "Starting to ignore lines: ".$_."\n";
 				$ignore = 1;
 			}
@@ -826,6 +831,16 @@ sub get_apache_conf_file {
 	return $apache_conf_file;
 }
 
+
+sub itk_detect {
+	my ($model) = @_;
+	if ( $model  =~ /(.*)itk(.*)/)  {
+		show_crit_box(); print "MPM ITK was detected, apache2buddy.pl does odd things so we quit. Sorry.\n";
+		show_advisory_box(); print "MPM ITK is not supported. Unload the module and try again.\n\n";
+		exit;
+	}
+}
+
 # this will determine whether this apache is using the worker or the prefork
 # model based on the way the binary was built
 sub get_apache_model {
@@ -835,7 +850,9 @@ sub get_apache_model {
 		# In apache2, worker / prefork / event are no longer compiled-in.
 		# Instead, with is a loaded in module 
 		# differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
-		$model = `apache2ctl -M 2>&1 | egrep "worker|prefork|event"`;
+		$model = `apache2ctl -M 2>&1 | egrep "worker|prefork|event|itk"`;
+		# if we detect itk module, we need to stop immediately:
+		itk_detect($model);
 		chomp($model);
 		$model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
 	} else {
@@ -846,11 +863,19 @@ sub get_apache_model {
 
 	# return the name of the MPM, or 0 if there is no result
 	if ( $model eq '' ) {
+		# In apache2, worker / prefork / event are no longer compiled-in.
+		# Instead, with is a loaded in module 
+		# differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
+		$model = `apachectl -M 2>&1 | egrep "worker|prefork|event|itk"`;
+		itk_detect($model);
+		chomp($model);
+		$model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
+	} else {
 		# find another way to verify the MPM, for example httpd4u packages
 		# use the loadmodule directive in /etc/httpd/conf.modules.d/00-mpm.conf.
 		# As such a command like 'httpd -M | egrep "worker|prefork"' would be able
 		# to capture this.
-		$model = `$process_name -M 2>&1 | egrep "worker|prefork|event"`;
+		$model = `$process_name -M 2>&1 | egrep "worker|prefork|event|itk"`;
 		chomp($model);
 		$model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
 	}
