@@ -1662,27 +1662,37 @@ sub preflight_checks {
 	if ( ! $NOCHKPID) {
 		our $pidfile_cfv = find_master_value(\@config_array, $model, 'pidfile');
 		if ( ! $NOINFO ) { show_info_box; print "pidfile setting is ${CYAN}$pidfile_cfv${ENDC}.\n" } 
-		if ($pidfile_cfv eq "run/httpd.pid") {
-			# it could be in a couple of places, so lets test!
-			if (-f "/var/run/httpd/httpd.pid") {
-				our $pidfile = "/var/run/httpd/httpd.pid";
-			} elsif (-f "/var/run/httpd.pid") {
-				our $pidfile = "/var/run/httpd.pid";
-			} else {
-				if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n" } 
-				exit;
-			}
-		} elsif ($pidfile_cfv eq "/var/run/apache2/apache2.pid") {
-			our $pidfile = "/var/run/apache2/apache2.pid";
-		} elsif ($pidfile_cfv eq "/var/run/apache2/apache2\$SUFFIX.pid") {
-			our $pidfile = "/var/run/apache2/apache2.pid";
-		} elsif ($pidfile_cfv eq "/var/run/apache2.pid") {
-			our $pidfile = "/var/run/apache2.pid";
-		} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX.pid") {
-			our $pidfile = "/var/run/apache2.pid";
+		# addressing issue #84, I realised this whole block of code is guessing, I inderstand why, but its not sane.
+		# for example what we need to do is first check if the path is a relative path or absolute path.
+		# If it is an absolute path, lets check that first, which will cut out a lot of unnescesary code, 
+		# otherwise we can start guessing based on common relative paths.
+		if ( -f $pidfile_cfv ) {
+			our $pidfile =$pidfile_cfv;
 		} else {
-			# set default (works on CentOS7)
-			our $pidfile = "/var/run/httpd/httpd.pid";
+			if ($pidfile_cfv eq "run/httpd.pid") {
+				# it could be in a couple of places, so lets test!
+				if (-f "/var/run/httpd/httpd.pid") {
+					our $pidfile = "/var/run/httpd/httpd.pid";
+				} elsif (-f "/var/run/httpd.pid") {
+					our $pidfile = "/var/run/httpd.pid";
+				} else {
+					if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n" } 
+					exit;
+				}
+			} elsif ($pidfile_cfv eq "/var/run/apache2/apache2\$SUFFIX.pid") {
+				our $pidfile = "/var/run/apache2/apache2.pid";
+			} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX.pid") {
+				our $pidfile = "/var/run/apache2.pid";
+			} else {
+				# CentOS7 always returns CONFIG NOT FOUND, but we know the PID exists.
+				our $pidguess = "/var/run/httpd/httpd.pid";
+				if ( -f  $pidguess ) {
+					our $pidfile = $pidguess;
+				} else {
+					show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n"; 
+					exit;
+				}
+			}
 		}
 	
 		our $pidfile;

@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-01-25 	Richard Forth   Fixed #84 Unable to open pidfile.
+				- Changed up the logic to check if the
+				setting is in fact a file BEFORE 'guessing'.
 2017-01-25 	Richard Forth   MPM ITK detection and exit.
 2017-01-25 	Richard Forth   Fixed #85 Wrong MPM information
 2017-01-19 	Richard Forth   Fixed #82 bug with calculations displaying wrong
