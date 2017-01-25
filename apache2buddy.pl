@@ -500,21 +500,26 @@ sub find_master_value {
 	my $ignore_by_model = 0;
 	my $ifmodule_count = 0;
 
-	# apache has two available models - prefork and worker. only one can be
-	# in use at a time. we have already determined which model is being 
-	# used
+	# apache has four available models - prefork, worker, event, and ith. only one can be
+	# in use at a time. we have already determined which model is being used. We also only
+	# support PreFork, any any one time three MPM's will need to be ignored.
 	my $ignore_model1;
 	my $ignore_model2;
+	my $ignore_model3; # always ignore MPM ITK
 	
 	if ( $model =~ m/.*worker.*/i ) {
 		$ignore_model1 = "prefork";
 		$ignore_model2 = "event";
+		$ignore_model3 = "itk";
 	} elsif ( $model =~ m/.*event.*/i )  {
 		$ignore_model1 = "worker";
 		$ignore_model2 = "prefork";
+		$ignore_model3 = "itk";
 	} else {
+		# default to prefork
 		$ignore_model1 = "worker";
 		$ignore_model2 = "event";
+		$ignore_model3 = "itk";
 	}
 
 	print "VERBOSE: Searching Apache configuration for the ".$config_element." directive\n" if $main::VERBOSE;
@@ -530,7 +535,7 @@ sub find_master_value {
 		
 			# check to see if we have an opening tag for one of the 
 			# block types listed above
-			if ( $_ =~ m/^\s*<(directory|location|files|virtualhost|ifmodule\s.*$ignore_model1|ifmodule\s.*$ignore_model2)/i ) {
+			if ( $_ =~ m/^\s*<(directory|location|files|virtualhost|ifmodule\s.*$ignore_model1|ifmodule\s.*$ignore_model2|ifmodule\s.*$ignore_model3)/i ) {
 				#print "Starting to ignore lines: ".$_."\n";
 				$ignore = 1;
 			}
