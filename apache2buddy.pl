@@ -500,7 +500,7 @@ sub find_master_value {
 	my $ignore_by_model = 0;
 	my $ifmodule_count = 0;
 
-	# apache has four available models - prefork, worker, event, and ith. only one can be
+	# apache has four available models - prefork, worker, event, and itk. only one can be
 	# in use at a time. we have already determined which model is being used. We also only
 	# support PreFork, any any one time three MPM's will need to be ignored.
 	my $ignore_model1;
