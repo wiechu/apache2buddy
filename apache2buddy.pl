@@ -831,6 +831,16 @@ sub get_apache_conf_file {
 	return $apache_conf_file;
 }
 
+
+sub itk_detect {
+	my ($model) = @_;
+	if ( $model  =~ /(.*)itk(.*)/)  {
+		show_crit_box(); print "MPM ITK was detected, apache2buddy.pl does odd things so we quit. Sorry.\n";
+		show_advisory_box(); print "MPM ITK is not supported. Unload the module and try again.\n\n";
+		exit;
+	}
+}
+
 # this will determine whether this apache is using the worker or the prefork
 # model based on the way the binary was built
 sub get_apache_model {
@@ -840,7 +850,9 @@ sub get_apache_model {
 		# In apache2, worker / prefork / event are no longer compiled-in.
 		# Instead, with is a loaded in module 
 		# differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
-		$model = `apache2ctl -M 2>&1 | egrep "worker|prefork|event"`;
+		$model = `apache2ctl -M 2>&1 | egrep "worker|prefork|event|itk"`;
+		# if we detect itk module, we need to stop immediately:
+		itk_detect($model);
 		chomp($model);
 		$model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
 	} else {
@@ -851,11 +863,19 @@ sub get_apache_model {
 
 	# return the name of the MPM, or 0 if there is no result
 	if ( $model eq '' ) {
+		# In apache2, worker / prefork / event are no longer compiled-in.
+		# Instead, with is a loaded in module 
+		# differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
+		$model = `apachectl -M 2>&1 | egrep "worker|prefork|event|itk"`;
+		itk_detect($model);
+		chomp($model);
+		$model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
+	} else {
 		# find another way to verify the MPM, for example httpd4u packages
 		# use the loadmodule directive in /etc/httpd/conf.modules.d/00-mpm.conf.
 		# As such a command like 'httpd -M | egrep "worker|prefork"' would be able
 		# to capture this.
-		$model = `$process_name -M 2>&1 | egrep "worker|prefork|event"`;
+		$model = `$process_name -M 2>&1 | egrep "worker|prefork|event|itk"`;
 		chomp($model);
 		$model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
 	}
