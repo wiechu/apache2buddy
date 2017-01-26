@@ -1426,7 +1426,6 @@ sub preflight_checks {
 	        $os_release = `cat /etc/redhat-release 2>&1 | head -1 | awk '{ print \$4 }'`;
       		chomp ($os_release);
 		$os_release =~ s/(^.{3}).*$/$1/; 
-		if ($VERBOSE) { print "$os_release\n" }
 	}
  		
 	if ( ! $NOINFO ) { show_info_box();  print "OS Name: ${CYAN}$os_name${ENDC}\n" }
@@ -1435,9 +1434,11 @@ sub preflight_checks {
 	# If its unsupported or end of life, continue, but complain loudly.
 	if ( $os_name eq "Red Hat Enterprise Linux" or $os_name eq "CentOS" ) {
 		# RedHat / CentOS 4 is currenly End of Life as of this writing.
+		if ($VERBOSE) { print "$os_release\n" }
+		print "Release: $os_release\n";
 		if ( $os_release <= 4 ) {
 			if ( ! $NOWARN ) { show_warn_box(); print "${RED}$os_name $os_release is now end of life, its technically unsupported, we may get errors${ENDC}.\n" }
-		} elsif ($os_release <= 5) {
+		} elsif ($os_release <= 5 ) {
 			 if ( ! $NOWARN ) { show_warn_box(); print "${YELLOW}Apache2buddy is dropping support for $os_name $os_release in March 2017${ENDC}.\n" }
 		} else {
 			 if ( ! $NOOK ) { show_ok_box(); print "Apache2buddy supports this OS Release/Version.\n" }
