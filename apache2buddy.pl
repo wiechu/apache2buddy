@@ -866,7 +866,7 @@ sub get_apache_model {
                 if ($VERBOSE) { print "VERBOSE: Return Value: $model\n" }
                 return $model;
         } else {
-                $model = `apachectl -M 2>&1 | egrep "worker|prefork|event|itk`;
+                $model = `apachectl -M 2>&1 | egrep "worker|prefork|event|itk"`;
                 if ($VERBOSE) { print "VERBOSE: $model" }
                 if ($VERBOSE) { print "VERBOSE: ITK DETECTTOR STARTED\n" }
                 itk_detect($model);
