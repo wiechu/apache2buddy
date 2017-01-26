@@ -1426,6 +1426,7 @@ sub preflight_checks {
 	        $os_release = `cat /etc/redhat-release 2>&1 | head -1 | awk '{ print \$4 }'`;
       		chomp ($os_release);
 		$os_release =~ s/(^.{3}).*$/$1/; 
+		if ($VERBOSE) { print "$os_release\n" }
 	}
  		
 	if ( ! $NOINFO ) { show_info_box();  print "OS Name: ${CYAN}$os_name${ENDC}\n" }
