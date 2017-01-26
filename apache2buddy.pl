@@ -844,46 +844,63 @@ sub itk_detect {
 # this will determine whether this apache is using the worker or the prefork
 # model based on the way the binary was built
 sub get_apache_model {
-	our $model;
-	my ( $process_name ) = @_;
-	if ( $process_name eq "/usr/sbin/apache2") {
-		# In apache2, worker / prefork / event are no longer compiled-in.
-		# Instead, with is a loaded in module 
-		# differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
-		$model = `apache2ctl -M 2>&1 | egrep "worker|prefork|event|itk"`;
-		# if we detect itk module, we need to stop immediately:
-		itk_detect($model);
-		chomp($model);
-		$model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
-	} else {
-		$model = `$process_name -l 2>&1 | egrep "worker.c|prefork.c"`;
-		chomp($model);
-		$model =~ s/\s*(.*)\.c/$1/;
-	}
+        our $model;
+        my ( $process_name ) = @_;
+        if ( $process_name eq "/usr/sbin/apache2") {
+                # In apache2, worker / prefork / event are no longer compiled-in.
+                # Instead, with is a loaded in module
+                # differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
+                $model = `apache2ctl -M 2>&1 | egrep "worker|prefork|event|itk"`;
+                # if we detect itk module, we need to stop immediately:
+                if ($VERBOSE) { print "VERBOSE: $model" }
+                if ($VERBOSE) { print "VERBOSE: ITK DETECTTOR STARTED\n" }
+                itk_detect($model);
+                if ($VERBOSE) { print "VERBOSE: ITK DETECTTOR PASSED\n" }
+                if ($VERBOSE) { print "VERBOSE: $model" }
+                chomp($model);
+                if ($VERBOSE) { print "VERBOSE: $model\n" }
+                if ($VERBOSE) { print "VERBOSE: REGEX Filter started.\n" }
+                $model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
+                if ($VERBOSE) { print "VERBOSE: REGEX Filter finished.\n" }
+                if ($VERBOSE) { print "VERBOSE: $model\n" }
+                if ($VERBOSE) { print "VERBOSE: Return Value: $model\n" }
+                return $model;
+        } else {
+                $model = `$process_name -l 2>&1 | egrep "worker.c|prefork.c"`;
+                chomp($model);
+                $model =~ s/\s*(.*)\.c/$1/;
+                if ($VERBOSE) { print "VERBOSE: Return Value: $model\n" }
+                return $model;
+        }
 
-	# return the name of the MPM, or 0 if there is no result
-	if ( $model eq '' ) {
-		# In apache2, worker / prefork / event are no longer compiled-in.
-		# Instead, with is a loaded in module 
-		# differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
-		$model = `apachectl -M 2>&1 | egrep "worker|prefork|event|itk"`;
-		itk_detect($model);
-		chomp($model);
-		$model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
-	} else {
-		# find another way to verify the MPM, for example httpd4u packages
-		# use the loadmodule directive in /etc/httpd/conf.modules.d/00-mpm.conf.
-		# As such a command like 'httpd -M | egrep "worker|prefork"' would be able
-		# to capture this.
-		$model = `$process_name -M 2>&1 | egrep "worker|prefork|event|itk"`;
-		chomp($model);
-		$model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
-	}
-	# If model is STILL BLANK....set it to 0
-	if ( $model eq '' ) {
-		$model = 0 ;
-	}
-	return $model;
+        # return the name of the MPM, or 0 if there is no result
+        if ( $model eq '' ) {
+                # In apache2, worker / prefork / event are no longer compiled-in.
+                # Instead, with is a loaded in module
+                # differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
+                $model = `apachectl -M 2>&1 | egrep "worker|prefork|event|itk"`;
+                itk_detect($model);
+                chomp($model);
+                $model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
+                if ($VERBOSE) { print "VERBOSE: Return Value: $model\n" }
+                return $model;
+        } else {
+                # find another way to verify the MPM, for example httpd4u packages
+                # use the loadmodule directive in /etc/httpd/conf.modules.d/00-mpm.conf.
+                # As such a command like 'httpd -M | egrep "worker|prefork"' would be able
+                # to capture this.
+                $model = `$process_name -M 2>&1 | egrep "worker|prefork|event|itk"`;
+                chomp($model);
+                $model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
+                if ($VERBOSE) { print "VERBOSE: Return Value: $model\n" }
+                return $model;
+        }
+        # If model is STILL BLANK....set it to 0
+        if ( $model eq '' ) {
+                $model = 0 ;
+                if ($VERBOSE) { print "VERBOSE: Return Value: $model\n" }
+                return $model;
+        }
 }
 
 # this will get the Apache version string
