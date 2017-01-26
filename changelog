@@ -2,7 +2,11 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
-2017-01-25 	Richard Forth   Fixed #88 Unable to determine whether Apache is using 
+2017-01-26 	Richard Forth   Fixed some breakages on Centos 5, 6, 7
+				 - Added a warning that Centos 5 / RHEL 5 is being
+				deprecated / EOLed in March 2017, so after this time
+				I will not be supporting CentOS5 any more.
+2017-01-65 	Richard Forth   Fixed #88 Unable to determine whether Apache is using 
 				worker or prefork
 2017-01-25 	Richard Forth   Fixed #84 Unable to open pidfile.
 				- Changed up the logic to check if the
