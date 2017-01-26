@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-01-26 	Richard Forth   Fixed some punctuation issues and color warning.
 2017-01-26 	Richard Forth   Fixed some breakages on Centos 5, 6, 7
 				 - Added a warning that Centos 5 / RHEL 5 is being
 				deprecated / EOLed in March 2017, so after this time
