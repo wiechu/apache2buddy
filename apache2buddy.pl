@@ -1434,8 +1434,7 @@ sub preflight_checks {
 	# If its unsupported or end of life, continue, but complain loudly.
 	if ( $os_name eq "Red Hat Enterprise Linux" or $os_name eq "CentOS" ) {
 		# RedHat / CentOS 4 is currenly End of Life as of this writing.
-		if ($VERBOSE) { print "$os_release\n" }
-		print "Release: $os_release\n";
+		if ($VERBOSE) { print "VERBOSE: $os_release\n" }
 		if ( $os_release <= 5 ) {
 			if ( ! $NOWARN ) { show_warn_box(); print "${RED}$os_name $os_release is now end of life, its technically unsupported, we may get errors${ENDC}.\n" }
 		} elsif ($os_release <= 5.11 ) {
@@ -1444,6 +1443,7 @@ sub preflight_checks {
 			 if ( ! $NOOK ) { show_ok_box(); print "Apache2buddy supports this OS Release/Version.\n" }
 		}
 	} elsif ( $os_name eq "Ubuntu" ) {
+		if ($VERBOSE) { print "VERBOSE: $os_release\n" }
                 # This code section is completely changing so that I only need to add/remove the LTS versions as they EOL
 		unless  ( $os_release == "12.04" or $os_release == "14.04" or $os_release == "16.04") {
 			# https://wiki.ubuntu.com/Releases
@@ -1456,6 +1456,7 @@ sub preflight_checks {
 			if ( ! $NOOK ) { show_ok_box(); print "The operating system is supported.\n" }
 		}
 	} elsif ( $os_name eq "Debian" ) {
+		if ($VERBOSE) { print "VERBOSE: $os_release\n" }
 		if ( $os_release <= 6.0 ) {
 			# as of current writing, 6.0 (Squeeze) is the latest EOL version of Debian
 			# https://wiki.debian.org/DebianReleases
