@@ -2,6 +2,14 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-01-28 	Richard Forth   Fixed #102 rpm error on ubuntu systems.
+				- hardcoded "MySQL" in to detection string rather than
+				adding lines and lines of unnecessary code trying to
+				get the actual MySQL variant. I decided it wasnt that
+				important to warrant the extra payload trying to
+				ascertain the right OS.
+				 - this change backs out the fix used to address issue
+				#62 (MariaDB incorrectly identified as MySQL).
 2017-01-28 	Richard Forth   Fixed #103 Spelling mistake.
 2017-01-26 	Richard Forth   Fix version support cleanup and verbosity fixes.
 2017-01-26 	Richard Forth   Fixed some punctuation issues and color warning.
