@@ -274,7 +274,7 @@ sub systemcheck_large_logs {
 		} else {
 			show_advisory_box(); print "${YELLOW}Consider setting up a log rotation policy.${ENDC}\n";
 			show_advisory_box(); print "${YELLOW}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
-			show_advisory_box(); print "${YELLOW}large error logs can indicate a fundmeneal issue with the website / web application.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}Large error logs can indicate a fundmental issue with the website / web application.${ENDC}\n";
 		}
 	} 
 	# silently proceed if the folder doesnt exist
