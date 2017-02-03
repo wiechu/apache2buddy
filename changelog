@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-02-03 	Richard Forth   Changed the logo for a more subtle and
+				professional, simple, and clean look.
 2017-01-28 	Richard Forth   Fixed #102 rpm error on ubuntu systems.
 				- hardcoded "MySQL" in to detection string rather than
 				adding lines and lines of unnecessary code trying to

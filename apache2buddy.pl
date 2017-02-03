@@ -6,13 +6,13 @@ use POSIX;
 use strict;
 use File::Find;
 ############################################################################################################
+#                            __        ___   __              __    __              __
+#    ____  ____  ____ ______/ /_  ___ |__ \ / /_  __  ______/ /___/ /_  __  ____  / /
+#   / __ `/ __ \/ __ `/ ___/ __ \/ _ \__/ // __ \/ / / / __  / __  / / / / / __ \/ / 
+#  / /_/ / /_/ / /_/ / /__/ / / /  __/ __// /_/ / /_/ / /_/ / /_/ / /_/ / / /_/ / /  
+#  \__,_/ .___/\__,_/\___/_/ /_/\___/____/_.___/\__,_/\__,_/\__,_/\__, (_) .___/_/   
+#      /_/                                                       /____/ /_/          
 #
-#                             |           ___ \   |                 |      |                   |     
-#   _` |  __ \    _` |   __|  __ \    _ \    ) |  __ \   |   |   _` |   _` |  |   |     __ \   |     
-#  (   |  |   |  (   |  (     | | |   __/   __/   |   |  |   |  (   |  (   |  |   |     |   |  |     
-# \__,_|  .__/  \__,_| \___| _| |_| \___| _____| _.__/  \__,_| \__,_| \__,_| \__, | _)  .__/  _|     
-#        _| Apache Tuning and Advisories for Professional Administrators.    ____/     _|            
-#        
 ############################################################################################################
 # author: richard forth
 # description: apache2buddy, a fork of apachebuddy that caters for apache2, obviously.
@@ -1179,18 +1179,14 @@ sub get_cores {
 
 # print a header
 sub print_header {
+	my ($servername, $ipaddr) = @_;
 	if ( ! $NOHEADER ) {
-		my $header = <<"END_HEADER";
-${GREEN}
-                             |           ___ \\   |                 |      |                   |     
-   _` |  __ \\    _` |   __|  __ \\    _ \\    ) |  __ \\   |   |   _` |   _` |  |   |     __ \\   |     
-  (   |  |   |  (   |  (     | | |   __/   __/   |   |  |   |  (   |  (   |  |   |     |   |  |     
- \\__,_|  .__/  \\__,_| \\___| _| |_| \\___| _____| _.__/  \\__,_| \\__,_| \\__,_| \\__, | _)  .__/  _|     
-        _| Apache Tuning and Advisories for Professional Administrators.    ____/     _|            
-${ENDC}
-END_HEADER
+		my $headerstring = "apache2buddy.pl report for $servername ($ipaddr)";
+		my $hrline = "#" x length($headerstring);
+		print ${GREEN} . $hrline . ${ENDC} . "\n";
+		print $headerstring . "\n";
+		print ${GREEN} . $hrline . ${ENDC} . "\n";
 
-		print $header;
 		if ( ! $NOINFO ) { print "\n${PURPLE}About...${ENDC}\n" };
 		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is a fork of apachebuddy.pl.\n" }
 		if ( ! $NOINFO ) { show_info_box(); print "MD5SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/md5sums.txt${ENDC}\n" }
@@ -1475,36 +1471,12 @@ sub preflight_checks {
 	}
 
 	# get our hostname
-	our $hostname = `which hostname`;
-	chomp($hostname);
-	print "VERBOSE: hostname executable path: ".$hostname if $VERBOSE;
-	if ( $hostname eq '' ) {
-		show_crit_box();
-		print "Cannot find the 'hostname' executable.";
-		exit;
-	} else {   	
-		#our $hostname;
-		our $servername = `$hostname -f`;
-		chomp($servername);
-		if ( ! $NOINFO ) { show_info_box(); print "Hostname: ${CYAN}$servername${ENDC}\n" }
-	}
+	our $servername = get_hostname();
+	if ( ! $NOINFO ) { show_info_box(); print "Hostname: ${CYAN}$servername${ENDC}\n" }
 
 	# get our ip address
-	our $curl = `which curl`;
-	chomp ($curl);
-	print "VERBOSE: curl executable path: ".$curl if $VERBOSE;
-	if ( $curl eq '' ) {
-		show_crit_box;
-		print "Cannot find the 'curl' executable.";
-		exit;
-	} else {   	
-		#our $curl;
-		# Commented out curlmyip.com as is now very slow to respond.
-		#our $public_ip_address = `$curl -s curlmyip.com`;
-		#chomp($public_ip_address); 
-		our $public_ip_address = `$curl -s myip.dnsomatic.com`;
-		if ( ! $NOINFO ) { show_info_box();  print "Primary IP: ${CYAN}$public_ip_address${ENDC}\n" }
-	}	
+	our $public_ip_address = get_ip();
+	if ( ! $NOINFO ) { show_info_box();  print "Primary IP: ${CYAN}$public_ip_address${ENDC}\n" }
 
 	
 	# Check 6
@@ -2191,6 +2163,35 @@ sub detect_additional_services {
 	}
 }
 
+
+sub get_hostname {
+	our $hostname = `which hostname`;
+        chomp($hostname);
+        if ( $hostname eq '' ) {
+                show_crit_box();
+                print "Cannot find the 'hostname' executable.";
+                exit;
+        } else {
+                our $servername = `$hostname -f`;
+                chomp($servername);
+		return $servername;
+        }
+}
+
+
+sub get_ip {
+	our $curl = `which curl`;
+	chomp ($curl);
+	if ( $curl eq '' ) {
+	 	show_crit_box;
+		print "Cannot find the 'curl' executable.";
+		exit;
+	} else {
+		our $ip = `$curl -s myip.dnsomatic.com`;
+		return $ip;
+	}
+}
+
 ########################
 # BEGIN MAIN EXECUTION #
 ########################
@@ -2202,7 +2203,9 @@ if ( $help eq 1 || $port eq 0 ) {
 }
 
 # print the header
-print_header();
+my $hn = get_hostname();
+my $ip = get_ip();
+print_header($hn, $ip);
 
 # do the preflight checks
 preflight_checks();
