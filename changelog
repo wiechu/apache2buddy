@@ -2,7 +2,39 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
-2017-01-143 	Richard Forth   Updated logo
+2017-02-05 	Richard Forth   Moved all the github messaging into comments
+				at the top of the file, rather than in output.
+2017-02-05 	Richard Forth   Added wiki page and better documentation and
+				error messaging around the parent PID, if the
+				script exists because it is greater than 50MB
+				- addresses issue #110
+2017-02-03 	Richard Forth   Changed the logo for a more subtle and
+				professional, simple, and clean look.
+2017-01-28 	Richard Forth   Fixed #102 rpm error on ubuntu systems.
+				- hardcoded "MySQL" in to detection string rather than
+				adding lines and lines of unnecessary code trying to
+				get the actual MySQL variant. I decided it wasnt that
+				important to warrant the extra payload trying to
+				ascertain the right OS.
+				 - this change backs out the fix used to address issue
+				#62 (MariaDB incorrectly identified as MySQL).
+2017-01-28 	Richard Forth   Fixed #103 Spelling mistake.
+2017-01-26 	Richard Forth   Fix version support cleanup and verbosity fixes.
+2017-01-26 	Richard Forth   Fixed some punctuation issues and color warning.
+2017-01-26 	Richard Forth   Fixed some breakages on Centos 5, 6, 7
+				 - Added a warning that Centos 5 / RHEL 5 is being
+				deprecated / EOLed in March 2017, so after this time
+				I will not be supporting CentOS5 any more.
+2017-01-65 	Richard Forth   Fixed #88 Unable to determine whether Apache is using 
+				worker or prefork
+2017-01-25 	Richard Forth   Fixed #84 Unable to open pidfile.
+				- Changed up the logic to check if the
+				setting is in fact a file BEFORE 'guessing'.
+2017-01-25 	Richard Forth   MPM ITK detection and exit.
+2017-01-25 	Richard Forth   Fixed #85 Wrong MPM information
+2017-01-19 	Richard Forth   Fixed #82 bug with calculations displaying wrong
+				colours
+2017-01-14 	Richard Forth   Updated logo
 				- updated tagline
 				- added a cool intro
 				- Fixed issue #62 MariaDB wrongly detected as
@@ -10,6 +42,17 @@ When		Who		What
 				too.
 				- Finally fixed the #57 issue regarding wonky
 				arrows in the report
+				- Fixed the #66 issue regarding extraneous
+				information in --report output
+				- Fixed futher issues relating to the #66 issue
+				regarding extraneous information in --report output
+				- Added a temp workaround for #69
+				- Fixed #69 by ripping out the cool typing
+				emulation as it breaks on Red Hat based
+				systems less than CentOS7
+				- Fixed #70 missing newline in large log
+				- Fixed #77 CRITICAL should be ADVISORY
+				- Fixed color problems related to #77
 2017-01-13 	Richard Forth   Addressed issue #9 Find Large Logs
 				 - Mopped up some code and made the additional
 				 services check look a bit more polished..
