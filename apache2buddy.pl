@@ -20,6 +20,13 @@ use File::Find;
 #  Github Page: https://github.com/richardforth/apache2buddy
 #  Please only make pull requests from staging branch.
 #
+# [ INFO     ] apache2buddy.pl is a fork of apachebuddy.pl.
+# [ INFO     ] MD5SUMs now availiable at https://raw.githubusercontent.com/richardforth/apache2buddy/master/md5sums.txt
+# [ INFO     ] SHA256SUMs now availiable at https://raw.githubusercontent.com/richardforth/apache2buddy/master/sha256sums.txt
+# [ INFO     ] apache2buddy.pl is now released under the Apache 2.0 License. See https://raw.githubusercontent.com/richardforth/apache2buddy/master/LICENSE
+# [ INFO     ] apache2buddy.pl is now hosted from github. See https://github.com/richardforth/apache2buddy
+# [ INFO     ] Changelogs and updates in github. See https://raw.githubusercontent.com/richardforth/apache2buddy/master/changelog
+#
 ###########################################################################################################
 #
 #                                           L I C E N S E
@@ -1186,14 +1193,6 @@ sub print_header {
 		print ${GREEN} . $hrline . ${ENDC} . "\n";
 		print $headerstring . "\n";
 		print ${GREEN} . $hrline . ${ENDC} . "\n";
-
-		if ( ! $NOINFO ) { print "\n${PURPLE}About...${ENDC}\n" };
-		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is a fork of apachebuddy.pl.\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "MD5SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/md5sums.txt${ENDC}\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "SHA256SUMs now availiable at ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/sha256sums.txt${ENDC}\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now released under the Apache 2.0 License. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/LICENSE${ENDC}\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "apache2buddy.pl is now hosted from github. See ${CYAN}https://github.com/richardforth/apache2buddy${ENDC}\n" }
-		if ( ! $NOINFO ) { show_info_box(); print "Changelogs and updates in github. See ${CYAN}https://raw.githubusercontent.com/richardforth/apache2buddy/master/changelog${ENDC}\n" }
 	}
 }
 
@@ -1684,7 +1683,10 @@ sub preflight_checks {
 		$ppid_mem_usage =~ s/K//;
 		chomp($ppid_mem_usage);
 		if ($ppid_mem_usage > 50000) {
-			show_crit_box; print "${RED}Memory usage of parent PID is greater than 50MB: $ppid_mem_usage Kilobytes${ENDC}. \n If you are desperate, try -P or --no-check-pid. Exiting.\n";
+			show_crit_box; print "${RED}Memory usage of parent PID is greater than 50MB: $ppid_mem_usage Kilobytes${ENDC}.\n";
+			show_info_box; print "For more information, see https://github.com/richardforth/apache2buddy/wiki/50MB-Parent-PID-Issue\n";
+			show_advisory_box; print "If you are desperate, try -P or --no-check-pid.\n";
+			show_info_box; print "Exiting.\n";
 			exit;
 		} else {
 			if ( ! $NOOK ) { show_ok_box; print "Memory usage of parent PID is less than 50MB: ${CYAN}$ppid_mem_usage Kilobytes${ENDC}.\n" }
