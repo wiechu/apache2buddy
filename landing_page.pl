@@ -6,8 +6,7 @@ my $message = <<'END_MESSAGE';
 
 This is the NEW landing page for apache2buddy.pl
 
-Please don't curl and perl the domain 
-any more.
+Please don't curl and perl the domain any more.
 
 For security reasons, the following 
 execution method will bring you to this page:
@@ -20,7 +19,7 @@ Instead please run / bookmark the following:
   
 This method is much safer.
 
-For more information on thisw change refer to the README.md:
+For more information on this change refer to the README.md:
 https://github.com/richardforth/apache2buddy/blob/master/README.md
 
 Pay specific attention to the "Security Concerns" and 
