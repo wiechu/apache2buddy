@@ -1,16 +1,14 @@
 # rebranding
 
-You may notice the logo and tag line has been updated:
-        	
-                                     |           ___ \   |                 |      |                   |	
-           _` |  __ \    _` |   __|  __ \    _ \    ) |  __ \   |   |   _` |   _` |  |   |     __ \   |
-          (   |  |   |  (   |  (     | | |   __/   __/   |   |  |   |  (   |  (   |  |   |     |   |  |
-         \__,_|  .__/  \__,_| \___| _| |_| \___| _____| _.__/  \__,_| \__,_| \__,_| \__, | _)  .__/  _|
-                _| Apache Tuning and Advisories for Professional Administrators.    ____/     _|
-        
-        Welcome to apache2buddy...
-        Stand by for launch...
-	
+You may notice the logo and tag line has been updated (again):
+
+	##########################################################################
+	apache2buddy.pl report for ____________________________________ (________)
+	##########################################################################
+
+I gave up on finding an appropriate ASCII ART logo and opted for a simpler design, based very 
+loosely on the original script (apachebuddy.pl).
+
 This is to reflect the maturity of the project, and to give it a more professional look and feel.
 I hope you find it as refreshing as the new features that have been added:
 
@@ -46,6 +44,30 @@ Reasons I frown when you do this wget method:
 	1. Youre downloading the file. This file is never going to get updated, unless you wget it again.
 	2. I do regular bugfixes, feature requests and cleanups of code.
 	3. With curl and perl, you always pull the latest version.
+
+
+# Security concerns
+
+While I do everything I can to ensure the code is clean and free from harmful bugs, there is a risk of malware being run,
+ for example "typocamping", therefore if you do curl and perl the domain, be sure to type it absolutely correctly.
+
+If you really want to mitigate the risks then I would urge you to curl and perl directly from github, like so:
+
+	# curl -sL https://raw.githubusercontent.com/richardforth/apache2buddy/master/apache2buddy.pl | perl
+
+This is a MUCH safer method than curling the domain, and making a typo and being left at the mercy of "typocampers".
+
+# typo camping is a thing, and why you should be concerned.
+
+First of all I am just a dude, with a github acount and enough money to keep one domain going. I don't have infinite wealth,
+so buying up all the different likely typo'ed versions of my domain, is impossible.  This is a concern if you are curling 
+and perling a domain, as root. can you see the problem if you ran "curl -sL apach2buddy.pl | perl" ? 
+
+Typo campers COULD take advantange of this and register a domain that is close to mine, in the vague hope of a typo that results
+in you hitting their site istead of mine, and what if THAT site contained a very malicious perl script?
+
+thats typocamping in a nutshell, and, for that reason, I want to stop using the domain, and phase it out.
+
 
 # apache2buddy
 
