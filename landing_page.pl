@@ -11,7 +11,7 @@ Please don't curl and perl the domain any more.
 For security reasons, the following 
 execution method will bring you to this page:
 
-  # curl apache2buddy.pl | perl
+  # curl -sL apache2buddy.pl | perl
 
 Instead please run / bookmark the following:
 
