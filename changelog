@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-02-09 	Richard Forth   Removed some obsolete lines of code.
 2017-02-05 	Richard Forth   Moved all the github messaging into comments
 				at the top of the file, rather than in output.
 2017-02-05 	Richard Forth   Added wiki page and better documentation and

@@ -182,9 +182,6 @@ our $NOHEADER = 0;
 # by default, check pid size 
 our $NOCHKPID = 0;
 
-# by default print out a cool message, in a miltray sytle
-our $MILITARY = 1;
-
 # grab the command line arguments
 GetOptions(
 	'help|h' => \$help,
