@@ -68,6 +68,13 @@ in you hitting their site istead of mine, and what if THAT site contained a very
 
 thats typocamping in a nutshell, and, for that reason, I want to stop using the domain, and phase it out.
 
+Supporting links:
+https://www.brandshield.com/typosquatting-ways-to-protect-your-brand/
+
+https://arstechnica.com/security/2016/06/college-student-schools-govs-and-mils-on-perils-of-arbitrary-code-execution/
+
+https://nakedsecurity.sophos.com/typosquatting/
+
 
 # apache2buddy
 
