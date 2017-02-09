@@ -26,6 +26,10 @@ Pay specific attention to the "Security Concerns" and
 "Typocamping is a thing and why you should be concerned" 
 sections.
 
+If you still don't understand the dangers of typocamping, remember,
+you just ran THIS script, on your server as root. Thankfully I am
+a good guy.
+
 The domain will slowly be phased out and will eventually be released.
 This landing page marks the start of that process. 
 
