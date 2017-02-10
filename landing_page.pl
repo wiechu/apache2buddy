@@ -23,15 +23,19 @@ For more information on this change refer to the README.md:
 https://github.com/richardforth/apache2buddy/blob/master/README.md
 
 Pay specific attention to the "Security Concerns" and 
-"Typocamping is a thing and why you should be concerned" 
+"Typo squatting  / camping is a thing and why you should be concerned" 
 sections.
 
-If you still don't understand the dangers of typocamping, remember,
-you just ran THIS script, on your server as root. Thankfully I am
+If you still don't understand the dangers of typo camping  / typo squatting, 
+remember, you just ran THIS script, on your server as root. Thankfully I am
 a good guy.
 
 The domain will slowly be phased out and will eventually be released.
 This landing page marks the start of that process. 
+
+I expect the domain will be up (and this page) and serving for at least 2
+years to catch all end-users to give ample chance to update their
+notes and stuff before the domain finally goes away.
 
 ############### END IMPORTANT SAFTEY ANNOUNCEMENT ##############
 
