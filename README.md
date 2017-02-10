@@ -88,11 +88,13 @@ If the md5sums or sha256sums do not match, then changes have been made and its u
 While I do everything I can to ensure the code is clean and free from harmful bugs, there is a risk of malware being run,
  for example "typocamping", therefore if you do curl and perl the domain, be sure to type it absolutely correctly.
 
-If you really want to mitigate the risks then I would urge you to curl and perl directly from github, like so:
+In order to mitigate the risks I am now urging you to curl and perl directly from github, like so:
 
 	# curl -sL https://raw.githubusercontent.com/richardforth/apache2buddy/master/apache2buddy.pl | perl
 
 This is a MUCH safer method than curling the domain, and making a typo and being left at the mercy of "typocampers".
+
+Any attempts going forward to curl and perl the domain, will give you the landing page above.
 
 # typo squatting  / camping is a thing, and why you should be concerned.
 
