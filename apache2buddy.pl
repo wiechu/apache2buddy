@@ -274,7 +274,7 @@ sub systemcheck_large_logs {
 			show_crit_box(); print $log . " --> " . $humansize . "GB\b\n";
 		}
 		if (@logs == 0) {
-			if ( ! $NOINFO ) { show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n"; }
+			if ( ! $NOOK ) { show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n"; }
 		} else {
 			show_advisory_box(); print "${YELLOW}Consider setting up a log rotation policy.${ENDC}\n";
 			show_advisory_box(); print "${YELLOW}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
@@ -1243,6 +1243,26 @@ sub preflight_checks {
         	exit;
 	} else {
 		if ( ! $NOOK ) { show_ok_box(); print "This script is being run as root.\n" }
+	}
+
+
+	# Check 1.1
+	# This script only works in the en_US locale
+	if (! $NOINFO ) { show_info_box(); print "Checking locale; must be in en_US or en_GB to avoid runtime errors.\n" }
+	my $current_locale = POSIX::setlocale(LC_ALL);
+	my @locale = split (/;/, $current_locale);
+	foreach my $line (@locale) {
+		if ($line =~ /en_US/ or $line =~ /en_GB/) {
+			if ( ! $NOOK ) { show_ok_box(); print $line . "\n" }
+		} else {
+			# make an exception for NUMERIC or MESSAGES, as these can sometimes be set to "C"
+			if ($line =~ /NUMERIC=C/ or $line =~ /MESSAGES=C/ ) {
+				if ( ! $NOOK ) { show_ok_box(); print $line . "\n" }
+			} else {
+				show_crit_box(); print "${RED}$line non-compatible locale detected, must be en_GB or en_US!${ENDC}\n";
+				exit;
+			}
+		}
 	}
 
 	# Check 2
