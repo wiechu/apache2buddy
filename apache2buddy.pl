@@ -1017,6 +1017,8 @@ sub generate_standard_report {
 	our @apache_uptime;
 	
 	# print a report header
+	print "\n\n";
+	insert_hrule();
 	print "${BOLD}### GENERAL FINDINGS & RECOMMENDATIONS ###${ENDC}\n"; 
 	insert_hrule();
  	our $servername;
@@ -1027,7 +1029,7 @@ sub generate_standard_report {
 	print "\nSettings considered for this report:\n"; # exempt from NOINFO directive. 
 	if ( $apache_uptime[0] == "0" ) { 
 		if ( ! $NOWARN ) {
-			show_warn_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
+			show_crit_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
 			show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n\n";
 		}
 	}
@@ -1071,9 +1073,9 @@ sub generate_standard_report {
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of REMAINING RAM allocated to Apache:", $max_potential_usage_pct_remain, "%");  # exempt from NOINFO directive.
 		} elsif ( $maxclients < $min_rec_maxclients ) {
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				show_shortcrit_box(); print "\t${RED}Your MaxRequestWorkers setting is too low.${ENDC}\n"; # exempt from NOINFO directive.
+				show_crit_box(); print "\t${RED}Your MaxRequestWorkers setting is too low.${ENDC}\n"; # exempt from NOINFO directive.
 			} else {
-				show_shortcrit_box(); print "\t${RED}Your MaxClients setting is too low.${ENDC}\n"; # exempt from NOINFO directive.
+				show_crit_box(); print "\t${RED}Your MaxClients setting is too low.${ENDC}\n"; # exempt from NOINFO directive.
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
 				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
@@ -1085,9 +1087,9 @@ sub generate_standard_report {
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of REMAINING RAM allocated to Apache:", $max_potential_usage_pct_remain, "%");  # exempt from NOINFO directive.
 		} else {
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				show_shortcrit_box(); print "\t${RED}Your MaxRequestWorkers setting is too high.${ENDC}\n"; # exempt from NOINFO directive.
+				show_crit_box(); print "\t${RED}Your MaxRequestWorkers setting is too high.${ENDC}\n"; # exempt from NOINFO directive.
 			} else {
-				show_shortcrit_box(); print "\t${RED}Your MaxClients setting is too high.${ENDC}\n"; # exempt from NOINFO directive.
+				show_crit_box(); print "\t${RED}Your MaxClients setting is too high.${ENDC}\n"; # exempt from NOINFO directive.
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
 				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
@@ -1171,16 +1173,6 @@ sub round {
 	return $value;
 }	
 
-#Return the number of CPU cores
-sub get_cores {
-    my $cmd = 'egrep ' . "'". '^physical id|^core id|^$' . "'" . ' /proc/cpuinfo | awk '. "'" . 'ORS=NR%3?",":"\n"' . "'" . '| sort | uniq | wc -l';
-    my $cmd_out = `$cmd`;
-    chomp $cmd_out;
-    return $cmd_out;
-}
-
-
-
 # print a header
 sub print_header {
 	my ($servername, $ipaddr) = @_;
@@ -1194,39 +1186,31 @@ sub print_header {
 }
 
 sub show_debug_box {
-	print "[ ${GREEN}DeBuG${ENDC} ] "; 
+	print "[ ${BOLD}${BLUE}??${ENDC} ] "; 
 }
 
 sub show_advisory_box {
-	print "[ ${YELLOW}ADVISORY${ENDC} ] "; 
-}
-
-sub show_news_box {
-	print "[ ${BOLD}* NEWS *${ENDC} ] ";
+	print "[ $BOLD${YELLOW}\@\@${ENDC} ] "; 
 }
 
 sub show_info_box {
-	print "[ ${BOLD}INFO${ENDC}     ] ";
+	print "[ ${BOLD}${BLUE}--${ENDC} ] ";
 }
 
 sub show_ok_box {
-	print "[ ${GREEN}OK${ENDC}       ] ";
+	print "[ ${BOLD}${GREEN}OK${ENDC} ] ";
 }
 
 sub show_warn_box {
-	print "[ ${BOLD}${YELLOW}WARNING${ENDC}  ] ";
+	print "[ ${BOLD}${YELLOW}>>${ENDC} ] ";
 }
 
 sub show_crit_box {
-	print "[ ${RED}CRITICAL${ENDC} ] ";
+	print "[ ${BOLD}${RED}!!${ENDC} ] ";
 }
 
 sub show_shortok_box {
 	print "[ ${GREEN}OK${ENDC} ]";
-}
-
-sub show_shortcrit_box {
-	print "[ ${RED}!!${ENDC} ] ";
 }
 
 sub show_important_message {
@@ -1234,7 +1218,6 @@ sub show_important_message {
 		print "\n${YELLOW}** IMPORTANT MESSAGE **\nImportant messages go here.${ENDC}\n";
 	}
 }
-
 
 sub insert_hrule() {
 	print "-" x 80;
@@ -1244,8 +1227,6 @@ sub insert_hrule() {
 sub preflight_checks {
 	# There will be other showstoppers that become apparent as the script develops in execution,
 	# however we can capture the common "basic errors" here, and gracefully exit with useful errors.
-	
-	if ( ! $NOINFO ) { print "\n${PURPLE}Performing Auto-Discovery, and Pre-Flight Checks...${ENDC}\n" }
 	
 	# Check 1
 	# make sure the script is being run as root.
@@ -1301,14 +1282,15 @@ sub preflight_checks {
 	my $check = `which php`;
 	chomp ($check);
 	if ( $check !~ m/.*\/php/ ) {
-		show_crit_box();
-		print "Unable to locate the PHP binary.\n";
+		show_advisory_box();
+		print "${YELLOW}Unable to locate the PHP binary. PHP specific checks will be skipped.${ENDC}\n";
+		our $PHP = 0;
 		my $path = `echo \$PATH`;
 		chomp($path);
 		print "VERBOSE: Path: $path\n" if $VERBOSE;
-		exit;
 	} else {	
 		if ( ! $NOOK ) { show_ok_box(); print "'php' exists and is available for use: ${CYAN}$check${ENDC}\n" }
+		our $PHP = 1; 
 	}
 
 	# check 3.1 
@@ -1556,7 +1538,7 @@ sub preflight_checks {
 	if ( ! $NOINFO ) { show_info_box(); print "Apache has been running ${CYAN}$apache_uptime[0]${ENDC}d ${CYAN}$apache_uptime[1]${ENDC}h ${CYAN}$apache_uptime[2]${ENDC}m ${CYAN}$apache_uptime[3]${ENDC}s.\n" }
 	if ( $apache_uptime[0] == "0" ) { 
 		if ( ! $NOWARN ) { 
-			show_warn_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
+			show_crit_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
 			show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n";
 		}
 	}
@@ -1590,7 +1572,7 @@ sub preflight_checks {
 	}
 	
 	# check 12
-	# find out if we're using worker or prefork
+	# find out what model we are running
 	our $model = get_apache_model($process_name);	
 	if ( $model eq 0 ) {
 		show_crit_box();
@@ -1818,7 +1800,6 @@ sub preflight_checks {
 	}		
 
 	# check #17a-1 detect control panels 
-	if ( ! $NOINFO ) { print "\n${PURPLE}Detecting Control Panels...${ENDC}\n" }
 	detect_plesk_version();
 	detect_cpanel_version();
 
@@ -1828,18 +1809,16 @@ sub preflight_checks {
 	# Use it as a conversation starter, esp if memory_limit is 3GB! as this is a per-process setting!
 	# get the PHP memory limit
 	# This has been abstracted to a separate subroutine
-	detect_php_memory_limit();
+	our $PHP;
+	if ($PHP) {
+		detect_php_memory_limit();
+	}
 
 	# Check 17c : Other Services
 	# This has been abstracted out into a separate subroutine
 	detect_additional_services();
 
 	# Check 17d : Large Logs in /var/log
-	if ( ! $NOINFO ) {
-		print "${PURPLE}Detecting Large Log Files...${ENDC}\n";
-		print "${CYAN}PRO TIP: This is a precursor to the following  2 checks that may appear to hang if there are very large error logs.${ENDC}\n";
-		print "${CYAN}PRO TIP: If those process do appear to hang, press CTRL + c to exit the program, and then go check the logs we report below, if any.${ENDC}\n";
-	}
 	systemcheck_large_logs("/var/log/httpd");
 	systemcheck_large_logs("/var/log/apache2");
 	systemcheck_large_logs("/var/log/php-fpm");
@@ -1854,7 +1833,9 @@ sub preflight_checks {
 	# Check 20 : PHP Fatal Errors
 	# This has been abstracted out into a separate subroutine
 	# This addresses issue #6 'Check for and report on PHP Fatal Errors in the logs'
-	detect_php_fatal_errors($model, $process_name);
+	if ($PHP) {
+		detect_php_fatal_errors($model, $process_name);
+	}
 
 	# Check 21 : Apache updates
 	our $os_name;
@@ -1862,7 +1843,6 @@ sub preflight_checks {
 }
 
 sub detect_package_updates {
-	if ( ! $NOINFO ) { print "\n${PURPLE}Detecting Package Updates for Apache or PHP...${ENDC}\n" }
 	my ($os_name) = @_;
 	our $package_update = 0;
 	if ($os_name eq "Ubuntu" or $os_name eq "Debian" ) {
@@ -1873,15 +1853,13 @@ sub detect_package_updates {
 	if ($package_update) {
 		if ( ! $NOWARN ) {
 			show_warn_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
-			show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n";
 			print $package_update;
 		}
 	} else {
 		if (-d "/usr/local/httpd" or -d "/usr/local/apache" or -d "/usr/local/apache2") {
-			if ( ! $NOWARN ) { show_warn_box(); print "${RED}It looks like apache was installed from sources. Skipping.${ENDC}\n" }
+			if ( ! $NOWARN ) { show_warn_box(); print "${RED}It looks like apache was installed from sources. Skipping update checks.${ENDC}\n" }
 		} else {
 			if ( ! $NOOK ) { show_ok_box(); print "${GREEN}No package updates found.${ENDC}\n" }
-			if ( ! $NOWARN ) { show_advisory_box(); print "${YELLOW}I only checked for \"apache specific\" package updates (eg php, httpd, httpd24u, or apache2 packages only).${ENDC}\n" }
 		}
 	}
 
@@ -1929,10 +1907,6 @@ sub detect_php_fatal_errors {
 	our ($model, $process_name) = @_;
 	if ($model eq "worker") {
 		return;
-	} else {
-		if ( ! $NOINFO ) {
-			print "\n${PURPLE}Detecting PHP Fatal Errors....${ENDC}\n";
-		}
 	}
 	our $phpfatalerr = 0;
 	our $phpfpmfatalerr_hits = 0;
@@ -1988,10 +1962,6 @@ sub detect_maxclients_hits {
 	our ($model, $process_name) = @_;
 	if ($model eq "worker") {
 		return;
-	} else {
-		if ( ! $NOINFO ) {
-			print "\n${PURPLE}Detecting If Maxclients or MaxRequestWorkers has been hit recently....${ENDC}\n";
-		}
 	}
 	our $hit = 0;
 	if ($process_name eq "/usr/sbin/httpd") {
@@ -2025,8 +1995,6 @@ sub detect_maxclients_hits {
 
 sub detect_php_memory_limit {
 	if ( ! $NOINFO) {
-		print "\n${PURPLE}Detecting PHP Memory Limits...${ENDC}\n";
-	
 		our $apache_proc_php = get_php_setting('/usr/bin/php', 'memory_limit');
 		show_info_box(); print "Your PHP Memory Limit (Per-Process) is ${CYAN}".$apache_proc_php." MB${ENDC}.\n";
 		if ($apache_proc_php eq "-1") {
@@ -2048,9 +2016,6 @@ sub get_service_memory_usage_mbytes {
 
 
 sub detect_additional_services {
-	
-	if ( ! $NOINFO ) { print "\n${PURPLE}Detecting additional services for consideration...${ENDC}\n" }
-	
 	our $servicefound_flag = 0; # we need this to give a message  if nothing was found, otherwise it looks silly.
 	# Detect Mysql
 	our $mysql_detected = 0;
@@ -2156,7 +2121,7 @@ sub detect_additional_services {
 		our $gluster_memory_usage_mbytes = 0;
 	}
 	if ( $servicefound_flag == 0 ) {
-		if ( ! $NOOK ) { show_ok_box(); print "${GREEN}No additional services were detected.${ENDC}\n\n" }
+		if ( ! $NOOK ) { show_ok_box(); print "${GREEN}No additional services were detected.${ENDC}\n" }
 	} else {
 		print "\n"; # add a aseparator before the next section
 	}
@@ -2233,8 +2198,6 @@ our $phpfpm_detected;
 our $phpfpm_memory_usage_mbytes;
 our $gluster_memory_usage_mbytes;
 
-if ( ! $NOINFO ) { print "\n${PURPLE}Analyzing apache memory use...${ENDC}\n" }
-
 # Detect httpd
 our $httpd_detected = 0;
 our $httpd_detected = `ps -C httpd -o rss | grep -v RSS`;
@@ -2268,7 +2231,6 @@ if ( $model eq "prefork") {
 	if ( ! $NOINFO ) { show_info_box(); print "The average apache process is using ${CYAN}$apache_proc_average MB${ENDC} of memory\n" }
 	if ( ! $NOINFO ) { show_info_box(); print "The largest apache process is using ${CYAN}$apache_proc_highest MB${ENDC} of memory\n" }
 
-	if ( ! $NOINFO ) { print "\n${PURPLE}Results...${ENDC}\n" }
 	my $average_potential_use = $maxclients * $apache_proc_average;
 	$average_potential_use = round($average_potential_use);
 	my $average_potential_use_pct = round(($average_potential_use/$available_mem)*100);
@@ -2359,7 +2321,6 @@ if ( $model eq "worker") {
 	if ( ! $NOINFO ) { show_info_box(); print "The average apache process is using ${CYAN}$apache_proc_average MB${ENDC} of memory\n" }
 }
 
-if ( ! $NOINFO ) { print "\n${PURPLE}Generating reports...${ENDC}\n" }
 generate_standard_report($available_mem, $maxclients, $apache_proc_lowest, $apache_proc_average, $apache_proc_highest, $model, $threadsperchild, $mysql_memory_usage_mbytes, $java_memory_usage_mbytes, $redis_memory_usage_mbytes, $memcache_memory_usage_mbytes, $varnish_memory_usage_mbytes, $phpfpm_memory_usage_mbytes, $gluster_memory_usage_mbytes);
 
 #show_important_message();
