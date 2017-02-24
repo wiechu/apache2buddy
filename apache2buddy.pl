@@ -1301,12 +1301,11 @@ sub preflight_checks {
 	my $check = `which php`;
 	chomp ($check);
 	if ( $check !~ m/.*\/php/ ) {
-		show_crit_box();
-		print "Unable to locate the PHP binary.\n";
+		show_info_box();
+		print "Unable to locate the PHP binary. PHP specific checks will be skipped\n";
 		my $path = `echo \$PATH`;
 		chomp($path);
 		print "VERBOSE: Path: $path\n" if $VERBOSE;
-		exit;
 	} else {	
 		if ( ! $NOOK ) { show_ok_box(); print "'php' exists and is available for use: ${CYAN}$check${ENDC}\n" }
 	}
