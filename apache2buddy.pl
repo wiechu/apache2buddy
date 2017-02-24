@@ -1298,7 +1298,7 @@ sub preflight_checks {
 	# Check 3
 	# make sure PHP is available before we proceed
 	# check to see if there is a binary called "php" in our path
-	my $check = `which php`;
+	my $check = `which php 2>&1 >/dev/null`;
 	chomp ($check);
 	if ( $check !~ m/.*\/php/ ) {
 		show_info_box();
