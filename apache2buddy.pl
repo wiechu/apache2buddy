@@ -1301,8 +1301,8 @@ sub preflight_checks {
 	my $check = `which php`;
 	chomp ($check);
 	if ( $check !~ m/.*\/php/ ) {
-		show_info_box();
-		print "Unable to locate the PHP binary. PHP specific checks will be skipped\n";
+		show_advisory_box();
+		print "${YELLOW}Unable to locate the PHP binary. PHP specific checks will be skipped${ENDC}\n";
 		my $path = `echo \$PATH`;
 		chomp($path);
 		print "VERBOSE: Path: $path\n" if $VERBOSE;
