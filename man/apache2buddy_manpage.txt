@@ -52,7 +52,7 @@ EXAMPLES
 ENVIRONMENT
 
 
-	No environment variables are used
+	LC_* variables are checked during preflight checks, they MUST be en_GB or en_US in order to avoid runtime errors.
 
 
 
