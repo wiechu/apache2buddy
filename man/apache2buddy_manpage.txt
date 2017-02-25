@@ -53,7 +53,7 @@ ENVIRONMENT
 
 
 	LC_* variables are checked during preflight checks, they MUST be en_GB or en_US in order to avoid runtime errors.
-	Script runs as root and requires appropriate PATH set up to access *sbin* commmands.
+	Script runs as root and requires apropriate PATH set up to access *sbin* commands.
 
 
 
