@@ -1247,7 +1247,7 @@ sub preflight_checks {
 
 
 	# Check 1.1
-	# This script only works in the en_US locale
+	# This script only works in the en_US, en_AU, or en_GB locales
 	if (! $NOINFO ) { show_info_box(); print "Checking locale; must be in en_US, en_AU, or en_GB to avoid runtime errors.\n" }
 	my $current_locale = POSIX::setlocale(LC_ALL);
 	my @locale = split (/;/, $current_locale);
