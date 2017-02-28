@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-02-28 	Richard Forth   Added en_AU to locale Preflight Check, Closes #137
 2017-02-24 	Richard Forth   Preflight Check requires en_US or en_GB, Closes #127
 2017-02-24 	Richard Forth   PHP No longer a hard requirement. Closes #128
 2017-02-24 	Richard Forth   Removed blocking code when PHP binary not found.
