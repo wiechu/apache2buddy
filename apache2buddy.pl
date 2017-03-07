@@ -1923,6 +1923,7 @@ sub detect_plesk_version {
 
 
 sub detect_php_fatal_errors {
+	print "VERBOSE: Checking logs for PHP Errors, this can take some time..." if $main::VERBOSE;
 	our $phpfpm_detected;
 	our ($model, $process_name) = @_;
 	if ($model eq "worker") {
