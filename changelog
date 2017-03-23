@@ -2,11 +2,14 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-03-24 	Richard Forth   Fixed some issues with vhost count breakdowns.
+2017-03-24 	Richard Forth   Removed 'privado' word, as locale setting makes this
+				redundant.
 2017-03-24 	Richard Forth   Added vhost count breakdown for HTTP/HTTPS,
 				closes #142
-2017-03-24 	Richard Forth   Removed OUCA word, as local setting makes this
+2017-03-24 	Richard Forth   Removed 'OUCA' word, as locale setting makes this
 				redundant.
-2017-03-24 	Richard Forth   Worked out that I can acutally set a locale
+2017-03-24 	Richard Forth   Worked out that I can actually set a locale
 				without affecting the system locale, closes
 				#144
 2017-03-07 	Richard Forth   Added Verbose message to start of PHP Fatal
