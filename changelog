@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-03-25 	Richard Forth   Minor formatting issue in vhost breakdowns.
+				Specifically removed extra space before
+				variable in output.
 2017-03-24 	Richard Forth   Fixed vhost breakdowns for when $real_port is
 				not defined.
 2017-03-24 	Richard Forth   Fixed vhost breakdowns for when apache is not
