@@ -1775,15 +1775,21 @@ sub preflight_checks {
 	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
 	our $vhost_count = `$apachectl -S 2>&1 | grep -c port`;
 	# split this total into port 80 and 443 vhosts respectively: https://github.com/richardforth/apache2buddy/issues/142
-	our $port80vhost_count = `$apachectl -S 2>&1 | grep -c "port 80"`;
-	our $port443vhost_count = `$apachectl -S 2>&1 | grep -c "port 443"`;
+	our $port80vhost_count = `$apachectl -S 2>&1 | grep -c "port 80 "`;
+	our $port443vhost_count = `$apachectl -S 2>&1 | grep -c "port 443 "`;
 	# in case apache2ctl not working, try apachectl
 	chomp ($vhost_count);
 	chomp ($port80vhost_count);
 	chomp ($port443vhost_count);
 	if ( ! $NOINFO ) { show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n" }
-	if ( ! $NOINFO ) { show_info_box(); print "            |________ of which  ${CYAN}$port80vhost_count${ENDC} are HTTP.\n" }
-	if ( ! $NOINFO ) { show_info_box(); print "            |________ of which  ${CYAN}$port443vhost_count${ENDC} are HTTPS.\n" }
+	if ( ! $NOINFO ) { show_info_box(); print "            |________ of which  ${CYAN}$port80vhost_count${ENDC} are HTTP (specifically, port 80).\n" }
+	if ( ! $NOINFO ) { show_info_box(); print "            |________ of which  ${CYAN}$port443vhost_count${ENDC} are HTTPS (specifically, port 443).\n" }
+	our $real_port;
+	if ( $real_port != "80") {
+		our $portXvhost_count = `$apachectl -S 2>&1 | grep -c "port $real_port "`;
+		chomp ($portXvhost_count);
+		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which  ${CYAN}$portXvhost_count${ENDC} are listening on nonstandard port ${CYAN}$real_port${ENDC}.\n" }
+	}
 	if ($vhost_count >= $maxclients) {
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
 			if ( ! $NOWARN ) { show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n" }
