@@ -1248,22 +1248,8 @@ sub preflight_checks {
 
 	# Check 1.1
 	# This script only works in the en_US, en_AU, or en_GB locales
-	if (! $NOINFO ) { show_info_box(); print "Checking locale; must be in en_US, en_AU, or en_GB to avoid runtime errors.\n" }
-	my $current_locale = POSIX::setlocale(LC_ALL);
-	my @locale = split (/;/, $current_locale);
-	foreach my $line (@locale) {
-		if ($line =~ /en_US|en_GB|en_AU/) {
-			if ( ! $NOOK ) { show_ok_box(); print $line . "\n" }
-		} else {
-			# make an exception for NUMERIC or MESSAGES, as these can sometimes be set to "C"
-			if ($line =~ /NUMERIC=C/ or $line =~ /MESSAGES=C/ ) {
-				if ( ! $NOOK ) { show_ok_box(); print $line . "\n" }
-			} else {
-				show_crit_box(); print "${RED}$line non-compatible locale detected, must be en_US, en_AU or en_GB!${ENDC}\n";
-				exit;
-			}
-		}
-	}
+	if (! $NOINFO ) { show_info_box(); print "Temporarily setting locale to en_GB.UTF-8 to avoid runtime errors.\n" }
+	POSIX::setlocale(LC_ALL, "en_GB.UTF-8");
 
 	# Check 2
 	# this script uses pmap to determine the memory mapped to each apache 
