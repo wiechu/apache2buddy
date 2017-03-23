@@ -2,6 +2,13 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-03-24 	Richard Forth   Added vhost count breakdown for HTTP/HTTPS,
+				closes #142
+2017-03-24 	Richard Forth   Removed OUCA word, as local setting makes this
+				redundant.
+2017-03-24 	Richard Forth   Worked out that I can acutally set a locale
+				without affecting the system locale, closes
+				#144
 2017-03-07 	Richard Forth   Added Verbose message to start of PHP Fatal
 				Checks, Closes #139
 2017-02-28 	Richard Forth   Added en_AU to locale Preflight Check, Closes #137

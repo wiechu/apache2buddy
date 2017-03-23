@@ -737,7 +737,7 @@ sub get_pid {
 
 	# find the pid for the software listening on the specified port. this
 	# might return multiple values depending on Apache's listen directives
-	my @pids = `netstat -ntap | egrep "LISTEN|OUÇA" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
+	my @pids = `netstat -ntap | egrep "LISTEN" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
 
 	print "VERBOSE: ".@pids." found listening on port 80\n" if $main::VERBOSE;
 
@@ -1248,22 +1248,8 @@ sub preflight_checks {
 
 	# Check 1.1
 	# This script only works in the en_US, en_AU, or en_GB locales
-	if (! $NOINFO ) { show_info_box(); print "Checking locale; must be in en_US, en_AU, or en_GB to avoid runtime errors.\n" }
-	my $current_locale = POSIX::setlocale(LC_ALL);
-	my @locale = split (/;/, $current_locale);
-	foreach my $line (@locale) {
-		if ($line =~ /en_US|en_GB|en_AU/) {
-			if ( ! $NOOK ) { show_ok_box(); print $line . "\n" }
-		} else {
-			# make an exception for NUMERIC or MESSAGES, as these can sometimes be set to "C"
-			if ($line =~ /NUMERIC=C/ or $line =~ /MESSAGES=C/ ) {
-				if ( ! $NOOK ) { show_ok_box(); print $line . "\n" }
-			} else {
-				show_crit_box(); print "${RED}$line non-compatible locale detected, must be en_US, en_AU or en_GB!${ENDC}\n";
-				exit;
-			}
-		}
-	}
+	if (! $NOINFO ) { show_info_box(); print "Temporarily setting locale to en_GB.UTF-8 to avoid runtime errors.\n" }
+	POSIX::setlocale(LC_ALL, "en_GB.UTF-8");
 
 	# Check 2
 	# this script uses pmap to determine the memory mapped to each apache 
@@ -1788,9 +1774,14 @@ sub preflight_checks {
 	# Get current number of vhosts
 	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
 	our $vhost_count = `$apachectl -S 2>&1 | grep -c port`;
+	# split this total into port 80 and 443 vhosts respectively: https://github.com/richardforth/apache2buddy/issues/142
+	our $port80vhost_count = `$apachectl -S 2>&1 | grep -c port 80`;
+	our $port443vhost_count = `$apachectl -S 2>&1 | grep -c port 443`;
 	# in case apache2ctl not working, try apachectl
 	chomp ($vhost_count);
 	if ( ! $NOINFO ) { show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n" }
+	if ( ! $NOINFO ) { show_info_box(); print "|________ of which  ${CYAN}$port80vhost_count${ENDC} are HTTP.\n" }
+	if ( ! $NOINFO ) { show_info_box(); print "|________ of which  ${CYAN}$port443vhost_count${ENDC} are HTTPS.\n" }
 	if ($vhost_count >= $maxclients) {
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
 			if ( ! $NOWARN ) { show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n" }
