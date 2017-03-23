@@ -2,7 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
-2017-03-07 	Richard Forth   Worked out that i can acutally set a locale
+2017-03-24 	Richard Forth   Removed OUCA word, as local setting makes this
+				redundant.
+2017-03-24 	Richard Forth   Worked out that I can acutally set a locale
 				without affecting the system locale, closes
 				#144
 2017-03-07 	Richard Forth   Added Verbose message to start of PHP Fatal
