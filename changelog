@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-03-24 	Richard Forth   Fixed vhost breakdowns for when apache is not
+				listening on port 80, but a custom port.
 2017-03-24 	Richard Forth   Fixed some issues with vhost count breakdowns.
 2017-03-24 	Richard Forth   Removed 'privado' word, as locale setting makes this
 				redundant.
