@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-03-24 	Richard Forth   Added vhost count breakdown for HTTP/HTTPS,
+				closes #142
 2017-03-24 	Richard Forth   Removed OUCA word, as local setting makes this
 				redundant.
 2017-03-24 	Richard Forth   Worked out that I can acutally set a locale
