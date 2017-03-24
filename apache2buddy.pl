@@ -138,6 +138,14 @@ If no options are specified, the basic tests will be run.
 	-r, --report		Implies -HNWK or --noinfo --nowarn --no-ok --noheader
 	-P, --no-check-pid	DON'T Check the Parent Pid File Size (only use if desperate for more info, results may be skewed)
 
+Key:
+
+    [ -- ]  = Information
+    [ @@ ]  = Advisory
+    [ >> ]  = Warning
+    [ !! ]  = Critical
+
+
 END_USAGE
 
 	print $usage_output;
@@ -1798,9 +1806,9 @@ sub preflight_checks {
 	}
 	if ($vhost_count >= $maxclients) {
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-			if ( ! $NOWARN ) { show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n" }
+			if ( ! $NOWARN ) { show_advisory_box(); print "${YELLOW}Current Apache vHost Count is greater than maxrequestworkers, which is unusual, but can be valid in some scenarios.${ENDC}\n" }
 		} else {
-			if ( ! $NOWARN ) { show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxclients${ENDC}.\n" }
+			if ( ! $NOWARN ) { show_advisory_box(); print "${YELLOW}Current Apache vHost Count is greater than maxclients, which is unusual, but can be valid in some scenarios.${ENDC}\n" }
 		}
 	} else {
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
