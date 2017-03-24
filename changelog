@@ -3,7 +3,7 @@ CHANGELOG
 When		Who		What
 ======================================================================================
 2017-03-25 	Richard Forth   Downgraded some warnings to advisory messages.
-				Specificlly where vhost count is greater than
+				Specifically where vhost count is greater than
 				MaxClients / MaxRequestWorkers, also changed
 				the wording slightly.
 2017-03-25 	Richard Forth   Added a key to the usage() output, see --help
