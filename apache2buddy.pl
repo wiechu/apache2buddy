@@ -138,6 +138,14 @@ If no options are specified, the basic tests will be run.
 	-r, --report		Implies -HNWK or --noinfo --nowarn --no-ok --noheader
 	-P, --no-check-pid	DON'T Check the Parent Pid File Size (only use if desperate for more info, results may be skewed)
 
+Key:
+
+    [ -- ]  = Information
+    [ @@ ]  = Advisory
+    [ >> ]  = Warning
+    [ !! ]  = Critical
+
+
 END_USAGE
 
 	print $usage_output;
@@ -1282,8 +1290,10 @@ sub preflight_checks {
 	my $check = `which php`;
 	chomp ($check);
 	if ( $check !~ m/.*\/php/ ) {
-		show_advisory_box();
-		print "${YELLOW}Unable to locate the PHP binary. PHP specific checks will be skipped.${ENDC}\n";
+		if ( ! $NOWARN ) {
+			show_advisory_box();
+			print "${YELLOW}Unable to locate the PHP binary. PHP specific checks will be skipped.${ENDC}\n";
+		}
 		our $PHP = 0;
 		my $path = `echo \$PATH`;
 		chomp($path);
@@ -1467,7 +1477,9 @@ sub preflight_checks {
 	print "VERBOSE: PID is ".$pid."\n" if $VERBOSE;
 	
 	if ( $pid eq 0 ) {
-		show_warn_box; print "${YELLOW}Nothing seems to be listening on port $port.${ENDC} Falling back to process list...\n";
+		if ( ! $NOWARN ) {
+			show_warn_box; print "${YELLOW}Nothing seems to be listening on port $port.${ENDC} Falling back to process list...\n";
+		}
 		my @process_info = split(' ', `ps -C 'httpd httpd.worker apache apache2' -f | grep '^root'`);
 		$pid = $process_info[1];
 		if ( not $pid ) {
@@ -1794,9 +1806,9 @@ sub preflight_checks {
 	}
 	if ($vhost_count >= $maxclients) {
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-			if ( ! $NOWARN ) { show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n" }
+			if ( ! $NOWARN ) { show_advisory_box(); print "${YELLOW}Current Apache vHost Count is greater than maxrequestworkers, which is unusual, but can be valid in some scenarios.${ENDC}\n" }
 		} else {
-			if ( ! $NOWARN ) { show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxclients${ENDC}.\n" }
+			if ( ! $NOWARN ) { show_advisory_box(); print "${YELLOW}Current Apache vHost Count is greater than maxclients, which is unusual, but can be valid in some scenarios.${ENDC}\n" }
 		}
 	} else {
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
