@@ -1776,14 +1776,20 @@ sub preflight_checks {
 	chomp ($port80vhost_count);
 	chomp ($port443vhost_count);
 	if ( ! $NOINFO ) { show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n" }
-	if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port80vhost_count${ENDC} are HTTP (specifically, port 80).\n" }
-	if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port443vhost_count${ENDC} are HTTPS (specifically, port 443).\n" }
+	if ($port80vhost_count gt 0 ) {
+		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port80vhost_count${ENDC} are HTTP (specifically, port 80).\n" }
+	}
+	if ($port443vhost_count gt 0 ) {
+		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port443vhost_count${ENDC} are HTTPS (specifically, port 443).\n" }
+	}
 	our $real_port;
 	if ($real_port) {
 		if ( $real_port != "80") {
 			our $portXvhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port $real_port "`;
 			chomp ($portXvhost_count);
-			if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$portXvhost_count${ENDC} are listening on nonstandard port ${CYAN}$real_port${ENDC}.\n" }
+			if ($portXvhost_count gt 0 ) {
+				if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$portXvhost_count${ENDC} are listening on nonstandard port ${CYAN}$real_port${ENDC}.\n" }
+			}
 		}
 	}
 	if ($vhost_count >= $maxclients) {
