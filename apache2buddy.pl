@@ -737,7 +737,7 @@ sub get_pid {
 
 	# find the pid for the software listening on the specified port. this
 	# might return multiple values depending on Apache's listen directives
-	my @pids = `netstat -ntap | egrep "LISTEN|OUÇA" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
+	my @pids = `netstat -ntap | egrep "LISTEN" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
 
 	print "VERBOSE: ".@pids." found listening on port 80\n" if $main::VERBOSE;
 
@@ -1247,23 +1247,9 @@ sub preflight_checks {
 
 
 	# Check 1.1
-	# This script only works in the en_US locale
-	if (! $NOINFO ) { show_info_box(); print "Checking locale; must be in en_US or en_GB to avoid runtime errors.\n" }
-	my $current_locale = POSIX::setlocale(LC_ALL);
-	my @locale = split (/;/, $current_locale);
-	foreach my $line (@locale) {
-		if ($line =~ /en_US/ or $line =~ /en_GB/) {
-			if ( ! $NOOK ) { show_ok_box(); print $line . "\n" }
-		} else {
-			# make an exception for NUMERIC or MESSAGES, as these can sometimes be set to "C"
-			if ($line =~ /NUMERIC=C/ or $line =~ /MESSAGES=C/ ) {
-				if ( ! $NOOK ) { show_ok_box(); print $line . "\n" }
-			} else {
-				show_crit_box(); print "${RED}$line non-compatible locale detected, must be en_GB or en_US!${ENDC}\n";
-				exit;
-			}
-		}
-	}
+	# This script only works in the en_US, en_AU, or en_GB locales
+	if (! $NOINFO ) { show_info_box(); print "Temporarily setting locale to en_GB.UTF-8 to avoid runtime errors.\n" }
+	POSIX::setlocale(LC_ALL, "en_GB.UTF-8");
 
 	# Check 2
 	# this script uses pmap to determine the memory mapped to each apache 
@@ -1678,7 +1664,7 @@ sub preflight_checks {
 		our $parent_pid = `cat $pidfile`;
 		chomp($parent_pid);
 		if ( ! $NOINFO ) { show_info_box; print "Parent PID: ${CYAN}$parent_pid${ENDC}.\n" }
-		my $ppid_mem_usage = `pmap -d $parent_pid | egrep "writeable/private|privado" | awk \'{ print \$4 }\'`;
+		my $ppid_mem_usage = `pmap -d $parent_pid | egrep "writeable/private" | awk \'{ print \$4 }\'`;
 		$ppid_mem_usage =~ s/K//;
 		chomp($ppid_mem_usage);
 		if ($ppid_mem_usage > 50000) {
@@ -1788,9 +1774,24 @@ sub preflight_checks {
 	# Get current number of vhosts
 	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
 	our $vhost_count = `$apachectl -S 2>&1 | grep -c port`;
+	# split this total into port 80 and 443 vhosts respectively: https://github.com/richardforth/apache2buddy/issues/142
+	our $port80vhost_count = `$apachectl -S 2>&1 | grep -c "port 80 "`;
+	our $port443vhost_count = `$apachectl -S 2>&1 | grep -c "port 443 "`;
 	# in case apache2ctl not working, try apachectl
 	chomp ($vhost_count);
+	chomp ($port80vhost_count);
+	chomp ($port443vhost_count);
 	if ( ! $NOINFO ) { show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n" }
+	if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port80vhost_count${ENDC} are HTTP (specifically, port 80).\n" }
+	if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port443vhost_count${ENDC} are HTTPS (specifically, port 443).\n" }
+	our $real_port;
+	if ($real_port) {
+		if ( $real_port != "80") {
+			our $portXvhost_count = `$apachectl -S 2>&1 | grep -c "port $real_port "`;
+			chomp ($portXvhost_count);
+			if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$portXvhost_count${ENDC} are listening on nonstandard port ${CYAN}$real_port${ENDC}.\n" }
+		}
+	}
 	if ($vhost_count >= $maxclients) {
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
 			if ( ! $NOWARN ) { show_warn_box(); print "Current Apache vHost Count is ${RED}greater than maxrequestworkers${ENDC}.\n" }
@@ -1923,6 +1924,7 @@ sub detect_plesk_version {
 
 
 sub detect_php_fatal_errors {
+	print "VERBOSE: Checking logs for PHP Fatal Errors, this can take some time..." if $main::VERBOSE;
 	our $phpfpm_detected;
 	our ($model, $process_name) = @_;
 	if ($model eq "worker") {

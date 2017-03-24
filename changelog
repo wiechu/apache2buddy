@@ -2,6 +2,26 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-03-25 	Richard Forth   Minor formatting issue in vhost breakdowns.
+				Specifically removed extra space before
+				variable in output.
+2017-03-24 	Richard Forth   Fixed vhost breakdowns for when $real_port is
+				not defined.
+2017-03-24 	Richard Forth   Fixed vhost breakdowns for when apache is not
+				listening on port 80, but a custom port.
+2017-03-24 	Richard Forth   Fixed some issues with vhost count breakdowns.
+2017-03-24 	Richard Forth   Removed 'privado' word, as locale setting makes this
+				redundant.
+2017-03-24 	Richard Forth   Added vhost count breakdown for HTTP/HTTPS,
+				closes #142
+2017-03-24 	Richard Forth   Removed 'OUCA' word, as locale setting makes this
+				redundant.
+2017-03-24 	Richard Forth   Worked out that I can actually set a locale
+				without affecting the system locale, closes
+				#144
+2017-03-07 	Richard Forth   Added Verbose message to start of PHP Fatal
+				Checks, Closes #139
+2017-02-28 	Richard Forth   Added en_AU to locale Preflight Check, Closes #137
 2017-02-24 	Richard Forth   Preflight Check requires en_US or en_GB, Closes #127
 2017-02-24 	Richard Forth   PHP No longer a hard requirement. Closes #128
 2017-02-24 	Richard Forth   Removed blocking code when PHP binary not found.
