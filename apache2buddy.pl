@@ -1282,8 +1282,10 @@ sub preflight_checks {
 	my $check = `which php`;
 	chomp ($check);
 	if ( $check !~ m/.*\/php/ ) {
-		show_advisory_box();
-		print "${YELLOW}Unable to locate the PHP binary. PHP specific checks will be skipped.${ENDC}\n";
+		if ( ! $NOWARN ) {
+			show_advisory_box();
+			print "${YELLOW}Unable to locate the PHP binary. PHP specific checks will be skipped.${ENDC}\n";
+		}
 		our $PHP = 0;
 		my $path = `echo \$PATH`;
 		chomp($path);
@@ -1467,7 +1469,9 @@ sub preflight_checks {
 	print "VERBOSE: PID is ".$pid."\n" if $VERBOSE;
 	
 	if ( $pid eq 0 ) {
-		show_warn_box; print "${YELLOW}Nothing seems to be listening on port $port.${ENDC} Falling back to process list...\n";
+		if ( ! $NOWARN ) {
+			show_warn_box; print "${YELLOW}Nothing seems to be listening on port $port.${ENDC} Falling back to process list...\n";
+		}
 		my @process_info = split(' ', `ps -C 'httpd httpd.worker apache apache2' -f | grep '^root'`);
 		$pid = $process_info[1];
 		if ( not $pid ) {
