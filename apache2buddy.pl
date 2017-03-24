@@ -635,7 +635,7 @@ sub get_memory_usage {
 		chomp($_);
 		# pmap -d is used to determine the memory usage for the 
 		# individual processes
-		my $pid_mem_usage = `pmap -d $_ | egrep "writeable/private|privado" | awk \'{ print \$4 }\'`;
+		my $pid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $_ | egrep "writeable/private" | awk \'{ print \$4 }\'`;
 		$pid_mem_usage =~ s/K//;
 		chomp($pid_mem_usage);
 
@@ -695,19 +695,19 @@ sub test_process {
 	# not this is Apache
 	our @output;
 	if ( $process_name eq '/usr/sbin/httpd' ) {
-		@output = `$process_name -V 2>&1 | grep "Server version"`;
+		@output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
 		print "VERBOSE: First line of output from \"$process_name -V\": $output[0]" if $main::VERBOSE;
 	} elsif ( $process_name eq '/usr/sbin/httpd.worker' ) {
 		# Handle Worker processes better
 		# BUGFIX, first identified by C. Piper Balta 
-		@output = `$process_name -V 2>&1 | grep "Server version"`;
+		@output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
 		print "VERBOSE: First line of output from \"$process_name -V\": $output[0]" if $main::VERBOSE;
 	} elsif ( $process_name eq '/usr/sbin/apache2' ) {
-		@output = `/usr/sbin/apache2ctl -V 2>&1 | grep "Server version"`;
+		@output = `LANGUAGE=en_GB.UTF-8 /usr/sbin/apache2ctl -V 2>&1 | grep "Server version"`;
 		print "VERBOSE: First line of output from \"/usr/sbin/apache2ctl -V\": $output[0]" if $main::VERBOSE;
 	} elsif ( $process_name eq '/usr/local/apache/bin/httpd' ) {
 		if ( ! $NOWARN ) { show_warn_box(); print "${RED}Apache seems to have been installed from source, its technically unsupported, we may get errors${ENDC}\n" }
-		@output = `$process_name -V 2>&1 | grep "Server version"`;
+		@output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
 		print "VERBOSE: First line of output from \"/usr/local/apache/bin/httpd -V\": $output[0]" if $main::VERBOSE;
 	} else {
 		# this catchall should cover all other possibilities, such as
@@ -737,7 +737,7 @@ sub get_pid {
 
 	# find the pid for the software listening on the specified port. this
 	# might return multiple values depending on Apache's listen directives
-	my @pids = `netstat -ntap | egrep "LISTEN" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
+	my @pids = `LANGUAGE=en_GB.UTF-8 netstat -ntap | egrep "LISTEN" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
 
 	print "VERBOSE: ".@pids." found listening on port 80\n" if $main::VERBOSE;
 
@@ -894,17 +894,17 @@ sub get_apache_version {
 	
 	# check for red hat style spache installs
 	if ( $process_name eq '/usr/sbin/httpd' || $process_name eq '/usr/sbin/httpd.worker' ) {
-		$version = `$process_name -V 2>&1 | grep "Server version"`;
+		$version = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
 		chomp($version);
 		$version =~ s/.*:\s(.*)$/$1/;
 	} elsif ( $process_name eq '/usr/sbin/apache2' ) { 
 		# ubuntu has to be different, so...
-                $version = `/usr/sbin/apache2ctl -V 2>&1 | grep "Server version"`;
+                $version = `LANGUAGE=en_GB.UTF-8 /usr/sbin/apache2ctl -V 2>&1 | grep "Server version"`;
                 chomp($version);
                 $version =~ s/.*:\s(.*)$/$1/;
         } else {
 		# check for compiled from source versions
-		$version = `$process_name -V 2>&1 | grep "Server version"`;
+		$version = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
                 chomp($version);
                 $version =~ s/.*:\s(.*)$/$1/;
         }
@@ -1245,12 +1245,6 @@ sub preflight_checks {
 		if ( ! $NOOK ) { show_ok_box(); print "This script is being run as root.\n" }
 	}
 
-
-	# Check 1.1
-	# This script only works in the en_US, en_AU, or en_GB locales
-	if (! $NOINFO ) { show_info_box(); print "Temporarily setting locale to en_GB.UTF-8 to avoid runtime errors.\n" }
-	POSIX::setlocale(LC_ALL, "en_GB.UTF-8");
-
 	# Check 2
 	# this script uses pmap to determine the memory mapped to each apache 
 	# process. make sure that pmap is available.
@@ -1370,11 +1364,11 @@ sub preflight_checks {
 	# if theres no /etc/redhat release check if its Ubuntu...
         if ( $os_name eq '' ) {
 	        # then we have to assume its either debian or ubuntu ...
-      	        $os_name = `lsb_release -a 2>&1 | grep "Distributor ID:" | awk '{ \$1=\$2=""; print }'`;
+      	        $os_name = `LANGUAGE=en_GB.UTF-8 lsb_release -a 2>&1 | grep "Distributor ID:" | awk '{ \$1=\$2=""; print }'`;
              	chomp ($os_name);
                 # strip the leading spaces
                 $os_name =~ s/\s*(.*)\s*/$1/;
-                $os_release = `lsb_release -a 2>&1 | grep "Release:" | awk '{ \$1=""; print }'`;
+                $os_release = `LANGUAGE=en_GB.UTF-8 sb_release -a 2>&1 | grep "Release:" | awk '{ \$1=""; print }'`;
                 # strip the leading spaces
                 $os_release =~ s/\s*(.*)\s*/$1/;
        	}
@@ -1664,7 +1658,7 @@ sub preflight_checks {
 		our $parent_pid = `cat $pidfile`;
 		chomp($parent_pid);
 		if ( ! $NOINFO ) { show_info_box; print "Parent PID: ${CYAN}$parent_pid${ENDC}.\n" }
-		my $ppid_mem_usage = `pmap -d $parent_pid | egrep "writeable/private" | awk \'{ print \$4 }\'`;
+		my $ppid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $parent_pid | egrep "writeable/private" | awk \'{ print \$4 }\'`;
 		$ppid_mem_usage =~ s/K//;
 		chomp($ppid_mem_usage);
 		if ($ppid_mem_usage > 50000) {
@@ -1680,7 +1674,7 @@ sub preflight_checks {
 
 
 	# figure out how much RAM is in the server
-	our $available_mem = `free | grep \"Mem:\" | awk \'{ print \$2 }\'` / 1024;
+	our $available_mem = `LANGUAGE=en_GB.UTF-8 free | grep \"Mem:\" | awk \'{ print \$2 }\'` / 1024;
 	$available_mem = floor($available_mem);
 
 	if ( ! $NOINFO ) { show_info_box(); print "Your server has ${CYAN}$available_mem MB${ENDC} of PHYSICAL memory.\n" }
@@ -1773,10 +1767,10 @@ sub preflight_checks {
 	# Check 16.2
 	# Get current number of vhosts
 	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
-	our $vhost_count = `$apachectl -S 2>&1 | grep -c port`;
+	our $vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c port`;
 	# split this total into port 80 and 443 vhosts respectively: https://github.com/richardforth/apache2buddy/issues/142
-	our $port80vhost_count = `$apachectl -S 2>&1 | grep -c "port 80 "`;
-	our $port443vhost_count = `$apachectl -S 2>&1 | grep -c "port 443 "`;
+	our $port80vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port 80 "`;
+	our $port443vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port 443 "`;
 	# in case apache2ctl not working, try apachectl
 	chomp ($vhost_count);
 	chomp ($port80vhost_count);
@@ -1787,7 +1781,7 @@ sub preflight_checks {
 	our $real_port;
 	if ($real_port) {
 		if ( $real_port != "80") {
-			our $portXvhost_count = `$apachectl -S 2>&1 | grep -c "port $real_port "`;
+			our $portXvhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port $real_port "`;
 			chomp ($portXvhost_count);
 			if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$portXvhost_count${ENDC} are listening on nonstandard port ${CYAN}$real_port${ENDC}.\n" }
 		}
@@ -1867,7 +1861,7 @@ sub detect_package_updates {
 	my ($os_name) = @_;
 	our $package_update = 0;
 	if ($os_name eq "Ubuntu" or $os_name eq "Debian" ) {
-		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | egrep "^php|^apache2"`;
+		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs LANGUAGE=en_GB.UTF-8 apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | egrep "^php|^apache2"`;
 	} else {
 		$package_update = `yum check-update | egrep "^httpd|^php"`;
 	}

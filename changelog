@@ -2,6 +2,13 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-03-25 	Richard Forth   Made the commands I think that are likely to
+				fail due to different locale settings run in 
+				en_GB.UTF-8 which doesnt affect system locale
+				Also removed obsolete locale code that didnt
+				do the job I wanted, also removed another 
+				'privado' word I found, as this is now
+				obsolete.
 2017-03-25 	Richard Forth   Minor formatting issue in vhost breakdowns.
 				Specifically removed extra space before
 				variable in output.
