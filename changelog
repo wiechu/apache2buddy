@@ -2,6 +2,12 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-03-25 	Richard Forth   Impreoved regex around the vhost count ,
+				specifically when looking for "port" it was capturing 
+				aliases etc that has the word port as part of it, like
+				support.mydomain.com, the regex should filter out what
+				we dont want to see and only give us a true count of
+				vhosts. Closes #160.
 2017-03-25 	Richard Forth   Downgraded some warnings to advisory messages.
 				Specifically where vhost count is greater than
 				MaxClients / MaxRequestWorkers, also changed
