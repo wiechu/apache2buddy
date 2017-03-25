@@ -1779,7 +1779,7 @@ sub preflight_checks {
 	# Check 16.2
 	# Get current number of vhosts
 	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
-	our $vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c port`;
+	our $vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "[ ]\\{1,\\}port [0-9]\\{1,\\}"`;
 	# split this total into port 80 and 443 vhosts respectively: https://github.com/richardforth/apache2buddy/issues/142
 	our $port80vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port 80 "`;
 	our $port443vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port 443 "`;
