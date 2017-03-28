@@ -1378,7 +1378,7 @@ sub preflight_checks {
              	chomp ($os_name);
                 # strip the leading spaces
                 $os_name =~ s/\s*(.*)\s*/$1/;
-                $os_release = `LANGUAGE=en_GB.UTF-8 sb_release -a 2>&1 | grep "Release:" | awk '{ \$1=""; print }'`;
+                $os_release = `LANGUAGE=en_GB.UTF-8 lsb_release -a 2>&1 | grep "Release:" | awk '{ \$1=""; print }'`;
                 # strip the leading spaces
                 $os_release =~ s/\s*(.*)\s*/$1/;
        	}

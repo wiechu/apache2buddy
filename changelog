@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-03-28 	Richard Forth   Small bug fix.
 2017-03-25 	Richard Forth   Improved regex around the vhost count, specifically
 				when looking for "port" it was capturing 
 				aliases etc that has the word port as part of it, like
