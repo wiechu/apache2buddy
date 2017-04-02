@@ -319,6 +319,7 @@ sub check_os_support {
                                         print "VERBOSE: ".  $item . "\n";
                                 }
                         }
+			my $major_debian_version = $debian_version[0];
 			if (exists($dsv{$major_debian_version})) {
 				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
 			} else {
