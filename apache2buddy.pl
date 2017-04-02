@@ -270,7 +270,7 @@ if ( ! $NOCOLOR ) {
 }
 
 sub get_os_platform_older {
-	my $raw_platform = `python -c 'import platform ; print (platform.ld())'`;
+	my $raw_platform = `python -c 'import platform ; print (platform.dist())'`;
 	# ('CentOS Linux', '7.3.1611', 'Core')
 	$raw_platform =~ s/[()']//g;
 	my @platform = split(", ", $raw_platform);
