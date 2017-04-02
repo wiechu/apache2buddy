@@ -1457,7 +1457,7 @@ sub preflight_checks {
 		#   AttributeError: 'module' object has no attribute 'linux_distribution'
 		#
 		# This is dues to Python 2.4.3 being used, which is too old.
-		if ( ! $NOINFO ) { print "${YELLOW}Couldnt determine OS version as your python version is too old, trying older python code...${ENDC}" }
+		if ( ! $NOINFO ) { print "${YELLOW}Couldnt determine OS version as your python version is too old, trying older python code...${ENDC}\n" }
 		my ($distro, $version, $codename) = get_os_platform_older();
 		if ( $distro ) { 
 			chomp($distro);
