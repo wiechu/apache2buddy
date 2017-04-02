@@ -302,7 +302,7 @@ sub check_os_support {
 	my %rol = map { $_ => 1 } @redhat_os_list;
 
 	# https://wiki.debian.org/DebianReleases
-	my @debian_supported_versions = ('7.0','8.0');
+	my @debian_supported_versions = ('7','8');
 	my %dsv = map { $_ => 1 } @debian_supported_versions;
 
 	# https://www.ubuntu.com/info/release-end-of-life
@@ -313,7 +313,13 @@ sub check_os_support {
 		# If the OS is deemed unsupported, we still run, but you may get errors, however any github issues raised will not
 		# be entertained for unsupported or EOL OS releaases.
 		if ($distro eq "Debian" ) {
-			if (exists($dsv{$version})) {
+			my @debian_version = split('\.', $version);
+                        if ( $VERBOSE ) {
+                                foreach my $item (@debian_version) {
+                                        print "VERBOSE: ".  $item . "\n";
+                                }
+                        }
+			if (exists($dsv{$major_debian_version})) {
 				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
 			} else {
 				show_crit_box(); print "${RED}This distro version (${CYAN}$version${ENDC}${RED}) is not supported by apache2buddy.pl.${ENDC}\n";
