@@ -1367,7 +1367,7 @@ sub preflight_checks {
 	if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}New OS/Version verification checks are being worked on, you may get errors and teething problems. 02-04-2017${ENDC}\n"}
 	if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Apologies for any inconvenience, this message will disappear when all issues resolved. 02-04-2017${ENDC}\n"}
 
-	# Please dont make pull requests to add your distro to this list, that doesnt make it supportes
+	# Please dont make pull requests to add your distro to this list, that doesnt make it supported.
 	# The following distros are what I use to test and deploy apache2buddy and only these distro's are supported.
 	my @supported_os_list = ('Ubuntu', 'Debian', 'Red Hat Enterprise Linux', 'CentOS Linux', 'Scientific Linux');
 	my %sol = map { $_ => 1 } @supported_os_list;
