@@ -269,6 +269,17 @@ if ( ! $NOCOLOR ) {
 	$UNDERLINE = ""; # SUPPRESS COLORS
 }
 
+sub get_os_platform_older {
+	my $raw_platform = `python -c 'import platform ; print (platform.ld())'`;
+	# ('CentOS Linux', '7.3.1611', 'Core')
+	$raw_platform =~ s/[()']//g;
+	my @platform = split(", ", $raw_platform);
+	my $distro =  @platform[0];
+	my $version = @platform[1];
+	my $codename = @platform[2];
+	return ($distro, $version, $codename);
+}
+
 sub get_os_platform {
 	my $raw_platform = `python -c 'import platform ; print (platform.linux_distribution())'`;
 	# ('CentOS Linux', '7.3.1611', 'Core')
@@ -1358,9 +1369,25 @@ sub preflight_checks {
 	# Get OS Name and Version
 	if ( ! $NOINFO ) { show_info_box(); print "We are attempting to discover the operating system type and version number ...\n" }
 	my ($distro, $version, $codename) = get_os_platform();
-	chomp($distro);
-	chomp($version);
-	chomp($codename);
+	if ( $distro ) { 
+		chomp($distro);
+		chomp($version);
+		chomp($codename);
+	} else {
+		# fallback when python fails to deliver - eg on CentOS5 which is EOL anyway, we get:
+		# Traceback (most recent call last):
+		#   File "<string>", line 1, in ?
+		#   AttributeError: 'module' object has no attribute 'linux_distribution'
+		#
+		# This is dues to Python 2.4.3 being used, which is too old.
+		if ( ! $NOINFO ) { print "${YELLOW}Couldnt determine OS version as your python version is too old, trying older python code...${ENDC}" }
+		my ($distro, $version, $codename) = get_os_platform_older();
+		if ( $distro ) { 
+			chomp($distro);
+			chomp($version);
+			chomp($codename);
+		}
+	}		 
 	if ( ! $NOINFO ) { show_info_box(); print "Distro: ${CYAN}" . $distro . "${ENDC}\n"}	
 	if ( ! $NOINFO ) { show_info_box(); print "Version: ${CYAN}" . $version . "${ENDC}\n"}	
 	if ( ! $NOINFO ) { show_info_box(); print "Codename: ${CYAN}" . $codename . "${ENDC}\n"}	
@@ -1371,11 +1398,63 @@ sub preflight_checks {
 	# The following distros are what I use to test and deploy apache2buddy and only these distro's are supported.
 	my @supported_os_list = ('Ubuntu', 'Debian', 'Red Hat Enterprise Linux', 'CentOS Linux', 'Scientific Linux');
 	my %sol = map { $_ => 1 } @supported_os_list;
+
+	my @redhat_os_list = ('Red Hat Enterprise Linux', 'CentOS Linux', 'Scientific Linux');
+	my %rol = map { $_ => 1 } @redhat_os_list;
+	
+	# https://wiki.debian.org/DebianReleases
+	my @debian_supported_versions = ('7.0','8.0');
+	my %dsv = map { $_ => 1 } @debian_supported_versions;
+	
+	# https://www.ubuntu.com/info/release-end-of-life
+	my @ubuntu_supported_versions = ('14.04','16.04');
+	my %usv = map { $_ => 1 } @ubuntu_supported_versions;
 	if (exists($sol{$distro})) {
-		if ( ! $NOOK ) { show_ok_box(); print "This Operating System is supported by apache2buddy.pl.\n" }
+		if ( ! $NOOK ) { show_ok_box(); print "This distro is supported by apache2buddy.pl.\n" }
 		# Coming soon sub checks for versions support / EOL, for example RHEL4/5 and CentOS4/5 Scientific 4/5 are NOT supported any more.
 		# If the OS is deemed unsupported, we still run, but you may get errors, however any github issues raised will not
-		# be entertained for unsupported OS releaases.
+		# be entertained for unsupported or EOL OS releaases.
+		if ($distro eq "Debian" ) {
+			if (exists($dsv{$version})) {
+				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
+			} else {
+				show_crit_box(); print "${RED}This distro version is not supported by apache2buddy.pl.${ENDC}\n";
+                		# list supported debian versions
+				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Debian versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @debian_supported_versions) . "${ENDC}'.\n"}
+				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
+				#exit;
+			}
+		} elsif  ($distro eq "Ubuntu" ) {
+			if (exists($usv{$version})) {
+				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
+			} else {
+				show_crit_box(); print "${RED}This distro version is not supported by apache2buddy.pl.${ENDC}\n";
+                		# list supported debian versions
+				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Ubuntu (LTS ONLY) versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @ubuntu_supported_versions) . "${ENDC}'.\n"}
+				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
+				#exit;
+			}
+		} elsif (exists($rol{$distro})) {
+				# for red hat versions is not si clinical regarding the specific versions, however we need to be mindful of EOL versions eg RHEL 3, 4, 5
+				# get mavjor version from version string. note that redhatm centos and scientifc are al rebuilds of the same sources, variables therefore
+				# se the generic 'redhat' reference.
+				if ( $VERBOSE ) { print "VERBOSE -> RedHat Version: ". $version . "\n"}
+				my @redhat_version = split('\.', $version);
+				if ( $VERBOSE ) {
+					foreach my $item (@redhat_version) {
+						print "VERBOSE: ".  $item . "\n";
+					}
+				}
+				my $major_redhat_version = $redhat_version[0];
+				if ( $VERBOSE ) { print "VERBOSE -> Major RedHat Version Detected ". $major_redhat_version . "\n"}
+				if ($major_redhat_version lt 6 ) {
+					show_crit_box(); print "${RED}This distro version is not supported by apache2buddy.pl.${ENDC}\n";
+					if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
+					#exit;
+				} else {
+					 if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
+				}
+		} 
 	} else {
 		show_crit_box(); print "${RED}This Operating System is not supported by apache2buddy.pl.${ENDC}\n";
 		# list supported OS distros

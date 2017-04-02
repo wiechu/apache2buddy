@@ -2,6 +2,10 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-04-02	Richard Forth   Added code to detect older EOL OS versions and abort.
+				Still in soft-fail at the moment.
+2017-04-02	Richard Forth   Added code to detect EOL OS versions and abort.
+				Still in soft-fail at the moment.
 2017-04-02 	Richard Forth   Laid foundations for new OS detection using
 				some embedded python, this actually reduces
 				required code base by over 100 lines of code,
