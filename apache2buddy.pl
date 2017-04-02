@@ -295,8 +295,14 @@ sub check_os_support {
 	my ($distro, $version, $codename) = @_;
 	# Please dont make pull requests to add your distro to this list, that doesnt make it supported.
 	# The following distros are what I use to test and deploy apache2buddy and only these distro's are supported.
-	my @supported_os_list = ('Ubuntu', 'Debian', 'Red Hat Enterprise Linux', 'redhat', 'CentOS Linux', 'Scientific Linux');
+	my @supported_os_list = ('Ubuntu', 'ubuntu', 'Debian', 'debian', 'Red Hat Enterprise Linux', 'redhat', 'CentOS Linux', 'Scientific Linux');
 	my %sol = map { $_ => 1 } @supported_os_list;
+	
+	my @ubuntu_os_list = ('Ubuntu', 'ubuntu');
+	my %uol = map { $_ => 1 } @ubuntu_os_list;
+	
+	my @debian_os_list = ('Debian', 'debian');
+	my %dol = map { $_ => 1 } @debian_os_list;
 	
 	my @redhat_os_list = ('Red Hat Enterprise Linux', 'redhat', 'CentOS Linux', 'Scientific Linux');
 	my %rol = map { $_ => 1 } @redhat_os_list;
@@ -308,11 +314,12 @@ sub check_os_support {
 	# https://www.ubuntu.com/info/release-end-of-life
 	my @ubuntu_supported_versions = ('14.04','16.04');
 	my %usv = map { $_ => 1 } @ubuntu_supported_versions;
+
 	if (exists($sol{$distro})) {
 		if ( ! $NOOK ) { show_ok_box(); print "This distro is supported by apache2buddy.pl.\n" }	
 		# If the OS is deemed unsupported, we still run, but you may get errors, however any github issues raised will not
 		# be entertained for unsupported or EOL OS releaases.
-		if ($distro eq "Debian" ) {
+		if (exists($dol{$distro})) {
 			my @debian_version = split('\.', $version);
                         if ( $VERBOSE ) {
                                 foreach my $item (@debian_version) {
@@ -329,7 +336,7 @@ sub check_os_support {
 				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
 				#exit;
 			}
-		} elsif  ($distro eq "Ubuntu" ) {
+		} elsif  (exists($uol{$distro})) {
 			if (exists($usv{$version})) {
 				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
 			} else {
@@ -340,7 +347,7 @@ sub check_os_support {
 				#exit;
 			}
 		} elsif (exists($rol{$distro})) {
-			# for red hat versions is not si clinical regarding the specific versions, however we need to be mindful of EOL versions eg RHEL 3, 4, 5
+			# for red hat versions is not so clinical regarding the specific versions, however we need to be mindful of EOL versions eg RHEL 3, 4, 5
 			# get mavjor version from version string. note that redhatm centos and scientifc are al rebuilds of the same sources, variables therefore
 			# use the generic 'redhat' reference.
 			if ( $VERBOSE ) { print "VERBOSE -> RedHat Version: ". $version . "\n"}
