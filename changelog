@@ -2,6 +2,11 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-04-02 	Richard Forth   Laid foundations for new OS detection using
+				some embedded python, this actually reduces
+				required code base by over 100 lines of code,
+				missing OS verification checks now but will
+				fix this in next update.
 2017-03-28 	Richard Forth   Small bug fix.
 2017-03-25 	Richard Forth   Improved regex around the vhost count, specifically
 				when looking for "port" it was capturing 
