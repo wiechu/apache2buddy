@@ -269,6 +269,16 @@ if ( ! $NOCOLOR ) {
 	$UNDERLINE = ""; # SUPPRESS COLORS
 }
 
+sub get_os_platform {
+	my $raw_platform = `python -c 'import platform ; print (platform.linux_distribution())'`;
+	# ('CentOS Linux', '7.3.1611', 'Core')
+	$raw_platform =~ s/[()']//g;
+	my @platform = split(", ", $raw_platform);
+	my $distro =  @platform[0];
+	my $version = @platform[1];
+	my $codename = @platform[2];
+	return ($distro, $version, $codename);
+}
 
 sub systemcheck_large_logs {
 	my ($logdir) = @_;
@@ -1346,117 +1356,15 @@ sub preflight_checks {
 	
 	# Check 5
 	# Get OS Name and Version
-	our $os_release;
-	our $os_name = '';
 	if ( ! $NOINFO ) { show_info_box(); print "We are attempting to discover the operating system type and version number ...\n" }
-	# in traditional style we go for the obvious first and check if its Red Hat or CentOS
-	if ( -f "/etc/redhat-release" ) {
-	        $os_name = `cat /etc/redhat-release 2>&1 | head -1 | awk '{ print \$1 }'`;
-	        chomp ($os_name);
-
-	        if ( $os_name eq "CentOS" ) {
-		        $os_release = `cat /etc/redhat-release 2>&1 | head -1 | awk '{ print \$3 }'`;
-       		 } elsif ( $os_name  eq "Red" ) {
-	        	$os_name = `cat /etc/redhat-release 2>&1 | head -1 | awk '{ print \$1 " " \$2 " " \$3 " " \$4 }'`;
-                	chomp ($os_name);
-                	$os_release = `cat /etc/redhat-release 2>&1 | head -1 | awk '{ print \$7 }'`;
-       		 } elsif ( $os_name  eq "Scientific" ) {
-	        	$os_name = `cat /etc/redhat-release 2>&1 | head -1 | awk '{ print \$1 " " \$2 }'`;
-                	chomp ($os_name);
-                	$os_release = `cat /etc/redhat-release 2>&1 | head -1 | awk '{ print \$3 }'`;
-        	} else {
-			show_crit_box();
-	               	print ("Either we couldnt get the OS name, or its not a supported distro.\n");
-			exit;
-        	}
-	}
-
-	# if theres no /etc/redhat release check if its Ubuntu...
-        if ( $os_name eq '' ) {
-	        # then we have to assume its either debian or ubuntu ...
-      	        $os_name = `LANGUAGE=en_GB.UTF-8 lsb_release -a 2>&1 | grep "Distributor ID:" | awk '{ \$1=\$2=""; print }'`;
-             	chomp ($os_name);
-                # strip the leading spaces
-                $os_name =~ s/\s*(.*)\s*/$1/;
-                $os_release = `LANGUAGE=en_GB.UTF-8 lsb_release -a 2>&1 | grep "Release:" | awk '{ \$1=""; print }'`;
-                # strip the leading spaces
-                $os_release =~ s/\s*(.*)\s*/$1/;
-       	}
-
-	## Or debian ...
-	if ( $os_name eq '' ) {
-		if ( -f "/etc/issue" ) {
-			$os_name = `cat /etc/issue | head -1 | awk '{ print \$1 }'`;
-             		chomp ($os_name);
-			print $os_name."\n";
-			if ( $os_name eq "Debian") {
-				$os_release = `cat /etc/debian_version`;
-				chomp($os_release);
-				$os_release =~ s/(^.{3}).*$/$1/; 
-			}
-		}
-	}	
-	
-	## or some other unsupported distro ...
-	if ( $os_name eq '' ) {
-		show_crit_box();
-		print ("Either we couldnt get the OS name, or its not a supported distro.\n");
-		exit;
-        }
-       	chomp ($os_release);
-	if ( $os_release  eq "release" ) {
-		# capture RHEL / CENTOS 7 first as I've not coded it up to support that yet, and the wording means that column 3 on CentOS 7 is the word "release" 
-		# shift one more field along in the /etc/redhat-release file to get the actual version number
-	        $os_release = `cat /etc/redhat-release 2>&1 | head -1 | awk '{ print \$4 }'`;
-      		chomp ($os_release);
-		$os_release =~ s/(^.{3}).*$/$1/; 
-	}
- 		
-	if ( ! $NOINFO ) { show_info_box();  print "OS Name: ${CYAN}$os_name${ENDC}\n" }
-	if ( ! $NOINFO ) { show_info_box();  print "OS Release: ${CYAN}$os_release${ENDC}\n" }
-
-	# If its unsupported or end of life, continue, but complain loudly.
-	if ( $os_name eq "Red Hat Enterprise Linux" or $os_name eq "CentOS" ) {
-		# RedHat / CentOS 4 is currenly End of Life as of this writing.
-		if ($VERBOSE) { print "VERBOSE: $os_release\n" }
-		if ( $os_release <= 5 ) {
-			if ( ! $NOWARN ) { show_warn_box(); print "${RED}$os_name $os_release is now end of life, its technically unsupported, we may get errors${ENDC}.\n" }
-		} elsif ($os_release <= 5.11 ) {
-			 if ( ! $NOWARN ) { show_warn_box(); print "${YELLOW}Apache2buddy is dropping support for $os_name $os_release in March 2017${ENDC}.\n" }
-		} else {
-			 if ( ! $NOOK ) { show_ok_box(); print "Apache2buddy supports this OS Release/Version.\n" }
-		}
-	} elsif ( $os_name eq "Ubuntu" ) {
-		if ($VERBOSE) { print "VERBOSE: $os_release\n" }
-                # This code section is completely changing so that I only need to add/remove the LTS versions as they EOL
-		unless  ( $os_release == "12.04" or $os_release == "14.04" or $os_release == "16.04") {
-			# https://wiki.ubuntu.com/Releases
-			if ( ! $NOWARN ) {
-				show_warn_box();
-				print $os_name." ".$os_release." is not supported, we may get errors.";
-				print ".\n";
-			}
-		} else {
-			if ( ! $NOOK ) { show_ok_box(); print "The operating system is supported.\n" }
-		}
-	} elsif ( $os_name eq "Debian" ) {
-		if ($VERBOSE) { print "VERBOSE: $os_release\n" }
-		if ( $os_release <= 6.0 ) {
-			# as of current writing, 6.0 (Squeeze) is the latest EOL version of Debian
-			# https://wiki.debian.org/DebianReleases
-			if ( ! $NOWARN ) {
-				show_warn_box();
-				print $os_name." ".$os_release." is now end of life, its technically unsupported, we may get errors";
-				print ".\n";
-			}
-		} else {
-			if ( ! $NOOK ) {
-				show_ok_box;
-				print "The operating system is supported.\n"
-			}
-		}
-		
-	}
+	my ($distro, $version, $codename) = get_os_platform();
+	chomp($distro);
+	chomp($version);
+	chomp($codename);
+	if ( ! $NOINFO ) { show_info_box(); print "Distro: ${CYAN}" . $distro . "${ENDC}\n"}	
+	if ( ! $NOINFO ) { show_info_box(); print "Version: ${CYAN}" . $version . "${ENDC}\n"}	
+	if ( ! $NOINFO ) { show_info_box(); print "Codename: ${CYAN}" . $codename . "${ENDC}\n"}	
+	if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}New OS verification checks are coming soon, for now it is opened up, but you may get errors. 02-04-2017${ENDC}\n"}
 
 	# get our hostname
 	our $servername = get_hostname();
@@ -1871,14 +1779,13 @@ sub preflight_checks {
 	}
 
 	# Check 21 : Apache updates
-	our $os_name;
-	detect_package_updates($os_name);
+	detect_package_updates();
 }
 
 sub detect_package_updates {
-	my ($os_name) = @_;
+	my ($distro, $version, $codename) = get_os_platform();
 	our $package_update = 0;
-	if ($os_name eq "Ubuntu" or $os_name eq "Debian" ) {
+	if ($distro eq "Ubuntu" or $distro eq "Debian" ) {
 		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs LANGUAGE=en_GB.UTF-8 apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | egrep "^php|^apache2"`;
 	} else {
 		$package_update = `yum check-update | egrep "^httpd|^php"`;
