@@ -354,7 +354,7 @@ sub check_os_support {
 			}
 		}
 	} else {
-		show_crit_box(); print "${RED}This Operating System is not supported by apache2buddy.pl.${ENDC}\n";
+		show_crit_box(); print "${RED}This distro is not supported by apache2buddy.pl.${ENDC}\n";
 		# list supported OS distros
 		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Distro's:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @supported_os_list) . "${ENDC}'.\n"}
 		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this would have aborted the script.${ENDC}\n" }
