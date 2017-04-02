@@ -1364,7 +1364,25 @@ sub preflight_checks {
 	if ( ! $NOINFO ) { show_info_box(); print "Distro: ${CYAN}" . $distro . "${ENDC}\n"}	
 	if ( ! $NOINFO ) { show_info_box(); print "Version: ${CYAN}" . $version . "${ENDC}\n"}	
 	if ( ! $NOINFO ) { show_info_box(); print "Codename: ${CYAN}" . $codename . "${ENDC}\n"}	
-	if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}New OS verification checks are coming soon, for now it is opened up, but you may get errors. 02-04-2017${ENDC}\n"}
+	if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}New OS/Version verification checks are being worked on, you may get errors and teething problems. 02-04-2017${ENDC}\n"}
+	if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Apologies for any inconvenience, this message will disappear when all issues resolved. 02-04-2017${ENDC}\n"}
+
+	# Please dont make pull requests to add your distro to this list, that doesnt make it supportes
+	# The following distros are what I use to test and deploy apache2buddy and only these distro's are supported.
+	my @supported_os_list = ('Ubuntu', 'Debian', 'Red Hat Enterprise Linux', 'CentOS Linux', 'Scientific Linux');
+	my %sol = map { $_ => 1 } @supported_os_list;
+	if (exists($sol{$distro})) {
+		if ( ! $NOOK ) { show_ok_box(); print "This Operating System is supported by apache2buddy.pl.\n" }
+		# Coming soon sub checks for versions support / EOL, for example RHEL4/5 and CentOS4/5 Scientific 4/5 are NOT supported any more.
+		# If the OS is deemed unsupported, we still run, but you may get errors, however any github issues raised will not
+		# be entertained for unsupported OS releaases.
+	} else {
+		show_crit_box(); print "${RED}This Operating System is not supported by apache2buddy.pl.${ENDC}\n";
+		# list supported OS distros
+		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Distro's:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @supported_os_list) . "${ENDC}'.\n"}
+		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this would have aborted the script.${ENDC}\n" }
+		#exit;
+	}		
 
 	# get our hostname
 	our $servername = get_hostname();
