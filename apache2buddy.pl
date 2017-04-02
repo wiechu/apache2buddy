@@ -325,33 +325,33 @@ sub check_os_support {
 		} elsif  ($distro eq "Ubuntu" ) {
 			if (exists($usv{$version})) {
 				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
+			} else {
+				show_crit_box(); print "${RED}This distro version is not supported by apache2buddy.pl.${ENDC}\n";
+				# list supported debian versions
+				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Ubuntu (LTS ONLY) versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @ubuntu_supported_versions) . "${ENDC}'.\n"}
+				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
+				#exit;
 			}
-		} else {
-			show_crit_box(); print "${RED}This distro version is not supported by apache2buddy.pl.${ENDC}\n";
-			# list supported debian versions
-			if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Ubuntu (LTS ONLY) versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @ubuntu_supported_versions) . "${ENDC}'.\n"}
-			if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
-			#exit;
-		}
-	} elsif (exists($rol{$distro})) {
-		# for red hat versions is not si clinical regarding the specific versions, however we need to be mindful of EOL versions eg RHEL 3, 4, 5
-		# get mavjor version from version string. note that redhatm centos and scientifc are al rebuilds of the same sources, variables therefore
-		# use the generic 'redhat' reference.
-		if ( $VERBOSE ) { print "VERBOSE -> RedHat Version: ". $version . "\n"}
-		my @redhat_version = split('\.', $version);
-		if ( $VERBOSE ) {
-			foreach my $item (@redhat_version) {
-				print "VERBOSE: ".  $item . "\n";
+		} elsif (exists($rol{$distro})) {
+			# for red hat versions is not si clinical regarding the specific versions, however we need to be mindful of EOL versions eg RHEL 3, 4, 5
+			# get mavjor version from version string. note that redhatm centos and scientifc are al rebuilds of the same sources, variables therefore
+			# use the generic 'redhat' reference.
+			if ( $VERBOSE ) { print "VERBOSE -> RedHat Version: ". $version . "\n"}
+			my @redhat_version = split('\.', $version);
+			if ( $VERBOSE ) {
+				foreach my $item (@redhat_version) {
+					print "VERBOSE: ".  $item . "\n";
+				}
+       			}
+			my $major_redhat_version = $redhat_version[0];
+			if ( $VERBOSE ) { print "VERBOSE -> Major RedHat Version Detected ". $major_redhat_version . "\n"}
+			if ($major_redhat_version lt 6 ) {
+				show_crit_box(); print "${RED}This distro version is not supported by apache2buddy.pl.${ENDC}\n";
+				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
+				#exit;
+			} else {
+				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
 			}
-       		}
-		my $major_redhat_version = $redhat_version[0];
-		if ( $VERBOSE ) { print "VERBOSE -> Major RedHat Version Detected ". $major_redhat_version . "\n"}
-		if ($major_redhat_version lt 6 ) {
-			show_crit_box(); print "${RED}This distro version is not supported by apache2buddy.pl.${ENDC}\n";
-			if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
-			#exit;
-		} else {
-			if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
 		}
 	} else {
 		show_crit_box(); print "${RED}This Operating System is not supported by apache2buddy.pl.${ENDC}\n";
