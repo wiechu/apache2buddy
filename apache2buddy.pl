@@ -295,7 +295,15 @@ sub check_os_support {
 	my ($distro, $version, $codename) = @_;
 	# Please dont make pull requests to add your distro to this list, that doesnt make it supported.
 	# The following distros are what I use to test and deploy apache2buddy and only these distro's are supported.
-	my @supported_os_list = ('Ubuntu', 'ubuntu', 'Debian', 'debian', 'Red Hat Enterprise Linux', 'redhat', 'CentOS Linux', 'Scientific Linux');
+	my @supported_os_list = ('Ubuntu',
+				'ubuntu',
+				'Debian',
+				'debian',
+				'Red Hat Enterprise Linux',
+				'Red Hat Enterprise Linux Server',
+				'redhat',
+				'CentOS Linux',
+				'Scientific Linux');
 	my %sol = map { $_ => 1 } @supported_os_list;
 	
 	my @ubuntu_os_list = ('Ubuntu', 'ubuntu');

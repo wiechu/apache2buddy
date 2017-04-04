@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-04-04	Richard Forth   Added 'Red Hat Enterprise Linux Server' to new
+				list of supported OSes. Fixes #179. Bug. 
 2017-04-02	Richard Forth   Added code to detect older EOL OS versions and abort.
 				Still in soft-fail at the moment.
 2017-04-02	Richard Forth   Added code to detect EOL OS versions and abort.
