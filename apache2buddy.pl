@@ -303,6 +303,8 @@ sub check_os_support {
 				'Red Hat Enterprise Linux Server',
 				'redhat',
 				'CentOS Linux',
+				'CentOS',
+				'centos',
 				'Scientific Linux');
 	my %sol = map { $_ => 1 } @supported_os_list;
 	
