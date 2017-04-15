@@ -190,6 +190,18 @@ our $NOHEADER = 0;
 # by default, check pid size 
 our $NOCHKPID = 0;
 
+# add 'skip section' options...
+
+# by default, do not skip maxclients check
+our $SKIPMAXCLIENTS = 0;
+
+# by default, do not skip php fatal errors check 
+our $SKIPPHPFATAL = 0;
+
+# by default, do not skip updates check 
+our $SKIPUPDATES = 0;
+
+
 # grab the command line arguments
 GetOptions(
 	'help|h' => \$help,
@@ -203,6 +215,9 @@ GetOptions(
 	'no-ok|K' => \$NOOK,
 	'noheader|H' => \$NOHEADER,
 	'no-check-pid|P' => \$NOCHKPID,
+	'skip-maxclients' => \$SKIPMAXCLIENTS,
+	'skip-php-fatal' => \$SKIPPHPFATAL,
+	'skip-updates' => \$SKIPUPDATES,
 	'nonews' => \$NONEWS
 );
 
