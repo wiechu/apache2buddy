@@ -1956,8 +1956,8 @@ sub detect_package_updates {
 	}
 	if ($package_update) {
 		if ( ! $NOWARN ) {
-			show_warn_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
-			print $package_update;
+			show_crit_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
+			print "${YELLOW}$package_update${ENDC}";
 		}
 	} else {
 		if (-d "/usr/local/httpd" or -d "/usr/local/apache" or -d "/usr/local/apache2") {
@@ -2013,8 +2013,6 @@ sub detect_php_fatal_errors {
 	if ($model eq "worker") {
 		return;
 	}
-	our $phpfatalerr = 0;
-	our $phpfpmfatalerr_hits = 0;
 
 	if ($process_name eq "/usr/sbin/httpd" ) {
 		our $SCANDIR = "/var/log/httpd/";
@@ -2023,34 +2021,16 @@ sub detect_php_fatal_errors {
         } else {
 		our $SCANDIR = "/var/log/apache2/";
         }
-        our @logfile_list;
-        our %logfile_counts;
 	our $SCANDIR;
-        find(sub {push @logfile_list, $File::Find::name  if ( -f $_ ) },  $SCANDIR);
-        foreach my $file (@logfile_list) {
-                our $phpfatalerror_hits = 0;
-                open(FILE, $file);
-                foreach my $line (<FILE>) {
-                        our $phpfatalerror_hits++ if $line =~ /php fatal/i;
-                }
-                close(FILE);
-	        if ($phpfatalerror_hits) {  $logfile_counts{ $file } =  $phpfatalerror_hits }
-        }
+	our %logfile_counts;
+	grep_php_fatal($SCANDIR);
 
 	if ($phpfpm_detected) {
 		our $SCANDIR = "/var/log/php-fpm/";
-	        our $phpfatalerr_hits = 0;
-	        find(sub {push @logfile_list, $File::Find::name  if ( -f $_ ) },  $SCANDIR);
-	        foreach my $file (@logfile_list) {
-	                our $phpfatalerror_hits = 0;
-	                open(FILE, $file);
-	                foreach my $line (<FILE>) {
-	                        our $phpfatalerror_hits++ if $line =~ /php fatal/i;
-	                }
-	                close(FILE);
-	         	if ($phpfatalerror_hits) {  $logfile_counts{ $file } =  $phpfatalerror_hits }
-	        }
+		our %logfile_counts;
+		grep_php_fatal($SCANDIR);
 	}
+	our %logfile_counts;
 	if (%logfile_counts) {
 		if ( ! $NOWARN ) {
 			show_crit_box();
@@ -2076,6 +2056,22 @@ sub detect_php_fatal_errors {
 	}
 }
 
+
+sub grep_php_fatal {
+	my ($SCANDIR) = @_;
+	our %logfile_counts;
+        my @logfile_list;
+	find(sub {push @logfile_list, $File::Find::name  if ( -f $_ ) },  $SCANDIR);
+        foreach my $file (@logfile_list) {
+                our $phpfatalerror_hits = 0;
+                open(FILE, $file);
+                foreach my $line (<FILE>) {
+                        $phpfatalerror_hits++ if $line =~ /php fatal/i;
+                }
+                close(FILE);
+                if ($phpfatalerror_hits) {  $logfile_counts{ $file } =  $phpfatalerror_hits }
+        }
+}	
 
 
 sub detect_maxclients_hits {
