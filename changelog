@@ -2,6 +2,11 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-04-20	Richard Forth   Closes #184 , Modified PHP Fatal Error Check.
+				- Now works on subfolders correctly
+				- removes need for backticked grep
+				- cleaner and more structured summaries rather
+				than actual log output.
 2017-04-20	Richard Forth   Closes #183 , Added skip checks for the following:
 				--skip-maxclients
 				--skip-php-fatal

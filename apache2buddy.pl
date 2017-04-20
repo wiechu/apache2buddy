@@ -2007,7 +2007,7 @@ sub detect_plesk_version {
 
 
 sub detect_php_fatal_errors {
-	print "VERBOSE: Checking logs for PHP Fatal Errors, this can take some time..." if $main::VERBOSE;
+	print "VERBOSE: Checking logs for PHP Fatal Errors, this can take some time...\n" if $main::VERBOSE;
 	our $phpfpm_detected;
 	our ($model, $process_name) = @_;
 	if ($model eq "worker") {
@@ -2015,34 +2015,49 @@ sub detect_php_fatal_errors {
 	}
 	our $phpfatalerr = 0;
 	our $phpfpmfatalerr_hits = 0;
-	if ($process_name eq "/usr/sbin/httpd") {
-                our $phpfatalerr_hits = `grep -Hi fatal /var/log/httpd/* | grep -i php | grep -i error | tail -5`;
-        } elsif ($process_name eq "/usr/local/apache/bin/httpd") {
-                our $phpfatalerr_hits = `grep -Hi fatal /usr/local/apache/logs/* | grep -i php | grep -i error | tail -5`;
-        } else {
-                our $phpfatalerr_hits = `grep -Hi fatal /var/log/apache2/* | grep -i php | grep -i error | tail -5`;
-        }
-	
-	if ($phpfpm_detected) {
-		our $phpfpmfatalerr_hits = `grep -Hi fatal /var/log/php-fpm/* | grep -i php | grep -i error | tail -5`;
-	}
 
-        our $phpfatalerr_hits;
-        our $phpfpmfatalerr_hits;
-	if ($phpfatalerr_hits or $phpfpmfatalerr_hits) {
-		$phpfatalerr = 1;
+	if ($process_name eq "/usr/sbin/httpd" ) {
+		our $SCANDIR = "/var/log/httpd/";
+        } elsif ($process_name eq "/usr/local/apache/bin/httpd" ) {
+		our $SCANDIR = "/usr/local/apache/logs/";
+        } else {
+		our $SCANDIR = "/var/log/apache2/";
+        }
+        our @logfile_list;
+        our %logfile_counts;
+	our $SCANDIR;
+        find(sub {push @logfile_list, $File::Find::name  if ( -f $_ ) },  $SCANDIR);
+        foreach my $file (@logfile_list) {
+                our $phpfatalerror_hits = 0;
+                open(FILE, $file);
+                foreach my $line (<FILE>) {
+                        our $phpfatalerror_hits++ if $line =~ /php fatal/i;
+                }
+                close(FILE);
+	        if ($phpfatalerror_hits) {  $logfile_counts{ $file } =  $phpfatalerror_hits }
+        }
+
+	if ($phpfpm_detected) {
+		our $SCANDIR = "/var/log/php-fpm/";
+	        our $phpfatalerr_hits = 0;
+	        find(sub {push @logfile_list, $File::Find::name  if ( -f $_ ) },  $SCANDIR);
+	        foreach my $file (@logfile_list) {
+	                our $phpfatalerror_hits = 0;
+	                open(FILE, $file);
+	                foreach my $line (<FILE>) {
+	                        our $phpfatalerror_hits++ if $line =~ /php fatal/i;
+	                }
+	                close(FILE);
+	         	if ($phpfatalerror_hits) {  $logfile_counts{ $file } =  $phpfatalerror_hits }
+	        }
 	}
-	our $phpfatalerr;
-	if ($phpfatalerr) {
+	if (%logfile_counts) {
 		if ( ! $NOWARN ) {
-			show_warn_box();
-			print "${RED}PHP Fatal errors were found, see the most recent entries below (CHECK THE DATESTAMPS!)${ENDC}\n";
-			show_advisory_box(); print "${YELLOW}Check the logs manually, there may be much more.${ENDC}\n";
-			print "\n${CYAN}Apache Logs (LAST 5 ENTRIES):${ENDC}\n";
-			print $phpfatalerr_hits;
-			if ($phpfpm_detected) {
-				print "\n${CYAN}PHP-FPM Logs (LAST 5 ENTRIES):${ENDC}\n";
-				print $phpfpmfatalerr_hits;
+			show_crit_box();
+			print "${RED}PHP Fatal errors were found, see summaries below.${ENDC}\n";
+			show_advisory_box(); print "${YELLOW}Check the logs manually.${ENDC}\n";
+			while( my( $key, $value ) = each %logfile_counts ){
+				show_advisory_box(); print " - ${YELLOW}$key${ENDC}: ${CYAN}$value${ENDC}\n";
 			}
 			our $plesk;
 			if ($plesk) {
