@@ -135,8 +135,12 @@ If no options are specified, the basic tests will be run.
 	-K, --no-ok		Do not show OK messages.
 	-W, --nowarn		Do not show warning messages.
 	-L, --light-term	Show colours for a light background terminal.
-	-r, --report		Implies -HNWK or --noinfo --nowarn --no-ok --noheader
-	-P, --no-check-pid	DON'T Check the Parent Pid File Size (only use if desperate for more info, results may be skewed)
+	-r, --report		Implies -HNWK or --noinfo --nowarn --no-ok --noheader --skip-maxclients --skip-php-fatal --skip-updates
+	-P, --no-check-pid	DON'T Check the Parent Pid File Size (only use if desperate for more info, results may be skewed).
+	    --skip-maxclients	Skip checking in maxclients was hit recently, can be slow, especialy if you have large log files.
+            --skip-php-fatal    Skip checking for PHP FATAL errors, can be slow, especialy if you have large log files.
+            --skip-updates      Skip checking for package updates, can be slow or problematic, causing the script to hang.
+
 
 Key:
 
@@ -238,6 +242,9 @@ if ( $REPORT ) {
 	$NONEWS = 1;
 	$NOWARN = 1;
 	$NOOK = 1;
+	$SKIPMAXCLIENTS = 1;
+	$SKIPPHPFATAL = 1;
+	$SKIPUPDATES = 1;
 }
 
 # Declare constants such as ANSI COLOR schemes.
@@ -1914,17 +1921,29 @@ sub preflight_checks {
 
 	# Check 19 : Maxclients Hits
 	# This has been abstracted out into a separate subroutine
-	detect_maxclients_hits($model, $process_name);
+	if ( ! $SKIPMAXCLIENTS ) { 
+		detect_maxclients_hits($model, $process_name) 
+	} else {
+		if ( ! $NOINFO ) { show_advisory_box(); print "Skipping Maxclients Hits check.\n" }
+	}
 
 	# Check 20 : PHP Fatal Errors
 	# This has been abstracted out into a separate subroutine
 	# This addresses issue #6 'Check for and report on PHP Fatal Errors in the logs'
-	if ($PHP) {
-		detect_php_fatal_errors($model, $process_name);
+	if ( ! $SKIPPHPFATAL ) {
+		if ($PHP) {
+			detect_php_fatal_errors($model, $process_name);
+		}
+	} else {
+		if ( ! $NOINFO ) { show_advisory_box(); print "Skipping PHP FATAL Errors check.\n" }
 	}
 
 	# Check 21 : Apache updates
-	detect_package_updates();
+	if ( ! $SKIPUPDATES ) {
+		detect_package_updates() 
+	} else {
+		if ( ! $NOINFO ) { show_advisory_box(); print "Skipping Package Updates check.\n" }
+	}
 }
 
 sub detect_package_updates {
