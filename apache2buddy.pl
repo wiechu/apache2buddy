@@ -725,7 +725,7 @@ sub find_master_value {
 		$result = "CONFIG NOT FOUND";
 	}
 
-	print "VERBOSE: $result " if $main::VERBOSE;
+	print "VERBOSE: $result \n" if $main::VERBOSE;
 	# Ubuntu does not store the Apache user, group, or pidfile definitions 
 	# in the apache2.conf file. instead, variables are in the configuration 
 	# file and the real values are in /etc/apache2/envvars. this is a 
@@ -1018,9 +1018,9 @@ sub get_apache_model {
         } else {
                 $model = `apachectl -M 2>&1 | egrep "worker|prefork|event|itk"`;
                 if ($VERBOSE) { print "VERBOSE: $model" }
-                if ($VERBOSE) { print "VERBOSE: ITK DETECTTOR STARTED\n" }
+                if ($VERBOSE) { print "VERBOSE: ITK DETECTOR STARTED\n" }
                 itk_detect($model);
-                if ($VERBOSE) { print "VERBOSE: ITK DETECTTOR PASSED\n" }
+                if ($VERBOSE) { print "VERBOSE: ITK DETECTOR PASSED\n" }
                 chomp($model);
                 if ($VERBOSE) { print "VERBOSE: $model\n" }
                 if ($VERBOSE) { print "VERBOSE: REGEX Filter started.\n" }
@@ -2132,17 +2132,20 @@ sub get_service_memory_usage_mbytes {
 
 
 sub detect_additional_services {
+	if ($VERBOSE) { print "VERBOSE: Begin detecting additional services...\n" }
 	our $servicefound_flag = 0; # we need this to give a message  if nothing was found, otherwise it looks silly.
 	# Detect Mysql
 	our $mysql_detected = 0;
 	our $mysql_detected = `ps -C mysqld -o rss | grep -v RSS`;
 	if ( $mysql_detected ) {
+		if ($VERBOSE) { print "VERBOSE: MySQL Detected\n" }
 		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}MySQL${ENDC} Detected => " } 
 		# Get MySQL Memory Usage
 		our $mysql_memory_usage_mbytes = get_service_memory_usage_mbytes("mysqld");
 		if ( ! $NOINFO ) { print "Using ${CYAN}$mysql_memory_usage_mbytes MB${ENDC} of memory.\n" }
 	} else {
+		if ($VERBOSE) { print "VERBOSE: MySQL NOT Detected\n" }
 		our $mysql_memory_usage_mbytes = 0;
 	}
 	
@@ -2150,11 +2153,13 @@ sub detect_additional_services {
 	our $java_detected = 0;
 	$java_detected = `ps -C java -o rss | grep -v RSS`;
 	if ( $java_detected ) {
+		if ($VERBOSE) { print "VERBOSE: Java Detected\n" }
 		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Java${ENDC} Detected => " } 
 		our $java_memory_usage_mbytes = get_service_memory_usage_mbytes("java");
 		if ( ! $NOINFO ) { print "Using ${CYAN}$java_memory_usage_mbytes MB${ENDC} of memory.\n" }
 	} else {
+		if ($VERBOSE) { print "VERBOSE: Java NOT Detected\n" }
 		our $java_memory_usage_mbytes = 0;
 	}
 
@@ -2162,12 +2167,14 @@ sub detect_additional_services {
 	our $varnish_detected = 0;
 	$varnish_detected = `ps -C varnishd -o rss | grep -v RSS`;
 	if ( $varnish_detected ) { 
+		if ($VERBOSE) { print "VERBOSE: Varnish Detected\n" }
 		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Varnish${ENDC} Detected => " }
 		# Get varnish Memory Usage
 		our $varnish_memory_usage_mbytes = get_service_memory_usage_mbytes("varnishd");
 		if ( ! $NOINFO ) { print "Using ${CYAN}$varnish_memory_usage_mbytes MB${ENDC} of memory.\n" }
 	} else {
+		if ($VERBOSE) { print "VERBOSE: Varnish NOT Detected\n" }
 		our $varnish_memory_usage_mbytes = 0;
 	}
 
@@ -2175,12 +2182,14 @@ sub detect_additional_services {
 	our $redis_detected = 0;
 	$redis_detected = `ps -C redis-server -o rss | grep -v RSS`;
 	if ( $redis_detected ) { 
+		if ($VERBOSE) { print "VERBOSE: Redis Detected\n" }
 		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Redis${ENDC} Detected => " }
 		# Get Redis Memory Usage
 		our $redis_memory_usage_mbytes = get_service_memory_usage_mbytes("redis-server");
 		if ( ! $NOINFO ) { print "Using ${CYAN}$redis_memory_usage_mbytes MB${ENDC} of memory.\n" }
 	} else {
+		if ($VERBOSE) { print "VERBOSE: Redis NOT Detected\n" }
 		our $redis_memory_usage_mbytes = 0;
 	}
 
@@ -2188,12 +2197,14 @@ sub detect_additional_services {
 	our $memcache_detected = 0;
 	$memcache_detected = `ps -C memcached -o rss | grep -v RSS`;
 	if ( $memcache_detected ) { 
+		if ($VERBOSE) { print "VERBOSE: Memcache Detected\n" }
 		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Memcache${ENDC} Detected => " }
 		# Get Memcache Memory Usage
 		our $memcache_memory_usage_mbytes = get_service_memory_usage_mbytes("memcached");
 		if ( ! $NOINFO ) { print "Using ${CYAN}$memcache_memory_usage_mbytes MB${ENDC} of memory.\n" }
 	} else {
+		if ($VERBOSE) { print "VERBOSE: Memcache NOT Detected\n" }
 		our $memcache_memory_usage_mbytes = 0;
 	}
 
@@ -2202,6 +2213,7 @@ sub detect_additional_services {
 	# Get PHP-FPM Memory Usage
 	$phpfpm_detected = `ps -C php-fpm -o rss | grep -v RSS` || `ps -C php5-fpm -o rss | grep -v RSS` || 0;
 	if ( $phpfpm_detected ) { 
+		if ($VERBOSE) { print "VERBOSE: PHP-FPM Detected\n" }
 		our $servicefound_flag = 1;
 		# Get PHP-FPM Memory Usage
 		our $phpfpm = 0;
@@ -2218,6 +2230,7 @@ sub detect_additional_services {
 		our $phpfpm_memory_usage_mbytes;
 		if ( ! $NOINFO ) { print "Using ${CYAN}$phpfpm_memory_usage_mbytes MB${ENDC} of memory.\n" }
 	} else {
+		if ($VERBOSE) { print "VERBOSE: PHP-FPM NOT Detected\n" }
 		our $phpfpm_memory_usage_mbytes = 0;
 	}
 
@@ -2225,6 +2238,7 @@ sub detect_additional_services {
 	our $gluster_detected = 0;
 	$gluster_detected = `ps -C glusterd -o rss | grep -v RSS`;
 	if ( $gluster_detected ) { 
+		if ($VERBOSE) { print "VERBOSE: Gluster Detected\n" }
 		our $servicefound_flag = 1;
 		if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Gluster${ENDC} Detected => " }
 		# Get Gluster Memory Usage
@@ -2234,6 +2248,7 @@ sub detect_additional_services {
 		our $gluster_memory_usage_mbytes = $glusterd_memory_usage_mbytes + $glusterfs_memory_usage_mbytes + $glusterfsd_memory_usage_mbytes;
 		if ( ! $NOINFO ) { print "Using ${CYAN}$gluster_memory_usage_mbytes MB${ENDC} of memory.\n" }
 	} else {
+		if ($VERBOSE) { print "VERBOSE: Gluster NOT Detected\n" }
 		our $gluster_memory_usage_mbytes = 0;
 	}
 	if ( $servicefound_flag == 0 ) {
@@ -2241,6 +2256,7 @@ sub detect_additional_services {
 	} else {
 		print "\n"; # add a aseparator before the next section
 	}
+	if ($VERBOSE) { print "VERBOSE: End detecting additional services...\n" }
 }
 
 
