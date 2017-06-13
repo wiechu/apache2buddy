@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-06-13	Richard Forth   Added more verbosity.
 2017-04-27	Richard Forth   Added more verbosity, fixed some typos.
 2017-04-20	Richard Forth   Closes #184 , Modified PHP Fatal Error Check.
 				- Now works on subfolders correctly
