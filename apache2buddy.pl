@@ -1067,6 +1067,7 @@ sub get_apache_uptime {
 	my $uptime = `ps -eo \"\%p \%t\" | grep $pid | grep -v grep | awk \'{ print \$2 }\'`;
 	chomp($uptime);
 
+	print "VERBOSE: PID passed to uptime function: $pid\n" if $main::VERBOSE;
 	print "VERBOSE: Raw uptime: $uptime\n" if $main::VERBOSE;
 
 	# check to see if we've been running for multiple days
