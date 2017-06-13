@@ -1605,16 +1605,8 @@ sub preflight_checks {
 	
 
 	# Check 8
-	# determine the Apache uptime
-	our @apache_uptime = get_apache_uptime($pid);
-	
-	if ( ! $NOINFO ) { show_info_box(); print "Apache has been running ${CYAN}$apache_uptime[0]${ENDC}d ${CYAN}$apache_uptime[1]${ENDC}h ${CYAN}$apache_uptime[2]${ENDC}m ${CYAN}$apache_uptime[3]${ENDC}s.\n" }
-	if ( $apache_uptime[0] == "0" ) { 
-		if ( ! $NOWARN ) { 
-			show_crit_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
-			show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n";
-		}
-	}
+	# Due to logic error, moved this check to 13.2
+	# Check apache uptime needs parent PID not a child pid.
 
 	# Check 9
 	# find the apache root	
@@ -1745,7 +1737,20 @@ sub preflight_checks {
 		}
 	}
 
+	# Check 13.2
+	# determine the Apache uptime
+	our $parent_pid;
+	our @apache_uptime = get_apache_uptime($parent_pid);
+	
+	if ( ! $NOINFO ) { show_info_box(); print "Apache has been running ${CYAN}$apache_uptime[0]${ENDC}d ${CYAN}$apache_uptime[1]${ENDC}h ${CYAN}$apache_uptime[2]${ENDC}m ${CYAN}$apache_uptime[3]${ENDC}s.\n" }
+	if ( $apache_uptime[0] == "0" ) { 
+		if ( ! $NOWARN ) { 
+			show_crit_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
+			show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n";
+		}
+	}
 
+	# check 13.3
 	# figure out how much RAM is in the server
 	our $available_mem = `LANGUAGE=en_GB.UTF-8 free | grep \"Mem:\" | awk \'{ print \$2 }\'` / 1024;
 	$available_mem = floor($available_mem);
