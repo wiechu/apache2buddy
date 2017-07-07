@@ -2071,8 +2071,8 @@ sub grep_php_fatal {
         foreach my $file (@logfile_list) {
                 our $phpfatalerror_hits = 0;
                 open(FILE, $file);
-                foreach my $line (<FILE>) {
-                        $phpfatalerror_hits++ if $line =~ /php fatal/i;
+                while (<FILE>) {
+                        $phpfatalerror_hits++ if $_ =~ /php fatal/i;
                 }
                 close(FILE);
                 if ($phpfatalerror_hits) {  $logfile_counts{ $file } =  $phpfatalerror_hits }
