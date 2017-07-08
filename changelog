@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-07-08	Richard Forth   Resolved #209, Yet more ubuntu madness...
+				No /etc/php/7.0/apache2 folder, this is
+				/etc/php/7.0/fpm. Added logic to include this.
 2017-07-08	Richard Forth   Resolved #207, Hard Fail in OS is not listed
 				as supported.
 2017-07-08	Richard Forth   Resolved #206, Drop support for debian 7

@@ -1121,7 +1121,10 @@ sub get_php_setting {
 			our $real_config = "/etc/php/7.0/apache2/php.ini";
 		} elsif ( -f "/etc/php5/apache2/php.ini" ) {
 			our $real_config = "/etc/php5/apache2/php.ini";
+		} elsif ( -f "/etc/php/7.0/fpm/php.ini") {
+			our $real_config = "/etc/php/7.0/fpm/php.ini";
 		}
+
 		our $real_config;
 		if ($VERBOSE) { print "VERBOSE: PHP: Real apache php.ini file is $real_config, using that...\n" }
 		our @php_config_array = `php -c $real_config -r "phpinfo(4);"`;
