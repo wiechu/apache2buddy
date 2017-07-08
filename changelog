@@ -2,6 +2,13 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-07-08	Richard Forth   Resolved #205 at least on Debian 9
+				debian update check broken, requires python
+				Addded a new preflight check to check for a
+				python binary.
+				Also adjusted the way to check what OS we are
+				running as debian 9 now reports its distro in
+				all lowercase.
 2017-07-08	Richard Forth   Resolved #197 at least on Debian 9
 				debian php.ini using cli not apache
 				committed to staging for further testing
