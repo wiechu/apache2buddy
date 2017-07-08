@@ -1937,6 +1937,7 @@ sub preflight_checks {
 	# check #17a-1 detect control panels 
 	detect_plesk_version();
 	detect_cpanel_version();
+	detect_virtualmin_version();
 
 	# Check 17b
 	# Display the php memory limit
@@ -2047,6 +2048,22 @@ sub detect_plesk_version {
 	}
 }
 
+sub detect_virtualmin_version {
+	our $vmin = 0;
+	our $vmin = 1 if -f "/usr/sbin/virtualmin";
+	if ($vmin) {
+		my $vmin_version = 0;
+		$vmin_version = `/usr/sbin/virtualmin info | grep "virtualmin version" | awk -F":" '{ print \$2}'`;
+		chomp($vmin_version);
+		my $wmin_version = 0;
+		$wmin_version = `/usr/sbin/virtualmin info | grep "webmin version" | awk -F":" '{ print \$2}'`;
+		chomp($wmin_version);
+		if ( ! $NOINFO ) { show_info_box(); print "Virtualmin Version: ${CYAN}$vmin_version${ENDC}\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "Webmin Version: ${CYAN}$wmin_version${ENDC}\n" }
+	} else {
+		if ( ! $NOINFO ) { show_info_box(); print "This server is NOT running Virtualmin.\n" }
+	}
+}
 
 sub detect_php_fatal_errors {
 	print "VERBOSE: Checking logs for PHP Fatal Errors, this can take some time...\n" if $main::VERBOSE;

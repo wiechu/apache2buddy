@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-07-08	Richard Forth   Resolved #211, detect virtualmin/webmin install.
+				Note: only displays webmin version in virtualmin
+				installs. 
 2017-07-08	Richard Forth   Resolved #209, Yet more ubuntu madness...
 				No /etc/php/7.0/apache2 folder, this is
 				/etc/php/7.0/fpm. Added logic to include this.
