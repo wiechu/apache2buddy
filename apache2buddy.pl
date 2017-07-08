@@ -1736,10 +1736,13 @@ sub preflight_checks {
 			} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX/apache2.pid") {
 				our $pidfile = "/var/run/apache2/apache2.pid";
 			} else {
-				# CentOS7 always returns CONFIG NOT FOUND, but we know the PID exists.
-				our $pidguess = "/var/run/httpd/httpd.pid";
-				if ( -f  $pidguess ) {
+				# revert to a find command as a last ditch effort to find the pid
+				if ($VERBOSE) { print "VERBOSE: Looking for pid file ..." }
+				our $pidguess = `find /var/run/apache2 | grep pid`;
+				chomp($pidguess);
+				if ( -f $pidguess ) {
 					our $pidfile = $pidguess;
+					if ($VERBOSE) { print "VERBOSE: Located pidfile at $pidfile." }
 				} else {
 					show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n"; 
 					exit;
