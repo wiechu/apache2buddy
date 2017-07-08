@@ -2,6 +2,10 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-07-08	Richard Forth   Resolved #197 at least on Debian 9
+				debian php.ini using cli not apache
+				committed to staging for further testing
+2017-07-08	Richard Forth   Closes #204, Debian 9 pidfile not found error.
 2017-07-07	Richard Forth   Closes #201, a serious bug that invoked OOMKILLER when
 				scanning very large log files.
 2017-06-13	Richard Forth   Fixed uptime logic problem.

@@ -1111,11 +1111,32 @@ sub get_php_setting {
 
 	# this will return an array with all of the local and global PHP 
 	# settings
-	my @php_config_array = `php -r "phpinfo(4);"`;
+	
+	# code to address bug raised in issue #197 (cli memory limits on debian / ubuntu)
+	# sanity check if we are using cli or apache 
+	my $config = `php -r "phpinfo(1);" | grep -i config | grep -i loaded`;
+	chomp ($config);
+	if ($VERBOSE) { print "VERBOSE: PHP: $config\n" }
+
+	if ( $config =~ /cli/ ) {
+		if ($VERBOSE) { print "VERBOSE: PHP: Attempting to find real apache php.ini file...\n" }
+		# try to find the apache2 one
+		if ( -f "/etc/php/7.0/apache2/php.ini") {
+			our $real_config = "/etc/php/7.0/apache2/php.ini";
+		} elsif ( -f "/etc/php5/apache2/php.ini" ) {
+			our $real_config = "/etc/php5/apache2/php.ini";
+		}
+		our $real_config;
+		if ($VERBOSE) { print "VERBOSE: PHP: Real apache php.ini file is $real_config, using that...\n" }
+		our @php_config_array = `php -c $real_config -r "phpinfo(4);"`;
+	} else {
+		our @php_config_array = `php -r "phpinfo(4);"`;
+	}
 
 	my @results;
 
 	# search the array for our desired setting
+	our @php_config_array;
 	foreach (@php_config_array) {
 		chomp($_);
 		if ( $_ =~ m/^\s*$element\s*/ ) {
@@ -1699,6 +1720,8 @@ sub preflight_checks {
 				our $pidfile = "/var/run/apache2/apache2.pid";
 			} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX.pid") {
 				our $pidfile = "/var/run/apache2.pid";
+			} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX/apache2.pid") {
+				our $pidfile = "/var/run/apache2/apache2.pid";
 			} else {
 				# CentOS7 always returns CONFIG NOT FOUND, but we know the PID exists.
 				our $pidguess = "/var/run/httpd/httpd.pid";
