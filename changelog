@@ -2,6 +2,21 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-07-08	Richard Forth   Resolved #207, Hard Fail in OS is not listed
+				as supported.
+2017-07-08	Richard Forth   Resolved #206, Drop support for debian 7
+				Issues with perl modules out of the box.
+2017-07-08	Richard Forth   Resolved #205 at least on Debian 9
+				debian update check broken, requires python
+				Addded a new preflight check to check for a
+				python binary.
+				Also adjusted the way to check what OS we are
+				running as debian 9 now reports its distro in
+				all lowercase.
+2017-07-08	Richard Forth   Resolved #197 at least on Debian 9
+				debian php.ini using cli not apache
+				committed to staging for further testing
+2017-07-08	Richard Forth   Closes #204, Debian 9 pidfile not found error.
 2017-07-07	Richard Forth   Closes #201, a serious bug that invoked OOMKILLER when
 				scanning very large log files.
 2017-06-13	Richard Forth   Fixed uptime logic problem.
