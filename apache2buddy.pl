@@ -340,7 +340,7 @@ sub check_os_support {
 	my %rol = map { $_ => 1 } @redhat_os_list;
 
 	# https://wiki.debian.org/DebianReleases
-	my @debian_supported_versions = ('7','8');
+	my @debian_supported_versions = ('7','8','9');
 	my %dsv = map { $_ => 1 } @debian_supported_versions;
 
 	# https://www.ubuntu.com/info/release-end-of-life
