@@ -340,7 +340,7 @@ sub check_os_support {
 	my %rol = map { $_ => 1 } @redhat_os_list;
 
 	# https://wiki.debian.org/DebianReleases
-	my @debian_supported_versions = ('7','8','9');
+	my @debian_supported_versions = ('8','9');
 	my %dsv = map { $_ => 1 } @debian_supported_versions;
 
 	# https://www.ubuntu.com/info/release-end-of-life
@@ -365,8 +365,7 @@ sub check_os_support {
 				show_crit_box(); print "${RED}This distro version (${CYAN}$version${ENDC}${RED}) is not supported by apache2buddy.pl.${ENDC}\n";
 				# list supported debian versions
 				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Debian versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @debian_supported_versions) . "${ENDC}'.\n"}
-				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
-				#exit;
+				exit;
 			}
 		} elsif  (exists($uol{$distro})) {
 			if (exists($usv{$version})) {
@@ -375,8 +374,7 @@ sub check_os_support {
 				show_crit_box(); print "${RED}This distro version (${CYAN}$version${ENDC}${RED}) is not supported by apache2buddy.pl.${ENDC}\n";
 				# list supported debian versions
 				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Ubuntu (LTS ONLY) versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @ubuntu_supported_versions) . "${ENDC}'.\n"}
-				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
-				#exit;
+				exit;
 			}
 		} elsif (exists($rol{$distro})) {
 			# for red hat versions is not so clinical regarding the specific versions, however we need to be mindful of EOL versions eg RHEL 3, 4, 5
@@ -393,8 +391,7 @@ sub check_os_support {
 			if ( $VERBOSE ) { print "VERBOSE -> Major RedHat Version Detected ". $major_redhat_version . "\n"}
 			if ($major_redhat_version lt 6 ) {
 				show_crit_box(); print "${RED}This distro version (${CYAN}$version${ENDC}${RED}) is not supported by apache2buddy.pl.${ENDC}\n";
-				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this will abort the script.${ENDC}\n" }
-				#exit;
+				exit;
 			} else {
 				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
 			}
@@ -403,8 +400,7 @@ sub check_os_support {
 		show_crit_box(); print "${RED}This distro is not supported by apache2buddy.pl.${ENDC}\n";
 		# list supported OS distros
 		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Distro's:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @supported_os_list) . "${ENDC}'.\n"}
-		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Allowing to run while we iron out bugs, but know that in future this would have aborted the script.${ENDC}\n" }
-		#exit;
+		exit;
        }
 }
 
@@ -1531,8 +1527,6 @@ sub preflight_checks {
 		if ( ! $NOINFO ) { show_info_box(); print "Distro: ${CYAN}" . $distro . "${ENDC}\n"}	
 		if ( ! $NOINFO ) { show_info_box(); print "Version: ${CYAN}" . $version . "${ENDC}\n"}	
 		if ( ! $NOINFO ) { show_info_box(); print "Codename: ${CYAN}" . $codename . "${ENDC}\n"}	
-		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}New OS/Version verification checks are being worked on, you may get errors and teething problems. 02-04-2017${ENDC}\n"}
-		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Apologies for any inconvenience, this message will disappear when all issues resolved. 02-04-2017${ENDC}\n"}
 		check_os_support($distro, $version, $codename);
 	} else {
 		# fallback when python fails to deliver - eg on CentOS5 which is EOL anyway, we get:

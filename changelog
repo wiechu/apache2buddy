@@ -2,6 +2,10 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-07-08	Richard Forth   Resolved #207, Hard Fail in OS is not listed
+				as supported.
+2017-07-08	Richard Forth   Resolved #206, Drop support for debian 7
+				Issues with perl modules out of the box.
 2017-07-08	Richard Forth   Resolved #205 at least on Debian 9
 				debian update check broken, requires python
 				Addded a new preflight check to check for a
