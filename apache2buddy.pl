@@ -1492,7 +1492,23 @@ sub preflight_checks {
                 if ( ! $NOOK ) { show_ok_box(); print "The utility 'apachectl' exists and is available for use: ${CYAN}$apachectl${ENDC}\n" }
         }
 
+	# check 3.2 
+	# Check for python (new in Debian 9  as it doesnt come with it out of the box)
+	our $python = `which python`;
+	chomp($python);
+
+
+	if ( $python !~ m/.*\/python/ ) {
+		show_crit_box(); 
+		print "Unable to locate the python binary. This script requires python to determine the Operating and Version.\n";
+		show_info_box(); print "${YELLOW}To fix this make sure the python package is installed.${ENDC}\n";
+		exit;
+	} else {
+		if ( ! $NOOK ) { show_ok_box(); print "The 'python' binary exists and is available for use: ${CYAN}$python${ENDC}\n" }
+	}
+
 	
+
 	# Check 4
 	# Check for valid port
 	if ( $port < 0 || $port > 65534 ) {
@@ -1978,8 +1994,8 @@ sub preflight_checks {
 sub detect_package_updates {
 	my ($distro, $version, $codename) = get_os_platform();
 	our $package_update = 0;
-	if ($distro eq "Ubuntu" or $distro eq "Debian" ) {
-		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs LANGUAGE=en_GB.UTF-8 apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | egrep "^php|^apache2"`;
+	if (ucfirst($distro) eq "Ubuntu" or ucfirst($distro) eq "Debian" ) {
+		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs apt-cache policy | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | egrep "^php|^apache2"`;
 	} else {
 		$package_update = `yum check-update | egrep "^httpd|^php"`;
 	}
