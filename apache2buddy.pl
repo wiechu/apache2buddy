@@ -1738,15 +1738,23 @@ sub preflight_checks {
 			} else {
 				# revert to a find command as a last ditch effort to find the pid
 				if ($VERBOSE) { print "VERBOSE: Looking for pid file ..." }
-				our $pidguess = `find /var/run/apache2 | grep pid`;
-				chomp($pidguess);
-				if ( -f $pidguess ) {
-					our $pidfile = $pidguess;
-					if ($VERBOSE) { print "VERBOSE: Located pidfile at $pidfile." }
-				} else {
-					show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n"; 
-					exit;
-				}
+                                if ( -d "/var/run/apache2") {
+                                        our $pidguess = `find /var/run/apache2 | grep pid`;
+                                } elsif ( -d "/var/run/httpd") {
+                                        our $pidguess = `find /var/run/httpd | grep pid`;
+                                } else {
+                                        show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n";
+                                        exit;
+                                }
+                                our $pidguess;
+                                chomp($pidguess);
+                                if ( -f $pidguess ) {
+                                        our $pidfile = $pidguess;
+                                        if ($VERBOSE) { print "VERBOSE: Located pidfile at $pidfile." }
+                                } else {
+                                        show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n";
+                                        exit;
+                                }
 			}
 		}
 	
