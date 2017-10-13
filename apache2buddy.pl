@@ -1716,6 +1716,13 @@ sub preflight_checks {
 		# for example what we need to do is first check if the path is a relative path or absolute path.
 		# If it is an absolute path, lets check that first, which will cut out a lot of unnescesary code, 
 		# otherwise we can start guessing based on common relative paths.
+		#  Fix for Issue #222 strip any quotes from returned string
+		#  "/var/run/httpd.pid" becomes /var/run/httpd.pid
+		if ($VERBOSE) { print "VERBOSE: Stripping any quotes from string ...\n" }
+		if ($VERBOSE) { print "VERBOSE: BEFORE ($pidfile_cfv).\n" }
+		$pidfile_cfv =~ s/^"(.*)"$/$1/;
+		$pidfile_cfv =~ s/^'(.*)'$/$1/;
+		if ($VERBOSE) { print "VERBOSE: AFTER ($pidfile_cfv).\n" }
 		if ( -f $pidfile_cfv ) {
 			our $pidfile =$pidfile_cfv;
 		} else {
