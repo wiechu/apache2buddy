@@ -838,19 +838,19 @@ sub test_process {
 	our @output;
 	if ( $process_name eq '/usr/sbin/httpd' ) {
 		@output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
-		print "VERBOSE: First line of output from \"$process_name -V\": $output[0]" if $main::VERBOSE;
+		print "VERBOSE: First line of output from \"$process_name -V\": $output[0]\n" if $main::VERBOSE;
 	} elsif ( $process_name eq '/usr/sbin/httpd.worker' ) {
 		# Handle Worker processes better
 		# BUGFIX, first identified by C. Piper Balta 
 		@output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
-		print "VERBOSE: First line of output from \"$process_name -V\": $output[0]" if $main::VERBOSE;
+		print "VERBOSE: First line of output from \"$process_name -V\": $output[0]\n" if $main::VERBOSE;
 	} elsif ( $process_name eq '/usr/sbin/apache2' ) {
 		@output = `LANGUAGE=en_GB.UTF-8 /usr/sbin/apache2ctl -V 2>&1 | grep "Server version"`;
-		print "VERBOSE: First line of output from \"/usr/sbin/apache2ctl -V\": $output[0]" if $main::VERBOSE;
+		print "VERBOSE: First line of output from \"/usr/sbin/apache2ctl -V\": $output[0]\n" if $main::VERBOSE;
 	} elsif ( $process_name eq '/usr/local/apache/bin/httpd' ) {
 		if ( ! $NOWARN ) { show_warn_box(); print "${RED}Apache seems to have been installed from source, its technically unsupported, we may get errors${ENDC}\n" }
 		@output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
-		print "VERBOSE: First line of output from \"/usr/local/apache/bin/httpd -V\": $output[0]" if $main::VERBOSE;
+		print "VERBOSE: First line of output from \"/usr/local/apache/bin/httpd -V\": $output[0]\n" if $main::VERBOSE;
 	} else {
 		# this catchall should cover all other possibilities, such as
 		# nginx, varnish, etc. 
@@ -1737,7 +1737,7 @@ sub preflight_checks {
 				our $pidfile = "/var/run/apache2/apache2.pid";
 			} else {
 				# revert to a find command as a last ditch effort to find the pid
-				if ($VERBOSE) { print "VERBOSE: Looking for pid file ..." }
+				if ($VERBOSE) { print "VERBOSE: Looking for pid file ...\n" }
                                 if ( -d "/var/run/apache2") {
                                         our $pidguess = `find /var/run/apache2 | grep pid`;
                                 } elsif ( -d "/var/run/httpd") {
@@ -1750,7 +1750,7 @@ sub preflight_checks {
                                 chomp($pidguess);
                                 if ( -f $pidguess ) {
                                         our $pidfile = $pidguess;
-                                        if ($VERBOSE) { print "VERBOSE: Located pidfile at $pidfile." }
+                                        if ($VERBOSE) { print "VERBOSE: Located pidfile at $pidfile.\n" }
                                 } else {
                                         show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n";
                                         exit;
