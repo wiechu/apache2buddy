@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2017-10-13	Richard Forth   Added some much needed carriage returns to VERBOSE lines.
 2017-07-14	Richard Forth   Resolved #215, pidfile issue.
 2017-07-08	Richard Forth   Resolved #195, virtualmin/webmin pidfile issue.
 2017-07-08	Richard Forth   Resolved #211, detect virtualmin/webmin install.
