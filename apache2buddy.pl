@@ -1922,7 +1922,7 @@ sub preflight_checks {
 		$maxclients =~ s/\s//;
 		if ( ! $NOINFO ) { show_info_box();  print "Your MaxClients setting is ${CYAN}$maxclients${ENDC}.\n" }
 	}
-	# trigger doge easter egg if masclients too low
+	# trigger doge easter egg if maxclients too low
 	our $maxclients;
 	our $flag_trigger;
 	if ( $maxclients <= 5 )  {
@@ -2579,4 +2579,4 @@ if ( $model eq "worker") {
 generate_standard_report($available_mem, $maxclients, $apache_proc_lowest, $apache_proc_average, $apache_proc_highest, $model, $threadsperchild, $mysql_memory_usage_mbytes, $java_memory_usage_mbytes, $redis_memory_usage_mbytes, $memcache_memory_usage_mbytes, $varnish_memory_usage_mbytes, $phpfpm_memory_usage_mbytes, $gluster_memory_usage_mbytes);
 
 #show_important_message();
-checktrigger_dogemessage($flag_trigger);
+#checktrigger_dogemessage($flag_trigger);
