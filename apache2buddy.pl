@@ -1325,12 +1325,6 @@ sub generate_standard_report {
 		my $entries = `tail -5 /var/log/apache2buddy.log`;
 		print $entries."\n";
 	}
-	# trigger doge easter egg if masclients too low
-	our $flag_trigger;
-	our $max_rec_maxclients;
-	if ( $max_rec_maxclients <= 5 )  {
-		our $flag_trigger += 1;
-	}
 }
 
 # this rounds a value to the nearest hundreth
@@ -1385,39 +1379,6 @@ sub show_crit_box {
 sub show_shortok_box {
 	print "[ ${GREEN}OK${ENDC} ]";
 }
-
-sub checktrigger_dogemessage {
-	our $flag_trigger = @_;
-	if ($flag_trigger > 0) {
-		dogesayseasteregg();
-	}
-}
-
-
-sub dogesayseasteregg {
-		print <<DOGESAYS
-\033[0;30;47m░░░░░░░░░▄░░░░░░░░░░░░░░▄░░░░\033[0m
-\033[0;30;47m░░░░░░░░▌▒█░░░░░░░░░░░▄▀▒▌░░░\033[0m                             ${RED}${BOLD}!!!!!!   A T T E N T I O N !!!!!!!${ENDC}
-\033[0;30;47m░░░░░░░░▌▒▒█░░░░░░░░▄▀▒▒▒▐░░░\033[0m
-\033[0;30;47m░░░░░░░▐▄▀▒▒▀▀▀▀▄▄▄▀▒▒▒▒▒▐░░░\033[0m     ${YELLOW}${BOLD}Your Recommended or Current MaxRequestWorkers is far too low for a production server!${ENDC}
-\033[0;30;47m░░░░░▄▄▀▒░▒▒▒▒▒▒▒▒▒█▒▒▄█▒▐░░░\033[0m             
-\033[0;30;47m░░░▄▀▒▒▒░░░▒▒▒░░░▒▒▒▀██▀▒▌░░░\033[0m     SUCH CAPACITY              *             Maxclients is reach quick 
-\033[0;30;47m░░▐▒▒▒▄▄▒▒▒▒░░░▒▒▒▒▒▒▒▀▄▒▒▌░░\033[0m
-\033[0;30;47m░░▌░░▌█▀▒▒▒▒▒▄▀█▄▒▒▒▒▒▒▒█▒▐░░\033[0m
-\033[0;30;47m░▐░░░▒▒▒▒▒▒▒▒▌██▀▒▒░░░▒▒▒▀▄▌░\033[0m
-\033[0;30;47m░▌░▒▄██▄▒▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒▌░\033[0m             *            very wow        *     much connection limiting
-\033[0;30;47m▀▒▀▐▄█▄█▌▄░▀▒▒░░░░░░░░░░▒▒▒▐░\033[0m
-\033[0;30;47m▐▒▒▐▀▐▀▒░▄▄▒▄▒▒▒▒▒▒░▒░▒░▒▒▒▒▌\033[0m
-\033[0;30;47m▐▒▒▒▀▀▄▄▒▒▒▄▒▒▒▒▒▒▒▒░▒░▒░▒▒▐░\033[0m                 BARK - NO TOUCH       *               WARN         *          NEED ATTENTION
-\033[0;30;47m░▌▒▒▒▒▒▒▀▀▀▒▒▒▒▒▒░▒░▒░▒░▒▒▒▌░\033[0m
-\033[0;30;47m░▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒░▒░▒▒▄▒▒▐░░\033[0m
-\033[0;30;47m░░▀▄▒▒▒▒▒▒▒▒▒▒▒░▒░▒░▒▄▒▒▒▒▌░░\033[0m       So Production!         *       so many concurrency    *   foodbowl empty
-\033[0;30;47m░░░░▀▄▒▒▒▒▒▒▒▒▒▒▄▄▄▀▒▒▒▒▄▀░░░\033[0m
-\033[0;30;47m░░░░░░▀▄▄▄▄▄▄▀▀▀▒▒▒▒▒▄▄▀░░░░░\033[0m
-\033[0;30;47m░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▀▀░░░░░░░░\033[0m    ${YELLOW}${BOLD}Hope you enjoyed this little easter egg, if youre happy with your settings, disregard this message.${ENDC}
-DOGESAYS
-}
-
 
 sub show_important_message {
 	if ( ! $NOINFO ) {
@@ -2579,4 +2540,3 @@ if ( $model eq "worker") {
 generate_standard_report($available_mem, $maxclients, $apache_proc_lowest, $apache_proc_average, $apache_proc_highest, $model, $threadsperchild, $mysql_memory_usage_mbytes, $java_memory_usage_mbytes, $redis_memory_usage_mbytes, $memcache_memory_usage_mbytes, $varnish_memory_usage_mbytes, $phpfpm_memory_usage_mbytes, $gluster_memory_usage_mbytes);
 
 #show_important_message();
-#checktrigger_dogemessage($flag_trigger);
