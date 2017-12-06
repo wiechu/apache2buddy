@@ -1883,12 +1883,17 @@ sub preflight_checks {
 		$maxclients =~ s/\s//;
 		if ( ! $NOINFO ) { show_info_box();  print "Your MaxClients setting is ${CYAN}$maxclients${ENDC}.\n" }
 	}
-	# trigger doge easter egg if maxclients too low
+
+	# Check 16.01
+	# Check if maxclients is more than ServerLimit
+	# Then set maxclients to serverlimit if serverlimit is LESS than MaxClients
 	our $maxclients;
-	our $flag_trigger;
-	if ( $maxclients <= 5 )  {
-		our $flag_trigger += 1;
+	our $serverlimit;
+	if ($maxclients gt $serverlimit) {
+		$maxclients = $serverlimit;
+		 if ( ! $NOWARN ) { show_warn_box; print "MaxClients directive is higher than ServerLimit, using ServerLimit ($serverlimit) to apply calculations.\n" }
 	}
+
 
 	# Check 16.1
 	# Get current number of running apache processes
