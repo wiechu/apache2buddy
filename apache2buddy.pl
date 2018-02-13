@@ -1937,7 +1937,7 @@ sub preflight_checks {
 	our $real_port;
 	if ($real_port) {
 		if ( not( $real_port =~ /^(80|443|7080|7081)$/ )) {
-			our $portXvhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port $real_port "`;
+			our $portXvhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | egrep -v "lists|default|webmail" | grep -c "port $real_port "`;
 			chomp ($portXvhost_count);
 			if ($portXvhost_count gt 0 ) {
 				if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$portXvhost_count${ENDC} are listening on nonstandard port ${CYAN}$real_port${ENDC}.\n" }
