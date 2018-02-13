@@ -1547,8 +1547,6 @@ sub preflight_checks {
 			if ( ! $NOINFO ) { show_info_box(); print "Distro: ${CYAN}" . $distro . "${ENDC}\n"}	
 			if ( ! $NOINFO ) { show_info_box(); print "Version: ${CYAN}" . $version . "${ENDC}\n"}	
 			if ( ! $NOINFO ) { show_info_box(); print "Codename: ${CYAN}" . $codename . "${ENDC}\n"}	
-			if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}New OS/Version verification checks are being worked on, you may get errors and teething problems. 02-04-2017${ENDC}\n"}
-			if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Apologies for any inconvenience, this message will disappear when all issues resolved. 02-04-2017${ENDC}\n"}
 			check_os_support($distro, $version, $codename);
 		}
 	}		 
@@ -1912,8 +1910,11 @@ sub preflight_checks {
 	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
 	our $vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "[ ]\\{1,\\}port [0-9]\\{1,\\}"`;
 	# split this total into port 80 and 443 vhosts respectively: https://github.com/richardforth/apache2buddy/issues/142
-	our $port80vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port 80 "`;
-	our $port443vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port 443 "`;
+	# address https://github.com/richardforth/apache2buddy/issues/239 Plesk vhost counts always out
+	our $port80vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | egrep -v "lists|default|webmail" | grep -c "port 80 "`;
+	our $port443vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | egrep -v "lists|default|webmail" | grep -c "port 443 "`;
+	our $port7080vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | egrep -v "lists|default|webmail" | grep -c "port 7080 "`;
+	our $port7081vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | egrep -v "lists|default|webmail" | grep -c "port 7081 "`;
 	# in case apache2ctl not working, try apachectl
 	chomp ($vhost_count);
 	chomp ($port80vhost_count);
@@ -1925,9 +1926,15 @@ sub preflight_checks {
 	if ($port443vhost_count gt 0 ) {
 		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port443vhost_count${ENDC} are HTTPS (specifically, port 443).\n" }
 	}
+	if ($port7080vhost_count gt 0 ) {
+		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port80vhost_count${ENDC} are HTTP (specifically, port 7080).\n" }
+	}
+	if ($port7081vhost_count gt 0 ) {
+		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port80vhost_count${ENDC} are HTTPS (specifically, port 7081).\n" }
+	}
 	our $real_port;
 	if ($real_port) {
-		if ( $real_port != "80") {
+		if ( not( $real_port =~ /^[80|443|7080|7081]$/ )) {
 			our $portXvhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "port $real_port "`;
 			chomp ($portXvhost_count);
 			if ($portXvhost_count gt 0 ) {
