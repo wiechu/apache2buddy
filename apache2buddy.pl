@@ -1919,6 +1919,8 @@ sub preflight_checks {
 	chomp ($vhost_count);
 	chomp ($port80vhost_count);
 	chomp ($port443vhost_count);
+	chomp ($port7080vhost_count);
+	chomp ($port7081vhost_count);
 	if ( ! $NOINFO ) { show_info_box(); print "Number of vhosts detected: ${CYAN}$vhost_count${ENDC}.\n" }
 	if ($port80vhost_count gt 0 ) {
 		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port80vhost_count${ENDC} are HTTP (specifically, port 80).\n" }
