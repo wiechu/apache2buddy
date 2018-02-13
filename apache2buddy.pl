@@ -1908,9 +1908,9 @@ sub preflight_checks {
 	# Check 16.2
 	# Get current number of vhosts
 	# This addresses issue #5 'count of vhosts': https://github.com/richardforth/apache2buddy/issues/5 
-	our $vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | grep -c "[ ]\\{1,\\}port [0-9]\\{1,\\}"`;
-	# split this total into port 80 and 443 vhosts respectively: https://github.com/richardforth/apache2buddy/issues/142
 	# address https://github.com/richardforth/apache2buddy/issues/239 Plesk vhost counts always out
+	our $vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | egrep -v "lists|default|webmail" | grep -c "[ ]\\{1,\\}port [0-9]\\{1,\\}"`;
+	# split this total into port 80 and 443 vhosts respectively: https://github.com/richardforth/apache2buddy/issues/142
 	our $port80vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | egrep -v "lists|default|webmail" | grep -c "port 80 "`;
 	our $port443vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | egrep -v "lists|default|webmail" | grep -c "port 443 "`;
 	our $port7080vhost_count = `LANGUAGE=en_GB.UTF-8 $apachectl -S 2>&1 | egrep -v "lists|default|webmail" | grep -c "port 7080 "`;
@@ -1927,10 +1927,10 @@ sub preflight_checks {
 		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port443vhost_count${ENDC} are HTTPS (specifically, port 443).\n" }
 	}
 	if ($port7080vhost_count gt 0 ) {
-		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port80vhost_count${ENDC} are HTTP (specifically, port 7080).\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port7080vhost_count${ENDC} are HTTP (specifically, port 7080).\n" }
 	}
 	if ($port7081vhost_count gt 0 ) {
-		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port80vhost_count${ENDC} are HTTPS (specifically, port 7081).\n" }
+		if ( ! $NOINFO ) { show_info_box(); print "            |________ of which ${CYAN}$port7081vhost_count${ENDC} are HTTPS (specifically, port 7081).\n" }
 	}
 	our $real_port;
 	if ($real_port) {
