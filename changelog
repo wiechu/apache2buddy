@@ -2,6 +2,12 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2018-02-10      Richard Forth   Addressed a concern over plesk vhosts counting
+                                now ommiting domains containing:
+				     - lists
+				     - default
+				     - webmail
+				from the count.
 2017-12-05	Richard Forth   Closes #231 Respect ServerLimit.
 2017-11-01	Richard Forth   Closes #229 Removed easter egg, causing problems.
 2017-10-13	Richard Forth   Closes #223 Added an easter egg.
