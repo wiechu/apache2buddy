@@ -128,6 +128,7 @@ If no options are specified, the basic tests will be run.
 
 	-h, --help		Print this help message
 	-p, --port=PORT		Specify an alternate port to check (default: 80)
+	    --pid=PID		Specify a PID to bypass the "Multiple PIDS listening on port 80" error.
 	-v, --verbose		Use verbose output (this is very noisy, only useful for debugging)
 	-n, --nocolor		Use default terminal color, dont try to be all fancy! 
 	-H, --noheader		Do not show header title bar.
@@ -166,6 +167,9 @@ my $LIGHTBG = 0;
 
 # if no port is specified, we default to 80
 my $port = 80;
+
+# if no pid is specified, we default to 0
+our $pid = 0;
 
 # by default, do not use verbose output
 our $VERBOSE = "";
@@ -210,6 +214,7 @@ our $SKIPUPDATES = 0;
 GetOptions(
 	'help|h' => \$help,
 	'port|p:i' => \$port,
+	'pid:i' => \$pid,
 	'verbose|v' => \$VERBOSE,
 	'nocolor|n' => \$main::NOCOLOR,
 	'noinfo|N' => \$NOINFO,
@@ -1565,7 +1570,10 @@ sub preflight_checks {
 	# specified port
 	if ( ! $NOINFO ) { show_info_box(); print "We are checking the service running on port ${CYAN}$port${ENDC}...\n" }
 
-	our $pid = get_pid($port);
+	our $pid;
+	if (! $pid ) {  
+		our $pid = get_pid($port);
+	}
 	
 	print "VERBOSE: PID is ".$pid."\n" if $VERBOSE;
 	
