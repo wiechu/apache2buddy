@@ -351,7 +351,7 @@ sub check_os_support {
 	my %dsv = map { $_ => 1 } @debian_supported_versions;
 
 	# https://www.ubuntu.com/info/release-end-of-life
-	my @ubuntu_supported_versions = ('14.04','16.04');
+	my @ubuntu_supported_versions = ('14.04','16.04','18.04');
 	my %usv = map { $_ => 1 } @ubuntu_supported_versions;
 
 	if (exists($sol{$distro})) {
