@@ -297,7 +297,8 @@ if ( ! $NOCOLOR ) {
 }
 
 sub get_os_platform_older {
-	my $raw_platform = `python -c 'import platform ; print (platform.dist())'`;
+	our $python;
+	my $raw_platform = `$python -c 'import platform ; print (platform.dist())'`;
 	# ('CentOS Linux', '7.3.1611', 'Core')
 	$raw_platform =~ s/[()']//g;
 	my @platform = split(", ", $raw_platform);
@@ -308,7 +309,8 @@ sub get_os_platform_older {
 }
 
 sub get_os_platform {
-	my $raw_platform = `python -c 'import platform ; print (platform.linux_distribution())'`;
+	our $python;
+	my $raw_platform = `$python -c 'import platform ; print (platform.linux_distribution())'`;
 	# ('CentOS Linux', '7.3.1611', 'Core')
 	$raw_platform =~ s/[()']//g;
 	my @platform = split(", ", $raw_platform);
@@ -1124,6 +1126,10 @@ sub get_php_setting {
 		# try to find the apache2 one
 		if ( -f "/etc/php/7.0/apache2/php.ini") {
 			our $real_config = "/etc/php/7.0/apache2/php.ini";
+		} elsif ( -f "/etc/php/7.1/apache2/php.ini") {
+                        our $real_config = "/etc/php/7.1/apache2/php.ini";
+                } elsif ( -f "/etc/php/7.2/apache2/php.ini") {
+                        our $real_config = "/etc/php/7.2/apache2/php.ini";
 		} elsif ( -f "/etc/php5/apache2/php.ini" ) {
 			our $real_config = "/etc/php5/apache2/php.ini";
 		} elsif ( -f "/etc/php/7.0/fpm/php.ini") {
@@ -1504,9 +1510,20 @@ sub preflight_checks {
 
 	if ( $python !~ m/.*\/python/ ) {
 		show_crit_box(); 
-		print "Unable to locate the python binary. This script requires python to determine the Operating and Version.\n";
-		show_info_box(); print "${YELLOW}To fix this make sure the python package is installed.${ENDC}\n";
-		exit;
+		print "Unable to locate the python binary.\n";
+                print "Trying for python3...\n";
+                our $python = `which python3`;
+                chomp($python);
+
+
+                if ( $python !~ m/.*\/python3/ ) {
+                        show_crit_box();
+                        print "Unable to locate the python3 binary. This script requires python to determine the Operating and Version.\n";
+                        show_info_box(); print "${YELLOW}To fix this make sure the python or python3 package is installed.${ENDC}\n";
+                        exit;
+                } else {
+                        if ( ! $NOOK ) { show_ok_box(); print "The 'python' binary exists and is available for use: ${CYAN}$python${ENDC}\n" }
+                }
 	} else {
 		if ( ! $NOOK ) { show_ok_box(); print "The 'python' binary exists and is available for use: ${CYAN}$python${ENDC}\n" }
 	}
