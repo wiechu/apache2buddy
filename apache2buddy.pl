@@ -1124,16 +1124,20 @@ sub get_php_setting {
 	if ( $config =~ /cli/ ) {
 		if ($VERBOSE) { print "VERBOSE: PHP: Attempting to find real apache php.ini file...\n" }
 		# try to find the apache2 one
-		if ( -f "/etc/php/7.0/apache2/php.ini") {
-			our $real_config = "/etc/php/7.0/apache2/php.ini";
-		} elsif ( -f "/etc/php/7.1/apache2/php.ini") {
-                        our $real_config = "/etc/php/7.1/apache2/php.ini";
-                } elsif ( -f "/etc/php/7.2/apache2/php.ini") {
-                        our $real_config = "/etc/php/7.2/apache2/php.ini";
-		} elsif ( -f "/etc/php5/apache2/php.ini" ) {
+		if ( -f "/etc/php5/apache2/php.ini" ) {
 			our $real_config = "/etc/php5/apache2/php.ini";
+		} elsif ( -f "/etc/php/7.0/apache2/php.ini") {
+			our $real_config = "/etc/php/7.0/apache2/php.ini";
 		} elsif ( -f "/etc/php/7.0/fpm/php.ini") {
 			our $real_config = "/etc/php/7.0/fpm/php.ini";
+		} elsif ( -f "/etc/php/7.1/apache2/php.ini") {
+                        our $real_config = "/etc/php/7.1/apache2/php.ini";
+		} elsif ( -f "/etc/php/7.1/fpm/php.ini") {
+			our $real_config = "/etc/php/7.1/fpm/php.ini";
+                } elsif ( -f "/etc/php/7.2/apache2/php.ini") {
+                        our $real_config = "/etc/php/7.2/apache2/php.ini";
+		} elsif ( -f "/etc/php/7.2/fpm/php.ini") {
+			our $real_config = "/etc/php/7.2/fpm/php.ini";
 		}
 
 		our $real_config;
