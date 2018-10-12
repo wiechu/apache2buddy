@@ -2,6 +2,7 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2018-10-12      Richard Forth   Closes Issue #255 Ignore large gzipped files.
 2018-10-12      Richard Forth   Closes Issue #268 Additional verbiage about
 				maxclients/maxrequestworkers being hit only
 				once per lifetime.
