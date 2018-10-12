@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2018-10-12      Richard Forth   Closes Issue #252 Add verbiage about Apache
+				2.2 EOL. Refer to https://httpd.apache.org/.
 2018-10-12      Richard Forth   Closes Issue #255 Ignore large gzipped files.
 2018-10-12      Richard Forth   Closes Issue #268 Additional verbiage about
 				maxclients/maxrequestworkers being hit only
