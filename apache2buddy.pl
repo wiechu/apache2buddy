@@ -418,9 +418,12 @@ sub systemcheck_large_logs {
 		my $logfiles_raw = find(sub {push @logs, $File::Find::name  if -s >= 1024000000;},  $logdir);
 		foreach my $log (@logs) {
 			chomp($log);
-			my $size = -s $log;
-			my $humansize = sprintf "%.2f", $size/1024/1024/1024;
-			show_crit_box(); print $log . " --> " . $humansize . "GB\b\n";
+			# Issue 255 skip reporting already gzipped logs, as they have already been rotated
+			if ( ! $log =~ m/\.gz$/ ) {	
+				my $size = -s $log;
+				my $humansize = sprintf "%.2f", $size/1024/1024/1024;
+				show_crit_box(); print $log . " --> " . $humansize . "GB\b\n";
+			}
 		}
 		if (@logs == 0) {
 			if ( ! $NOOK ) { show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n"; }
