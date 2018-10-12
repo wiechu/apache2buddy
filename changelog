@@ -2,6 +2,10 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2018-10-12      Richard Forth   Closes Issue #221
+				Log Uptime in /var/log/apache2buddy.log
+2018-10-12      Richard Forth   Closes Issue #251 
+				Warn if vhost_count exceeds maxclients
 2018-10-12      Richard Forth   Closes Issue #273 Graceful catch of syntax
 				error in httpd.conf when parsing config.
 2018-10-12      Richard Forth   Closes Issue #252 Add verbiage about Apache

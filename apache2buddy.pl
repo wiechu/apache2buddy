@@ -1193,10 +1193,12 @@ sub get_php_setting {
 sub generate_standard_report {
 	my ( $available_mem,
 		$maxclients,
+		$vhost_count,
 		$apache_proc_smallest,
 		$apache_proc_average,
 		$apache_proc_highest,
 		$model,
+		$uptime,
 		$threadsperchild,
 		$mysql_memory_usage_mbytes,
 		$java_memory_usage_mbytes,
@@ -1250,6 +1252,13 @@ sub generate_standard_report {
 		my $max_potential_usage = $maxclients * $apache_proc_highest;
 		our $max_potential_usage_pct_avail = round(($max_potential_usage/$available_mem)*100);
 		our $max_potential_usage_pct_remain = round(($max_potential_usage/$memory_remaining)*100);
+		if ( $vhost_count >= $maxclients ) { 
+			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
+				show_crit_box(); print "\t${RED}Vhost count exceeds MaxRequestWorkers limits!${ENDC}\n";
+			} else {
+				show_crit_box(); print "\t${RED}Vhost count exceeds MaxClients limits!${ENDC}\n";
+			}
+		}
 		if ( $maxclients >= $min_rec_maxclients and  $maxclients <= $max_rec_maxclients ) {
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
 				if ( ! $NOOK ) { show_shortok_box(); print "\t${GREEN}Your MaxRequestWorkers setting is within an acceptable range.${ENDC}\n" }
@@ -1257,9 +1266,11 @@ sub generate_standard_report {
 				if ( ! $NOOK ) { show_shortok_box(); print "\t${GREEN}Your MaxClients setting is within an acceptable range.${ENDC}\n" } 
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting (based on available memory) is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				if ( $vhost_count >= $max_rec_maxclients ) { show_crit_box(); print "\t${RED}Vhost count exceeds recommended MaxRequestWorkers limits!${ENDC}\n"}
 			} else {
-				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting (based on available memory) is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				if ( $vhost_count >= $max_rec_maxclients ) { show_crit_box(); print "${RED}Vhost count exceeds recommended MaxClients limits!${ENDC}\n"}
 			}
 			printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1272,8 +1283,10 @@ sub generate_standard_report {
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
 				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				if ( $vhost_count >= $max_rec_maxclients ) { show_crit_box(); print "${RED}Vhost count exceeds recommended MaxRequestWorkers limits!${ENDC}\n"}
 			} else {
-				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting (based on available memory) is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				if ( $vhost_count >= $max_rec_maxclients ) { show_crit_box(); print "${RED}Vhost count exceeds recommended MaxClients limits!${ENDC}\n"}
 			}
 			printf ("%-62s ${CYAN}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf  ("%-62s ${CYAN}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1285,9 +1298,11 @@ sub generate_standard_report {
 				show_crit_box(); print "\t${RED}Your MaxClients setting is too high.${ENDC}\n"; # exempt from NOINFO directive.
 			}
 			if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxRequestWorkers setting (based on available memory) is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				if ( $vhost_count >= $max_rec_maxclients ) { show_crit_box(); print "${RED}Vhost count exceeds recommended MaxRequestWorkers limits!${ENDC}\n"}
 			} else {
-				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				printf ("${YELLOW}%-75s${ENDC} %-38s\n", "\tYour recommended MaxClients setting (based on available memory) is between $min_rec_maxclients and $max_rec_maxclients${ENDC}.", "<------- Acceptable Range (10% of MAX)");
+				if ( $vhost_count >= $max_rec_maxclients ) { show_crit_box(); print "${RED}Vhost count exceeds recommended MaxClients limits!${ENDC}\n"}
 			}
 			printf ("%-62s ${RED}%d %2s${ENDC}\n", "\tMax potential memory usage:", $max_potential_usage, "MB");  # exempt from NOINFO directive.
 			printf ("%-62s ${RED}%3.2f %2s${ENDC}\n", "\tPercentage of TOTAL RAM allocated to Apache:", $max_potential_usage_pct_avail, "%");  # exempt from NOINFO directive.
@@ -1302,9 +1317,9 @@ sub generate_standard_report {
         	}
 	
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
-        		print LOGFILE (date()." Model: \"Prefork\" Memory: \"$available_mem MB\" MaxRequestWorkers: \"$maxclients\" Recommended: \"$max_rec_maxclients\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\" Highest Pct Remaining RAM: \"$max_potential_usage_pct_remain%\" \($max_potential_usage_pct_avail% TOTAL RAM)\n");
+        		print LOGFILE (date()." Uptime: \"$uptime\" Model: \"Prefork\" Memory: \"$available_mem MB\" MaxRequestWorkers: \"$maxclients\" Recommended: \"$max_rec_maxclients\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\" Highest Pct Remaining RAM: \"$max_potential_usage_pct_remain%\" \($max_potential_usage_pct_avail% TOTAL RAM)\n");
 		} else {
-        		print LOGFILE (date()." Model: \"Prefork\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"$max_rec_maxclients\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\" Highest Pct Remaining RAM: \"$max_potential_usage_pct_remain%\" \($max_potential_usage_pct_avail% TOTAL RAM)\n");
+        		print LOGFILE (date()." Uptime: \"$uptime\"  Model: \"Prefork\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"$max_rec_maxclients\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\" Highest Pct Remaining RAM: \"$max_potential_usage_pct_remain%\" \($max_potential_usage_pct_avail% TOTAL RAM)\n");
 		}
         	close(LOGFILE);
 	
@@ -1320,7 +1335,7 @@ sub generate_standard_report {
        				$current_date = substr($current_date,0,-1);
        				return $current_date;
         		}
-        		print LOGFILE (date()." Model: \"Worker\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"N\\A\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\"\n");
+        		print LOGFILE (date()." Uptime: \"$uptime\"  Model: \"Worker\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"N\\A\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\"\n");
         		close(LOGFILE);
 	}	
 	if ($model eq "event") {
@@ -1334,7 +1349,7 @@ sub generate_standard_report {
        				$current_date = substr($current_date,0,-1);
        				return $current_date;
         		}
-        		print LOGFILE (date()." Model: \"Event\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"N\\A\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\"\n");
+        		print LOGFILE (date()." Uptime: \"$uptime\"  Model: \"Event\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"N\\A\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\"\n");
         		close(LOGFILE);
 	}
 	our $phpfpm_detected;
@@ -2462,9 +2477,12 @@ our $public_ip_address;
 our @config_array;
 our $apache_user;
 our $model;
+our @apache_uptime;
+our $uptime = "$apache_uptime[0]d $apache_uptime[1]h $apache_uptime[2]m $apache_uptime[3]s";
 our $process_name;
 our $available_mem;
 our $maxclients;
+our $vhost_count;
 our $flag_trigger = 0;
 our $threadsperchild;
 our $serverlimit;
@@ -2605,6 +2623,6 @@ if ( $model eq "worker") {
 	if ( ! $NOINFO ) { show_info_box(); print "The average apache process is using ${CYAN}$apache_proc_average MB${ENDC} of memory\n" }
 }
 
-generate_standard_report($available_mem, $maxclients, $apache_proc_lowest, $apache_proc_average, $apache_proc_highest, $model, $threadsperchild, $mysql_memory_usage_mbytes, $java_memory_usage_mbytes, $redis_memory_usage_mbytes, $memcache_memory_usage_mbytes, $varnish_memory_usage_mbytes, $phpfpm_memory_usage_mbytes, $gluster_memory_usage_mbytes);
+generate_standard_report($available_mem, $maxclients, $vhost_count, $apache_proc_lowest, $apache_proc_average, $apache_proc_highest, $model, $uptime, $threadsperchild, $mysql_memory_usage_mbytes, $java_memory_usage_mbytes, $redis_memory_usage_mbytes, $memcache_memory_usage_mbytes, $varnish_memory_usage_mbytes, $phpfpm_memory_usage_mbytes, $gluster_memory_usage_mbytes);
 
 #show_important_message();
