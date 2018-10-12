@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2018-10-12      Richard Forth   Closes Issue #241 --no-check-pid causes perl
+				error. 
 2018-09-26      Andriy Fetsyuk  Merged a change to support more environments. 
 2018-08-30      Richard Forth   Issue #259 fix fpm support for ubuntu systems. 
 2018-08-28      Richard Forth   Issue #259 add support for ubuntu 18.04 
