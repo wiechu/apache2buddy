@@ -1618,6 +1618,8 @@ sub preflight_checks {
                         our $apache_version = get_apache_version($process_name);
                         if ( ! $NOINFO ) { show_info_box; print "Apache is actually listening on port ${CYAN}$real_port${ENDC}\n" }
                         if ( ! $NOINFO ) { show_info_box; print "The process running on port ${CYAN}$real_port${ENDC} is ${CYAN}$apache_version${ENDC}.\n" }
+			# Issue #252 apache 2.2 is EOL
+			if ( ! $NOINFO ) { show_crit_box; print "${YELLOW}Apache 2.2 is End Of Life. For more Information, see ${CYAN}https://httpd.apache.org/.${ENDC}" }
                 }
 	} else {	
 		# now we get the name of the process running with the specified pid
@@ -1816,8 +1818,8 @@ sub preflight_checks {
 		chomp($ppid_mem_usage);
 		if ($ppid_mem_usage > 50000) {
 			show_crit_box; print "${RED}Memory usage of parent PID is greater than 50MB: $ppid_mem_usage Kilobytes${ENDC}.\n";
-			show_info_box; print "For more information, see https://github.com/richardforth/apache2buddy/wiki/50MB-Parent-PID-Issue\n";
-			show_advisory_box; print "If you are desperate, try -P or --no-check-pid.\n";
+			show_advisory_box; print "${YELLOW}For more information, see ${CYAN}https://github.com/richardforth/apache2buddy/wiki/50MB-Parent-PID-Issue${ENDC}\n";
+			show_advisory_box; print "${YELLOW}If you are desperate, try ${CYAN}-P${YELLOW} or ${CYAN}--no-check-pid${ENDC}${YELLOW}.${ENDC}\n";
 			show_info_box; print "Exiting.\n";
 			exit;
 		} else {
@@ -2235,12 +2237,14 @@ sub detect_maxclients_hits {
 		if ( ! $NOOK ) {
 			show_ok_box();
 			print "${GREEN}MaxClients has not been hit recently.${ENDC}\n";
-			show_warn_box();
-			print "${YELLOW}Apache only logs maxclients/maxrequestworkers hits once in a lifetime, if no restart has happened this event may have been rotated away.${ENDC}\n";
-			show_warn_box();
-			print "${YELLOW}As a backup check, please compare number of running apache processes (minus 1 for parent) against maxclients/maxrequestworkers.${ENDC}\n";
-			show_warn_box();
-			print "${YELLOW}For more information see ${CYAN}https://github.com/apache/httpd/blob/0b61edca6cdda2737aa1d84a4526c5f9d2e23a8c/server/mpm/prefork/prefork.c#L809${ENDC}\n";
+			if ( ! $NOWARN ) {
+				show_warn_box();
+				print "${YELLOW}Apache only logs maxclients/maxrequestworkers hits once in a lifetime, if no restart has happened this event may have been rotated away.${ENDC}\n";
+				show_warn_box();
+				print "${YELLOW}As a backup check, please compare number of running apache processes (minus 1 for parent) against maxclients/maxrequestworkers.${ENDC}\n";
+				show_warn_box();
+				print "${YELLOW}For more information see ${CYAN}https://github.com/apache/httpd/blob/0b61edca6cdda2737aa1d84a4526c5f9d2e23a8c/server/mpm/prefork/prefork.c#L809${ENDC}\n";
+			}
 			return;
 		}
 	}
