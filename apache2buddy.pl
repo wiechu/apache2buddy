@@ -2236,6 +2236,8 @@ sub detect_maxclients_hits {
 			print "${YELLOW}Apache only logs maxclients/maxrequestworkers hits once in a lifetime, if no restart has happened this event may have been rotated away.${ENDC}\n";
 			show_warn_box();
 			print "${YELLOW}As a backup check, please compare number of running apache processes (minus 1 for parent) against maxclients/maxrequestworkers.${ENDC}\n";
+			show_warn_box();
+			print "${YELLOW}For more information see ${CYAN}https://github.com/apache/httpd/blob/0b61edca6cdda2737aa1d84a4526c5f9d2e23a8c/server/mpm/prefork/prefork.c#L809${ENDC}\n";
 			return;
 		}
 	}
