@@ -2232,6 +2232,10 @@ sub detect_maxclients_hits {
 		if ( ! $NOOK ) {
 			show_ok_box();
 			print "${GREEN}MaxClients has not been hit recently.${ENDC}\n";
+			show_warn_box();
+			print "${YELLOW}Apache only logs maxclients/maxrequestworkers hits once in a lifetime, if no restart has happened this event may have been rotated away.${ENDC}\n";
+			show_warn_box();
+			print "${YELLOW}As a backup check, please compare number of running apache processes (minus 1 for parent) against maxclients/maxrequestworkers.${ENDC}\n";
 			return;
 		}
 	}

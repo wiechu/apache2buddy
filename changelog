@@ -2,6 +2,12 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2018-10-12      Richard Forth   Closes Issue #268 Additional verbiage about
+				maxclients/maxrequestworkers being hit only
+				once per lifetime.
+
+				For more information see: 
+				https://github.com/apache/httpd/blob/0b61edca6cdda2737aa1d84a4526c5f9d2e23a8c/server/mpm/prefork/prefork.c#L809
 2018-10-12      Richard Forth   Closes Issue #241 --no-check-pid causes perl
 				error. 
 2018-09-26      Andriy Fetsyuk  Merged a change to support more environments. 
