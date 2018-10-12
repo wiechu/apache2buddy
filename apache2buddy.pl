@@ -875,11 +875,19 @@ sub test_process {
         #    $return_val = 0;
         #}
 
-	# check for output matching Apache'
-        if ( $output[0] =~ m/^Server version.*Apache\/[0-9].*/ ) {
-		$return_val = 1;
-	} 
-
+	# check for valid variable
+	if ( ! $output[0] ) { 
+		show_crit_box();
+		print "${RED}Something went wrong, and I suspect you have a syntax error in your apache configuration.${ENDC}\n";
+		show_crit_box();
+		print "${YELLOW}See \"${CYAN}systemctl status httpd.service${ENDC}\" ${YELLOW}and \"${CYAN}journalctl -xe${ENDC}\" ${YELLOW}for details.${ENDC}\n";
+		exit;
+	} else {
+		# check for output matching Apache'
+        	if ( $output[0] =~ m/^Server version.*Apache\/[0-9].*/ ) {
+			$return_val = 1;
+		}	 
+	}
 	return $return_val;
 }
 
