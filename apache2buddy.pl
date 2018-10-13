@@ -2115,9 +2115,15 @@ sub detect_package_updates {
 		$package_update = `yum check-update | egrep "^httpd|^php"`;
 	}
 	if ($package_update) {
-		if ( ! $NOWARN ) {
-			show_crit_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
-			print "${YELLOW}$package_update${ENDC}";
+		if ( ! $package_update =~ /Failed/ || /Error/ ) {
+			if ( ! $NOWARN ) {
+				show_crit_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
+				print "${YELLOW}$package_update${ENDC}";
+			} else {
+				show_crit_box(); print "${RED}There was an error getting package updates, please check your package manager for potential problems, and try again.${ENDC}\n";
+				show_crit_box(); print "${RED} - Or use ${CYAN}--skip-updates${ENDC}\n";
+				exit;
+			}
 		}
 	} else {
 		if (-d "/usr/local/httpd" or -d "/usr/local/apache" or -d "/usr/local/apache2") {

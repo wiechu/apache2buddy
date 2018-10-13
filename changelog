@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2018-10-13      Richard Forth   Closes Issue #194
+				Detect issues getting package updates.
 2018-10-13      Richard Forth   Closes Issue #245
 				Skip OS Version Check option, see --help.
 2018-10-13      Richard Forth   Closes Issue #221
