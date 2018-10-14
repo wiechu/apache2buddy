@@ -436,7 +436,7 @@ sub systemcheck_large_logs {
 			}
 		}
 		if (@logs == 0) {
-			if ( ! $NOOK ) { show_ok_box(); print "${GREEN}No large logs files were found in ${CYAN}$logdir${ENDC}.\n"; }
+			if ( ! $NOOK ) { show_ok_box(); print "${GREEN}No large log files were found in ${CYAN}$logdir${ENDC}.\n"; }
 		} else {
 			show_advisory_box(); print "${YELLOW}Consider setting up a log rotation policy.${ENDC}\n";
 			show_advisory_box(); print "${YELLOW}Note: Log rotation should already be set up under normal circumstances, so very${ENDC}\n";
