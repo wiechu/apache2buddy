@@ -2,6 +2,10 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2018-12-02      Richard Forth   Closes Issue #281
+				Php memory limit was only interpretted in MB.
+				Forced a change that accepts whatever is in
+				the config, eg '128M' or '16G'.
 2018-10-13      Richard Forth   Closes Issue #278
 				logs to log (spelling correction in verbiage)
 2018-10-13      Richard Forth   Closes Issue #194
