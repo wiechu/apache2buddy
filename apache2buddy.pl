@@ -1192,10 +1192,6 @@ sub get_php_setting {
                 $result = $results[0];
         }
 
-	# some PHP directives are measured in MB. we want to trim the "M" off
-	# here for those that are
-	$result =~ s/^(.*)M$/$1/;
-
         # return the value to the main program
         return $result;
 }
@@ -2302,7 +2298,7 @@ sub detect_maxclients_hits {
 sub detect_php_memory_limit {
 	if ( ! $NOINFO) {
 		our $apache_proc_php = get_php_setting('/usr/bin/php', 'memory_limit');
-		show_info_box(); print "Your PHP Memory Limit (Per-Process) is ${CYAN}".$apache_proc_php." MB${ENDC}.\n";
+		show_info_box(); print "Your PHP Memory Limit (Per-Process) is ${CYAN}".$apache_proc_php."${ENDC}.\n";
 		if ($apache_proc_php eq "-1") {
 			show_advisory_box(); print "You should set a PHP Memory Limit (-1 is ${CYAN}UNLIMITED${ENDC}) which is not recommended.\n";
 		}
