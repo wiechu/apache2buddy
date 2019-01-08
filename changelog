@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2019-01-08      psytester       Added support for SUSE Linux and apache in
+				/opt/apache2
 2018-12-02      Richard Forth   Closes Issue #281
 				Php memory limit was only interpretted in MB.
 				Forced a change that accepts whatever is in
