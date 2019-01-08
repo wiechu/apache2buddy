@@ -325,6 +325,8 @@ sub get_os_platform {
 	$raw_platform =~ s/[()']//g;
 	my @platform = split(", ", $raw_platform);
 	my $distro =  @platform[0];
+	# because of trailing spaces in: ('SUSE Linux Enterprise Server ', '12', 'x86_64') we have to trim
+	$distro =~ s/\s+$//;
 	my $version = @platform[1];
 	my $codename = @platform[2];
 	return ($distro, $version, $codename);
@@ -344,7 +346,9 @@ sub check_os_support {
 				'CentOS Linux',
 				'CentOS',
 				'centos',
-				'Scientific Linux');
+				'Scientific Linux',
+				'SUSE Linux Enterprise Server',
+				'SuSE');
 	my %sol = map { $_ => 1 } @supported_os_list;
 	
 	my @ubuntu_os_list = ('Ubuntu', 'ubuntu');
@@ -355,6 +359,9 @@ sub check_os_support {
 	
 	my @redhat_os_list = ('Red Hat Enterprise Linux', 'redhat', 'CentOS Linux', 'Scientific Linux');
 	my %rol = map { $_ => 1 } @redhat_os_list;
+
+	my @suse_os_list = ('SUSE Linux Enterprise Server');
+	my %suseol = map { $_ => 1 } @suse_os_list;
 
 	# https://wiki.debian.org/DebianReleases
 	my @debian_supported_versions = ('8','9');
@@ -395,7 +402,7 @@ sub check_os_support {
 			}
 		} elsif (exists($rol{$distro})) {
 			# for red hat versions is not so clinical regarding the specific versions, however we need to be mindful of EOL versions eg RHEL 3, 4, 5
-			# get mavjor version from version string. note that redhatm centos and scientifc are al rebuilds of the same sources, variables therefore
+			# get major version from version string. note that redhatm centos and scientifc are al rebuilds of the same sources, variables therefore
 			# use the generic 'redhat' reference.
 			if ( $VERBOSE ) { print "VERBOSE -> RedHat Version: ". $version . "\n"}
 			my @redhat_version = split('\.', $version);
@@ -412,13 +419,31 @@ sub check_os_support {
 			} else {
 				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
 			}
+		} elsif (exists($suseol{$distro})) {
+			# for SUSE versions is not so clinical regarding the specific versions, however we need to be mindful of EOL versions eg SLES 12, 15, ...
+			# get major version from version string.
+			if ( $VERBOSE ) { print "VERBOSE -> SUSE Version: ". $version . "\n"}
+			my @suse_version = split('\.', $version);
+			if ( $VERBOSE ) {
+				foreach my $item (@suse_version) {
+					print "VERBOSE: ".  $item . "\n";
+				}
+       			}
+			my $major_suse_version = $suse_version[0];
+			if ( $VERBOSE ) { print "VERBOSE -> Major SUSE Version Detected ". $major_suse_version . "\n"}
+			if ($major_suse_version lt 12 ) {
+				show_crit_box(); print "${RED}This distro version (${CYAN}$version${ENDC}${RED}) is not supported by apache2buddy.pl.${ENDC}\n";
+				exit;
+			} else {
+				if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
+			}
 		}
 	} else {
 		show_crit_box(); print "${RED}This distro is not supported by apache2buddy.pl.${ENDC}\n";
 		# list supported OS distros
 		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Distro's:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @supported_os_list) . "${ENDC}'.\n"}
 		exit;
-       }
+	}
 }
 
 sub systemcheck_large_logs {
@@ -797,7 +822,14 @@ sub get_memory_usage {
 		chomp($_);
 		# pmap -d is used to determine the memory usage for the 
 		# individual processes
-		my $pid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $_ | egrep "writeable/private" | awk \'{ print \$4 }\'`;
+		my ($distro, $version, $codename) = get_os_platform();
+		#output of 'pmap' is different depending on distro!
+		my $pid_mem_usage;
+		if (ucfirst($distro) eq "SUSE Linux Enterprise Server" ) {
+			$pid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $_ | egrep "writable-private" | awk \'{ print \$1 }\'`;
+		} else {
+			$pid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $_ | egrep "writeable/private" | awk \'{ print \$4 }\'`;
+		}
 		$pid_mem_usage =~ s/K//;
 		chomp($pid_mem_usage);
 
@@ -871,6 +903,10 @@ sub test_process {
 		if ( ! $NOWARN ) { show_warn_box(); print "${RED}Apache seems to have been installed from source, its technically unsupported, we may get errors${ENDC}\n" }
 		@output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
 		print "VERBOSE: First line of output from \"/usr/local/apache/bin/httpd -V\": $output[0]\n" if $main::VERBOSE;
+	} elsif ( $process_name eq '/opt/apache2/bin/httpd' ) {
+		if ( ! $NOWARN ) { show_warn_box(); print "${RED}Apache seems to have been installed from a self build package, its technically unsupported, we may get errors${ENDC}\n" }
+		@output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
+		print "VERBOSE: First line of output from \"/opt/apache2/bin/httpd -V\": $output[0]\n" if $main::VERBOSE;
 	} else {
 		# this catchall should cover all other possibilities, such as
 		# nginx, varnish, etc. 
@@ -894,7 +930,11 @@ sub test_process {
 		exit;
 	} else {
 		# check for output matching Apache'
-        	if ( $output[0] =~ m/^Server version.*Apache\/[0-9].*/ ) {
+        if ( $output[0] =~ m/^Server version.*Apache\/[0-9].*/ ) {
+			$return_val = 1;
+		}
+        elsif ( $output[0] =~ m/^Server version.*Server\/[0-9].*/ ) {
+			print "${YELLOW}Apache server was build with version string \"${CYAN}Server version: Server/....${YELLOW}\" and not as usual \"${CYAN}Server version: Apache/....${YELLOW}\"${ENDC}\n";
 			$return_val = 1;
 		}	 
 	}
@@ -1780,9 +1820,9 @@ sub preflight_checks {
 	# Bug Out if greater than 50MB
 	our $pidfile_cfv = find_master_value(\@config_array, $model, 'pidfile');
 	if ( ! $NOINFO ) { show_info_box; print "pidfile setting is ${CYAN}$pidfile_cfv${ENDC}.\n" } 
-	# addressing issue #84, I realised this whole block of code is guessing, I inderstand why, but its not sane.
+	# addressing issue #84, I realised this whole block of code is guessing, I understand why, but its not sane.
 	# for example what we need to do is first check if the path is a relative path or absolute path.
-	# If it is an absolute path, lets check that first, which will cut out a lot of unnescesary code, 
+	# If it is an absolute path, lets check that first, which will cut out a lot of unnecessary code, 
 	# otherwise we can start guessing based on common relative paths.
 	#  Fix for Issue #222 strip any quotes from returned string
 	#  "/var/run/httpd.pid" becomes /var/run/httpd.pid
@@ -1821,6 +1861,8 @@ sub preflight_checks {
 				our $pidguess = `find /run/httpd | grep pid`;
 			} elsif ( -d "/var/run/httpd") {
 				our $pidguess = `find /var/run/httpd | grep pid`;
+			} elsif ( -d "/opt/apache2/run") {
+				our $pidguess = `find /opt/apache2/run | grep pid`;
 			} else {
 				show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n";
 				exit;
@@ -1850,7 +1892,13 @@ sub preflight_checks {
 	chomp($parent_pid);
 	if ( ! $NOINFO ) { show_info_box; print "Parent PID: ${CYAN}$parent_pid${ENDC}.\n" }
 	if ( ! $NOCHKPID) {
-		my $ppid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $parent_pid | egrep "writeable/private" | awk \'{ print \$4 }\'`;
+		if ($VERBOSE) { print "VERBOSE: output of 'pmap' is different depending on distro!\n" }
+		my $ppid_mem_usage;
+		if (ucfirst($distro) eq "SUSE Linux Enterprise Server" ) {
+			$ppid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $parent_pid | egrep "writable-private" | awk \'{ print \$1 }\'`;
+		} else {
+			$ppid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $parent_pid | egrep "writeable/private" | awk \'{ print \$4 }\'`;
+		}
 		$ppid_mem_usage =~ s/K//;
 		chomp($ppid_mem_usage);
 		if ($ppid_mem_usage > 50000) {
@@ -2107,6 +2155,8 @@ sub detect_package_updates {
 	our $package_update = 0;
 	if (ucfirst($distro) eq "Ubuntu" or ucfirst($distro) eq "Debian" ) {
 		$package_update = `apt-get update 2>&1 >/dev/null && dpkg --get-selections | xargs apt-cache policy | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '\$d' | sed -n 1~2p | egrep "^php|^apache2"`;
+	} elsif (ucfirst($distro) eq "SUSE Linux Enterprise Server") {
+		$package_update = `zypper list-updates | egrep "^httpd|^php"`;
 	} else {
 		$package_update = `yum check-update | egrep "^httpd|^php"`;
 	}
@@ -2262,7 +2312,14 @@ sub detect_maxclients_hits {
 		our $maxclients_hits = `grep -i reached /var/log/httpd/error_log | egrep -v "mod" | tail -5`;
 	} elsif ($process_name eq "/usr/local/apache/bin/httpd") {
 		our $maxclients_hits = `grep -i reached /usr/local/apache/logs/error_log | egrep -v "mod" | tail -5`;
+	} elsif ($process_name eq "/opt/apache2/bin/httpd") {
+		our $maxclients_hits = `find /opt/apache2/logs -name "error*" | tail -1 | xargs grep -i reached | egrep -v "mod" | tail -5`;
 	} else {
+		# general ToDo would be `'grep "^ErrorLog " $apache_conf_file'`;
+		# to get configuration like:
+		# ErrorLog "|/opt/apache2/bin/rotatelogs /opt/apache2/logs/error.log.%Y-%m-%d 86400"
+		# and finally extract the ErrorLog file location for further processing
+		# `'find /opt/apache2/logs -name "error*" | tail -1'`
 		our $maxclients_hits = `grep -i reached /var/log/apache2/error.log | egrep -v "mod" | tail -5`;
 	}
 	our $maxclients_hits;
