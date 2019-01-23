@@ -236,7 +236,7 @@ GetOptions(
 	'skip-maxclients' => \$SKIPMAXCLIENTS,
 	'skip-php-fatal' => \$SKIPPHPFATAL,
 	'skip-updates' => \$SKIPUPDATES,
-	'skip-os-version-checki|O' => \$NOCHKOS,
+	'skip-os-version-check|O' => \$NOCHKOS,
 	'nonews' => \$NONEWS
 );
 
