@@ -668,8 +668,12 @@ sub expand_included_files {
 	# add the files from the glob to the array we're going to pass back
 	foreach(@files) {
 		chomp($_);
-		push(@$include_files,$_);
-		print "VERBOSE: Adding ".$_." to list of files for processing\n" if $main::VERBOSE;
+		if ( -f $_ ) {
+			push(@$include_files,$_);
+			print "VERBOSE: Adding ".$_." to list of files for processing\n" if $main::VERBOSE;
+		} else {
+			print "VERBOSE: Skipping ".$_." as it is a directory\n" if $main::VERBOSE;
+		}
 	}
 
 	# return the include_files array with the files from the glob attached
