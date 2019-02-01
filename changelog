@@ -2,6 +2,11 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2019-02-01      Richard Forth   Closes Issue #12
+				Detect and skip unexpected directories in
+				glob. Previously these were added to the list
+				of files for processing and caused an
+				exception to be raised.
 2019-01-23      Richard Forth   Closes Issue #287
 				Typo on --skip-os-version-check option
 				rectified.
