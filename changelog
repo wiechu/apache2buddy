@@ -2,6 +2,10 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2019-02-09      Richard Forth   Revert changes made in  #283
+				This went in staging but then got reverted as
+				it caused problems and had inexpected
+				behaviour.
 2019-02-09      Richard Forth   Closes Issue #283
 				Service detection inprovements to include
 				services not running as root (eg vcache)
