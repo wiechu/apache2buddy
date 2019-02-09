@@ -2368,13 +2368,38 @@ sub detect_php_memory_limit {
 
 sub get_service_memory_usage_mbytes {
 	my ( $svc )  = @_;
-	my @usage_by_pids = `ps -C $svc -o rss | grep -v RSS`;
-	our $usage_mbytes = 0;
-	foreach my $proc (@usage_by_pids) {
-		our $usage_mbytes += $proc / 1024;
+	if ($svc eq "varnishd") {
+		# we have to treat varnish somewhat differently due to changes made in 4.1+
+		my $vcache_detected = 0;
+		# check for the existence of a 'vcache' user, which is the default user of varnish after 4.1
+		# checking this way prevents ugly errors
+		$vcache_detected = getpwnam("vcache");
+		if ( $vcache_detected ) {
+			my @usage_by_pids = `ps -U vcache -C varnishd -o rss | grep -v RSS`;
+                        our $usage_mbytes = 0;
+                        foreach my $proc (@usage_by_pids) {
+                                 our $usage_mbytes += $proc / 1024;
+                        }
+                        our $usage_mbytes = round($usage_mbytes);
+                        return $usage_mbytes;
+		} else {
+			my @usage_by_pids = `ps -C varnishd -o rss | grep -v RSS`;
+                	our $usage_mbytes = 0;
+                	foreach my $proc (@usage_by_pids) {
+                       		 our $usage_mbytes += $proc / 1024;
+                	}
+                	our $usage_mbytes = round($usage_mbytes);
+                	return $usage_mbytes;
+		}
+	} else {
+		my @usage_by_pids = `ps -C $svc -o rss | grep -v RSS`;
+		our $usage_mbytes = 0;
+		foreach my $proc (@usage_by_pids) {
+			our $usage_mbytes += $proc / 1024;
+		}
+		our $usage_mbytes = round($usage_mbytes);
+		return $usage_mbytes;
 	}
-	our $usage_mbytes = round($usage_mbytes);
-	return $usage_mbytes;
 }
 
 
