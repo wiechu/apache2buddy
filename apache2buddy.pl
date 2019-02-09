@@ -2368,7 +2368,7 @@ sub detect_php_memory_limit {
 
 sub get_service_memory_usage_mbytes {
 	my ( $svc )  = @_;
-	my @usage_by_pids = `ps -C $svc -o rss | grep -v RSS`;
+	my @usage_by_pids = `ps -aC $svc -o rss | grep -v RSS`;
 	our $usage_mbytes = 0;
 	foreach my $proc (@usage_by_pids) {
 		our $usage_mbytes += $proc / 1024;
@@ -2383,7 +2383,7 @@ sub detect_additional_services {
 	our $servicefound_flag = 0; # we need this to give a message  if nothing was found, otherwise it looks silly.
 	# Detect Mysql
 	our $mysql_detected = 0;
-	our $mysql_detected = `ps -C mysqld -o rss | grep -v RSS`;
+	our $mysql_detected = `ps -aC mysqld -o rss | grep -v RSS`;
 	if ( $mysql_detected ) {
 		if ($VERBOSE) { print "VERBOSE: MySQL Detected\n" }
 		our $servicefound_flag = 1;
@@ -2398,7 +2398,7 @@ sub detect_additional_services {
 	
 	# Detect Java
 	our $java_detected = 0;
-	$java_detected = `ps -C java -o rss | grep -v RSS`;
+	$java_detected = `ps -aC java -o rss | grep -v RSS`;
 	if ( $java_detected ) {
 		if ($VERBOSE) { print "VERBOSE: Java Detected\n" }
 		our $servicefound_flag = 1;
@@ -2412,7 +2412,7 @@ sub detect_additional_services {
 
 	# Detect Varnish
 	our $varnish_detected = 0;
-	$varnish_detected = `ps -C varnishd -o rss | grep -v RSS`;
+	$varnish_detected = `ps -aC varnishd -o rss | grep -v RSS`;
 	if ( $varnish_detected ) { 
 		if ($VERBOSE) { print "VERBOSE: Varnish Detected\n" }
 		our $servicefound_flag = 1;
@@ -2427,7 +2427,7 @@ sub detect_additional_services {
 
 	# Detect Redis
 	our $redis_detected = 0;
-	$redis_detected = `ps -C redis-server -o rss | grep -v RSS`;
+	$redis_detected = `ps -aC redis-server -o rss | grep -v RSS`;
 	if ( $redis_detected ) { 
 		if ($VERBOSE) { print "VERBOSE: Redis Detected\n" }
 		our $servicefound_flag = 1;
@@ -2442,7 +2442,7 @@ sub detect_additional_services {
 
 	# Detect Memcache
 	our $memcache_detected = 0;
-	$memcache_detected = `ps -C memcached -o rss | grep -v RSS`;
+	$memcache_detected = `ps -aC memcached -o rss | grep -v RSS`;
 	if ( $memcache_detected ) { 
 		if ($VERBOSE) { print "VERBOSE: Memcache Detected\n" }
 		our $servicefound_flag = 1;
@@ -2458,15 +2458,15 @@ sub detect_additional_services {
 	# Detect PHP-FPM
 	our $phpfpm_detected = 0;
 	# Get PHP-FPM Memory Usage
-	$phpfpm_detected = `ps -C php-fpm -o rss | grep -v RSS` || `ps -C php5-fpm -o rss | grep -v RSS` || 0;
+	$phpfpm_detected = `ps -aC php-fpm -o rss | grep -v RSS` || `ps -aC php5-fpm -o rss | grep -v RSS` || 0;
 	if ( $phpfpm_detected ) { 
 		if ($VERBOSE) { print "VERBOSE: PHP-FPM Detected\n" }
 		our $servicefound_flag = 1;
 		# Get PHP-FPM Memory Usage
 		our $phpfpm = 0;
-		our $phpfpm = `ps -C php-fpm -o rss | grep -v RSS`; 
+		our $phpfpm = `ps -aC php-fpm -o rss | grep -v RSS`; 
 		our $php5fpm = 0;
-		our $php5fpm = `ps -C php5-fpm -o rss | grep -v RSS`; 
+		our $php5fpm = `ps -aC php5-fpm -o rss | grep -v RSS`; 
 		if ( $phpfpm ) {
 			if ( ! $NOINFO ) { show_info_box(); print "${CYAN}PHP-FPM${ENDC} Detected => " }
 			our $phpfpm_memory_usage_mbytes = get_service_memory_usage_mbytes("php-fpm");
@@ -2483,7 +2483,7 @@ sub detect_additional_services {
 
 	# Detect Gluster
 	our $gluster_detected = 0;
-	$gluster_detected = `ps -C glusterd -o rss | grep -v RSS`;
+	$gluster_detected = `ps -aC glusterd -o rss | grep -v RSS`;
 	if ( $gluster_detected ) { 
 		if ($VERBOSE) { print "VERBOSE: Gluster Detected\n" }
 		our $servicefound_flag = 1;
