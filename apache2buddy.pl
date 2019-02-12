@@ -812,6 +812,8 @@ sub get_memory_usage {
 	
 	my (@proc_mem_usages, $result);
 
+	print "VERBOSE: Get '".$search_type."' memory usage\n" if $main::VERBOSE;
+
 	# get a list of the pid's for apache running as the appropriate user
 	my @pids = `ps aux | grep $process_name | grep -v root | grep $apache_user | awk \'{ print \$2 }\'`;
 
@@ -2024,7 +2026,7 @@ sub preflight_checks {
 	# Get current number of running apache processes
 	# This resolves Issue #15: https://github.com/richardforth/apache2buddy/issues/15
 	our $maxclients;
-	our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v apache2buddy | grep -v grep | wc -l`;
+	our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v rotatelogs | grep -v apache2buddy | grep -v grep | wc -l`;
 	chomp ($current_proc_count);
 	if ($current_proc_count >= $maxclients) {
 		if ( ! $NOWARN ) { show_warn_box(); print "Current Apache Process Count is ${RED}$current_proc_count${ENDC}, including the parent PID.\n" }
