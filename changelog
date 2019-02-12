@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2019-02-12      Richard Forth   Closes Issue #292
+				Updated man page textfile for 2019
 2019-02-09      Richard Forth   Closes Issue #283
 				This update treates varnich differently to
 				other detected services due to changes in
