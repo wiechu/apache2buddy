@@ -2,6 +2,12 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2019-02-12      Richard Forth   Closes #294
+				Add verbiage about new --skip-os-version-check
+				option.
+2019-02-12      psytester       PR #294
+				exclude rotatelogs binary from $current_proc_count
+				calculation
 2019-02-12      Richard Forth   Closes Issue #292
 				Updated man page textfile for 2019
 2019-02-09      Richard Forth   Closes Issue #283

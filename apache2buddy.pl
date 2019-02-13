@@ -388,7 +388,7 @@ sub check_os_support {
 			} else {
 				show_crit_box(); print "${RED}This distro version (${CYAN}$version${ENDC}${RED}) is not supported by apache2buddy.pl.${ENDC}\n";
 				# list supported debian versions
-				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Debian versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @debian_supported_versions) . "${ENDC}'.\n"}
+				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Debian versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @debian_supported_versions) . "${ENDC}'. To run anyway (at your own risk), try -O or --skip-os-version-check.\n"}
 				exit;
 			}
 		} elsif  (exists($uol{$distro})) {
@@ -397,7 +397,7 @@ sub check_os_support {
 			} else {
 				show_crit_box(); print "${RED}This distro version (${CYAN}$version${ENDC}${RED}) is not supported by apache2buddy.pl.${ENDC}\n";
 				# list supported debian versions
-				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Ubuntu (LTS ONLY) versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @ubuntu_supported_versions) . "${ENDC}'.\n"}
+				if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Ubuntu (LTS ONLY) versions:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @ubuntu_supported_versions) . "${ENDC}'. To run anyway (at your own risk), try -O or --skip-os-version-check.\n"}
 				exit;
 			}
 		} elsif (exists($rol{$distro})) {
@@ -441,7 +441,7 @@ sub check_os_support {
 	} else {
 		show_crit_box(); print "${RED}This distro is not supported by apache2buddy.pl.${ENDC}\n";
 		# list supported OS distros
-		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Distro's:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @supported_os_list) . "${ENDC}'.\n"}
+		if ( ! $NOINFO ) { show_advisory_box(); print "${YELLOW}Supported Distro's:${ENDC} '${CYAN}" . join("${ENDC}', '${CYAN}", @supported_os_list) . "${ENDC}'. To run anyway (at your own risk), try -O or --skip-os-version-check.\n"}
 		exit;
 	}
 }
@@ -811,6 +811,8 @@ sub get_memory_usage {
 	my ($process_name, $apache_user, $search_type) = @_;
 	
 	my (@proc_mem_usages, $result);
+
+	print "VERBOSE: Get '".$search_type."' memory usage\n" if $main::VERBOSE;
 
 	# get a list of the pid's for apache running as the appropriate user
 	my @pids = `ps aux | grep $process_name | grep -v root | grep $apache_user | awk \'{ print \$2 }\'`;
@@ -2024,7 +2026,7 @@ sub preflight_checks {
 	# Get current number of running apache processes
 	# This resolves Issue #15: https://github.com/richardforth/apache2buddy/issues/15
 	our $maxclients;
-	our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v apache2buddy | grep -v grep | wc -l`;
+	our $current_proc_count = `ps aux | egrep "httpd|apache2" | grep -v rotatelogs | grep -v apache2buddy | grep -v grep | wc -l`;
 	chomp ($current_proc_count);
 	if ($current_proc_count >= $maxclients) {
 		if ( ! $NOWARN ) { show_warn_box(); print "Current Apache Process Count is ${RED}$current_proc_count${ENDC}, including the parent PID.\n" }
