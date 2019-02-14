@@ -1688,7 +1688,7 @@ sub preflight_checks {
 		if ( ! $NOWARN ) {
 			show_warn_box; print "${YELLOW}Nothing seems to be listening on port $port.${ENDC} Falling back to process list...\n";
 		}
-		my @process_info = split(' ', `ps -C 'httpd httpd.worker apache apache2' -f | grep '^root'`);
+		my @process_info = split(' ', `ps -C 'httpd httpd.worker apache apache2 /usr/sbin/httpd /usr/sbin/httpd.worker' -f | grep '^root'`);
 		$pid = $process_info[1];
 		if ( not $pid ) {
                         show_crit_box; print "apache process not found.\n";
@@ -1731,7 +1731,7 @@ sub preflight_checks {
 			if ( ! $NOINFO ) { show_info_box; print "The process running on port ${CYAN}$port${ENDC} is ${CYAN}$apache_version${ENDC}.\n" }
 		}  else {
 			if ( ! $NOINFO ) { show_info_box; print "The process running on port $port is not Apache. Falling back to process list...\n" }
-			my @process_info = split(' ', `ps -C 'httpd httpd.worker apache apache2' -f | grep '^root'`);
+			my @process_info = split(' ', `ps -C 'httpd httpd.worker apache apache2 /usr/sbin/httpd /usr/sbin/httpd.worker' -f | grep '^root'`);
 			$pid = $process_info[1];
 	
 			if ( !$pid ) {
