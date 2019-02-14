@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2019-02-14      Richard Forth   Closes #250
+				Make the serverlimit apply only to prefork
+				model.
 2019-02-14      Richard Forth   Closes #289
 				Apply fixup for borked ps command on Plesk
 				servers.
