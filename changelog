@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2019-02-14      Richard Forth   Closes #289
+				Apply fixup for borked ps command on Plesk
+				servers.
 2019-02-12      Richard Forth   Closes #294
 				Add verbiage about new --skip-os-version-check
 				option.
