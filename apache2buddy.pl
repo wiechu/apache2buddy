@@ -2012,13 +2012,15 @@ sub preflight_checks {
 	}
 
 	# Check 16.01
-	# Check if maxclients is more than ServerLimit
+	# Check if maxclients is more than ServerLimit (Only applies to prefork)
 	# Then set maxclients to serverlimit if serverlimit is LESS than MaxClients
 	our $maxclients;
 	our $serverlimit;
-	if ($maxclients > $serverlimit) {
-		$maxclients = $serverlimit;
-		 if ( ! $NOWARN ) { show_warn_box; print "MaxClients directive is higher than ServerLimit, using ServerLimit ($serverlimit) to apply calculations.\n" }
+	if ($model  eq "prefork") {
+		if ($maxclients > $serverlimit) {
+			$maxclients = $serverlimit;
+			 if ( ! $NOWARN ) { show_warn_box; print "MaxClients directive is higher than ServerLimit, using ServerLimit ($serverlimit) to apply calculations.\n" }
+		}
 	}
 
 
