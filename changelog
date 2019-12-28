@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2019-12-28      Richard Forth   Quick fix for issue #304
+				Report MaxConnectionsPerChild as well as
+				MaxRequestsPerChild.
 2019-04-17      Richard Forth   Ubuntu 14.04 went EOL. 
 2019-02-14      Richard Forth   Closes #250
 				Make the serverlimit apply only to prefork

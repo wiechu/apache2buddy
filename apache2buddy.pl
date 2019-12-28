@@ -2100,6 +2100,13 @@ sub preflight_checks {
 			if ( ! $NOWARN ) { show_warn_box; print "MaxRequestsPerChild directive not found.\n" }
 		} else {
 			if ( ! $NOINFO ) { show_info_box();  print "Your MaxRequestsPerChild setting is ${CYAN}$maxrequestsperchild${ENDC}.\n" }
+		}	
+		# Quick fix for issue #304 - needs adiitional logic for polishing output, for now just report on both.
+		our $maxconnectionsperchild = find_master_value(\@config_array, $model, 'MaxConnectionsPerChild');
+		if($maxconnectionsperchild eq 'CONFIG NOT FOUND') {
+			if ( ! $NOWARN ) { show_warn_box; print "MaxConnectionsPerChild directive not found.\n" }
+		} else {
+			if ( ! $NOINFO ) { show_info_box();  print "Your MaxConnectionsPerChild setting is ${CYAN}$maxconnectionsperchild${ENDC}.\n" }
 		}
 	}		
 
