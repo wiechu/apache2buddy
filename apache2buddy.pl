@@ -1978,6 +1978,10 @@ sub preflight_checks {
 	if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
 		our $maxclients = find_master_value(\@config_array, $model, 'maxrequestworkers');
 		if($maxclients eq 'CONFIG NOT FOUND') {
+      # Fallback to MaxClients if MaxRequestsPerWorker not found
+      $maxclients = find_master_value(\@config_array, $model, 'maxclients');
+    }
+		if($maxclients eq 'CONFIG NOT FOUND') {
 			if ( ! $NOWARN ) { show_warn_box; print "MaxRequestWorkers directive not found, assuming default values.\n" }
 			if ( $model eq "prefork") {
 				# Default for prefork - see http://httpd.apache.org/docs/2.4/mod/mpm_common.html#maxrequestworkers
