@@ -955,7 +955,7 @@ sub get_pid {
 	# might return multiple values depending on Apache's listen directives
 	my @pids = `LANGUAGE=en_GB.UTF-8 netstat -ntap | egrep "LISTEN" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
 
-	print "VERBOSE: ".@pids." found listening on port 80\n" if $main::VERBOSE;
+	print "VERBOSE: ".@pids." found listening on port $port\n" if $main::VERBOSE;
 
 	# set an initial, invalid PID. 
 	my $pid = 0;;
