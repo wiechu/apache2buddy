@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-03-12      Richard Forth /	Fixed Package management Issue - issue #312
+		"wiechu"
 2020-03-10      Mark Hyde   	PR to address backward compatibilty with
 				MaxClients directive in apache 2.4
 2019-12-28      Richard Forth   Quick fix for issue #304

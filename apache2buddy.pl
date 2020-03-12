@@ -2180,7 +2180,7 @@ sub detect_package_updates {
 		$package_update = `yum check-update | egrep "^httpd|^php"`;
 	}
 	if ($package_update) {
-		if ( ! $package_update =~ /Failed/ || /Error/ ) {
+		if ( $package_update !~ /Failed|Error/) {
 			if ( ! $NOWARN ) {
 				show_crit_box(); print "${RED}Apache and / or PHP has a pending package update available.${ENDC}\n";
 				print "${YELLOW}$package_update${ENDC}";
