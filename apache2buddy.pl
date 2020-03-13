@@ -536,10 +536,10 @@ sub find_included_files {
     while ( $count > 0 ) {
         my $file = $$find_includes_in[0];
 
-        print "VERBOSE: Processing ".$file."\n" if $main::VERBOSE;
+        print "VERBOSE: Processing ".$file."\n" if $VERBOSE;
 
         if(-d $file && $file !~ /\*$/) {
-            print "VERBOSE: Adding glob to ".$file.", is a directory\n" if $main::VERBOSE;
+            print "VERBOSE: Adding glob to ".$file.", is a directory\n" if $VERBOSE;
             $file .= "/" if($file !~ /\/$/);
             $file .= "*";
         }
@@ -579,7 +579,7 @@ sub find_included_files {
 
                 # check for file globbing
                 if(-d $_ && $_ !~ /\*$/) {
-                    print "VERBOSE: Adding glob to ".$_.", is a directory\n" if $main::VERBOSE;
+                    print "VERBOSE: Adding glob to ".$_.", is a directory\n" if $VERBOSE;
                     $_ .= "/" if($_ !~ /\/$/);
                     $_ .= "*";
                 }
@@ -620,7 +620,7 @@ sub find_included_files {
 
                 # check for file globbing
                 if(-d $_ && $_ !~ /\*$/) {
-                    print "VERBOSE: Adding glob to ".$_.", is a directory\n" if $main::VERBOSE;
+                    print "VERBOSE: Adding glob to ".$_.", is a directory\n" if $VERBOSE;
                     $_ .= "/" if($_ !~ /\/$/);
                     $_ .= "*";
                 }
@@ -670,9 +670,9 @@ sub expand_included_files {
         chomp($_);
         if ( -f $_ ) {
             push(@$include_files,$_);
-            print "VERBOSE: Adding ".$_." to list of files for processing\n" if $main::VERBOSE;
+            print "VERBOSE: Adding ".$_." to list of files for processing\n" if $VERBOSE;
         } else {
-            print "VERBOSE: Skipping ".$_." as it is a directory\n" if $main::VERBOSE;
+            print "VERBOSE: Skipping ".$_." as it is a directory\n" if $VERBOSE;
         }
     }
 
@@ -717,7 +717,7 @@ sub find_master_value {
         $ignore_model3 = "itk";
     }
 
-    print "VERBOSE: Searching Apache configuration for the ".$config_element." directive\n" if $main::VERBOSE;
+    print "VERBOSE: Searching Apache configuration for the ".$config_element." directive\n" if $VERBOSE;
 
     # search for the string in the configuration array
     foreach (@$config_array) {
@@ -770,15 +770,15 @@ sub find_master_value {
         $result = "CONFIG NOT FOUND";
     }
 
-    print "VERBOSE: $result \n" if $main::VERBOSE;
+    print "VERBOSE: $result \n" if $VERBOSE;
     # Ubuntu does not store the Apache user, group, or pidfile definitions
     # in the apache2.conf file. instead, variables are in the configuration
     # file and the real values are in /etc/apache2/envvars. this is a
     # workaround for that behavior.
     if ( $config_element =~ m/[users|group|pidfile]/i && $result =~ m/^\$/i ) {
         if ( -e "/etc/debian_version" && -e "/etc/apache2/envvars") {
-            print "VERBOSE: Using Ubuntu workaround for: ".$config_element."\n" if $main::VERBOSE;
-            print "VERBOSE: Processing /etc/apache2/envvars\n" if $main::VERBOSE;
+            print "VERBOSE: Using Ubuntu workaround for: ".$config_element."\n" if $VERBOSE;
+            print "VERBOSE: Processing /etc/apache2/envvars\n" if $VERBOSE;
 
             open(ENVVARS,"/etc/apache2/envvars") || die "Could not open file: /etc/apache2/envvars\n";
             my @envvars = <ENVVARS>;
@@ -812,7 +812,7 @@ sub get_memory_usage {
 
     my (@proc_mem_usages, $result);
 
-    print "VERBOSE: Get '".$search_type."' memory usage\n" if $main::VERBOSE;
+    print "VERBOSE: Get '".$search_type."' memory usage\n" if $VERBOSE;
 
     # get a list of the pid's for apache running as the appropriate user
     my @pids = `ps aux | grep $process_name | grep -v root | grep $apache_user | awk \'{ print \$2 }\'`;
@@ -839,7 +839,7 @@ sub get_memory_usage {
         $pid_mem_usage =~ s/K//;
         chomp($pid_mem_usage);
 
-        print "VERBOSE: Memory usage by PID ".$_." is ".$pid_mem_usage."K\n" if $main::VERBOSE;
+        print "VERBOSE: Memory usage by PID ".$_." is ".$pid_mem_usage."K\n" if $VERBOSE;
 
         # on a busy system, the grep output will return the pid for the
         # grep process itself, which will be gone by the time we get
@@ -896,23 +896,23 @@ sub test_process {
     our @output;
     if ( $process_name eq '/usr/sbin/httpd' ) {
         @output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
-        print "VERBOSE: First line of output from \"$process_name -V\": $output[0]\n" if $main::VERBOSE;
+        print "VERBOSE: First line of output from \"$process_name -V\": $output[0]\n" if $VERBOSE;
     } elsif ( $process_name eq '/usr/sbin/httpd.worker' ) {
         # Handle Worker processes better
         # BUGFIX, first identified by C. Piper Balta
         @output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
-        print "VERBOSE: First line of output from \"$process_name -V\": $output[0]\n" if $main::VERBOSE;
+        print "VERBOSE: First line of output from \"$process_name -V\": $output[0]\n" if $VERBOSE;
     } elsif ( $process_name eq '/usr/sbin/apache2' ) {
         @output = `LANGUAGE=en_GB.UTF-8 /usr/sbin/apache2ctl -V 2>&1 | grep "Server version"`;
-        print "VERBOSE: First line of output from \"/usr/sbin/apache2ctl -V\": $output[0]\n" if $main::VERBOSE;
+        print "VERBOSE: First line of output from \"/usr/sbin/apache2ctl -V\": $output[0]\n" if $VERBOSE;
     } elsif ( $process_name eq '/usr/local/apache/bin/httpd' ) {
         if ( ! $NOWARN ) { show_warn_box(); print "${RED}Apache seems to have been installed from source, its technically unsupported, we may get errors${ENDC}\n" }
         @output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
-        print "VERBOSE: First line of output from \"/usr/local/apache/bin/httpd -V\": $output[0]\n" if $main::VERBOSE;
+        print "VERBOSE: First line of output from \"/usr/local/apache/bin/httpd -V\": $output[0]\n" if $VERBOSE;
     } elsif ( $process_name eq '/opt/apache2/bin/httpd' ) {
         if ( ! $NOWARN ) { show_warn_box(); print "${RED}Apache seems to have been installed from a self build package, its technically unsupported, we may get errors${ENDC}\n" }
         @output = `LANGUAGE=en_GB.UTF-8 $process_name -V 2>&1 | grep "Server version"`;
-        print "VERBOSE: First line of output from \"/opt/apache2/bin/httpd -V\": $output[0]\n" if $main::VERBOSE;
+        print "VERBOSE: First line of output from \"/opt/apache2/bin/httpd -V\": $output[0]\n" if $VERBOSE;
     } else {
         # this catchall should cover all other possibilities, such as
         # nginx, varnish, etc.
@@ -955,7 +955,7 @@ sub get_pid {
     # might return multiple values depending on Apache's listen directives
     my @pids = `LANGUAGE=en_GB.UTF-8 netstat -ntap | egrep "LISTEN" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
 
-    print "VERBOSE: ".@pids." found listening on port $port\n" if $main::VERBOSE;
+    print "VERBOSE: ".@pids." found listening on port $port\n" if $VERBOSE;
 
     # set an initial, invalid PID.
     my $pid = 0;;
@@ -979,7 +979,7 @@ sub get_pid {
         $pid = 0;
     }
 
-    print "VERBOSE: Returning a PID of ".$pid."\n" if $main::VERBOSE;
+    print "VERBOSE: Returning a PID of ".$pid."\n" if $VERBOSE;
 
     return $pid;
 }
@@ -988,13 +988,13 @@ sub get_pid {
 sub get_process_name {
     my ( $pid ) = @_;
 
-    print "VERBOSE: Finding process running with a PID of ".$pid."\n" if $main::VERBOSE;
+    print "VERBOSE: Finding process running with a PID of ".$pid."\n" if $VERBOSE;
 
     # based on the process name, we can figure out where the binary lives
     my $process_name = `ps ax | grep "\^[[:space:]]*$pid\[[:space:]]" | awk \'{print \$5 }\'`;
     chomp($process_name);
 
-    print "VERBOSE: Found process ".$process_name."\n" if $main::VERBOSE;
+    print "VERBOSE: Found process ".$process_name."\n" if $VERBOSE;
 
     # return the process name, or 0 if there is no name found
     if ( $process_name eq '' ) {
@@ -2232,7 +2232,7 @@ sub detect_virtualmin_version {
 }
 
 sub detect_php_fatal_errors {
-    print "VERBOSE: Checking logs for PHP Fatal Errors, this can take some time...\n" if $main::VERBOSE;
+    print "VERBOSE: Checking logs for PHP Fatal Errors, this can take some time...\n" if $VERBOSE;
     our $phpfpm_detected;
     our ($model, $process_name) = @_;
     if ($model eq "worker") {
@@ -2636,18 +2636,18 @@ if ( $model eq "prefork") {
     $average_potential_use = round($average_potential_use);
     my $average_potential_use_pct = round(($average_potential_use/$available_mem)*100);
     # Calculate percentages of remaining RAM, after services considered:
-    print "VERBOSE: Available Mem: $available_mem\n" if $main::VERBOSE;
-    print "VERBOSE: Mysql Mem: $mysql_memory_usage_mbytes\n" if $main::VERBOSE;
-    print "VERBOSE: Java Mem: $java_memory_usage_mbytes\n" if $main::VERBOSE;
-    print "VERBOSE: Redis Mem: $redis_memory_usage_mbytes\n" if $main::VERBOSE;
-    print "VERBOSE: Memcache Mem: $memcache_memory_usage_mbytes\n" if $main::VERBOSE;
-    print "VERBOSE: Varnish Mem: $varnish_memory_usage_mbytes\n" if $main::VERBOSE;
-    print "VERBOSE: PHP-FPM Mem: $phpfpm_memory_usage_mbytes\n" if $main::VERBOSE;
-    print "VERBOSE: Gluster Mem: $gluster_memory_usage_mbytes\n" if $main::VERBOSE;
+    print "VERBOSE: Available Mem: $available_mem\n" if $VERBOSE;
+    print "VERBOSE: Mysql Mem: $mysql_memory_usage_mbytes\n" if $VERBOSE;
+    print "VERBOSE: Java Mem: $java_memory_usage_mbytes\n" if $VERBOSE;
+    print "VERBOSE: Redis Mem: $redis_memory_usage_mbytes\n" if $VERBOSE;
+    print "VERBOSE: Memcache Mem: $memcache_memory_usage_mbytes\n" if $VERBOSE;
+    print "VERBOSE: Varnish Mem: $varnish_memory_usage_mbytes\n" if $VERBOSE;
+    print "VERBOSE: PHP-FPM Mem: $phpfpm_memory_usage_mbytes\n" if $VERBOSE;
+    print "VERBOSE: Gluster Mem: $gluster_memory_usage_mbytes\n" if $VERBOSE;
     my $memory_remaining = $available_mem - $mysql_memory_usage_mbytes - $java_memory_usage_mbytes - $redis_memory_usage_mbytes -
     $memcache_memory_usage_mbytes - $varnish_memory_usage_mbytes - $phpfpm_memory_usage_mbytes - $gluster_memory_usage_mbytes;
-    print "VERBOSE: Average Potential Use : $average_potential_use\n" if $main::VERBOSE;
-    print "VERBOSE: Mem Remaining: $memory_remaining\n" if $main::VERBOSE;
+    print "VERBOSE: Average Potential Use : $average_potential_use\n" if $VERBOSE;
+    print "VERBOSE: Mem Remaining: $memory_remaining\n" if $VERBOSE;
     if ($memory_remaining < 0) {
         show_crit_box(); print "${RED}ERROR: Memory Overload Error: Remaining RAM in negative numbers! Dumping memory report, and exiting...${ENDC}\n";
         print "Available Mem: $available_mem\n";
@@ -2690,8 +2690,8 @@ if ( $model eq "prefork") {
     $highest_potential_use = round($highest_potential_use);
     my $highest_potential_use_pct = round(($highest_potential_use/$available_mem)*100);
     # Calculate percentages of remaining RAM, after services considered:
-    print "VERBOSE: Highest Potential Use : $highest_potential_use\n" if $main::VERBOSE;
-    print "VERBOSE: Mem Remaining: $memory_remaining\n" if $main::VERBOSE;
+    print "VERBOSE: Highest Potential Use : $highest_potential_use\n" if $VERBOSE;
+    print "VERBOSE: Mem Remaining: $memory_remaining\n" if $VERBOSE;
 
     my $highest_potential_use_pct_remain = round(($highest_potential_use/$memory_remaining)*100);
     if ( $highest_potential_use_pct > 100  or $highest_potential_use_pct_remain > 100 ) {
