@@ -306,30 +306,33 @@ if ( ! $NOCOLOR ) {
     $UNDERLINE = ""; # SUPPRESS COLORS
 }
 
+# our global variables
+our $python;
+
 sub get_os_platform_older {
-    our $python;
-    my $raw_platform = `$python -c 'import platform ; print (platform.dist())'`;
+    # XXX platform.dist() - deprecated since version 3.5, will be removed in version 3.7.
+    my $raw_platform = `$main::python -c 'import platform ; print (platform.dist())'`;
     # ('CentOS Linux', '7.3.1611', 'Core')
-    $raw_platform =~ s/[()']//g;
-    my @platform = split(", ", $raw_platform);
-    my $distro =  @platform[0];
-    my $version = @platform[1];
-    my $codename = @platform[2];
-    return ($distro, $version, $codename);
+    chomp($raw_platform);
+    $raw_platform =~ s{[()']}{}g;
+    my @platform = split( '\s*,\s+', $raw_platform );
+    my $distro   = $platform[0];
+    my $version  = $platform[1];
+    my $codename = $platform[2];
+    return ( $distro, $version, $codename );
 }
 
 sub get_os_platform {
-    our $python;
-    my $raw_platform = `$python -c 'import platform ; print (platform.linux_distribution())'`;
+    # XXX platform.linux_distribution() - deprecated since version 3.5, will be removed in version 3.7.
+    my $raw_platform = `$main::python -c 'import platform ; print (platform.linux_distribution())'`;
     # ('CentOS Linux', '7.3.1611', 'Core')
-    $raw_platform =~ s/[()']//g;
-    my @platform = split(", ", $raw_platform);
-    my $distro =  @platform[0];
-    # because of trailing spaces in: ('SUSE Linux Enterprise Server ', '12', 'x86_64') we have to trim
-    $distro =~ s/\s+$//;
-    my $version = @platform[1];
-    my $codename = @platform[2];
-    return ($distro, $version, $codename);
+    chomp($raw_platform);
+    $raw_platform =~ s{[()']}{}g;
+    my @platform = split( '\s*,\s+', $raw_platform );
+    my $distro   = $platform[0];
+    my $version  = $platform[1];
+    my $codename = $platform[2];
+    return ( $distro, $version, $codename );
 }
 
 sub check_os_support {
@@ -823,12 +826,12 @@ sub get_memory_usage {
         print ("DEBUG -> Process Name: ".$process_name."\nDEBUG -> Apache_user: ".$apache_user."\nDEBUG -> Search Type: ".$search_type."\n\n");
         exit 1;
     }
+    # pmap -d is used to determine the memory usage for the
+    # individual processes
+    my ($distro, $version, $codename) = get_os_platform();
     # figure out how much memory each process is using
     foreach (@pids) {
         chomp($_);
-        # pmap -d is used to determine the memory usage for the
-        # individual processes
-        my ($distro, $version, $codename) = get_os_platform();
         #output of 'pmap' is different depending on distro!
         my $pid_mem_usage;
         if (ucfirst($distro) eq "SUSE Linux Enterprise Server" ) {
@@ -1564,29 +1567,25 @@ sub preflight_checks {
 
     # check 3.2
     # Check for python (new in Debian 9  as it doesnt come with it out of the box)
-    our $python = `which python`;
-    chomp($python);
+    $main::python = `which python`;
+    chomp($main::python);
 
 
-    if ( $python !~ m/.*\/python/ ) {
+    if ( $main::python !~ m{.*/python} ) {
         show_crit_box();
         print "Unable to locate the python binary.\n";
-                print "Trying for python3...\n";
-                our $python = `which python3`;
-                chomp($python);
+        print "Trying for python3...\n";
+        $main::python = `which python3`;
+        chomp($main::python);
 
-
-                if ( $python !~ m/.*\/python3/ ) {
-                        show_crit_box();
-                        print "Unable to locate the python3 binary. This script requires python to determine the Operating and Version.\n";
-                        show_info_box(); print "${YELLOW}To fix this make sure the python or python3 package is installed.${ENDC}\n";
-                        exit;
-                } else {
-                        if ( ! $NOOK ) { show_ok_box(); print "The 'python' binary exists and is available for use: ${CYAN}$python${ENDC}\n" }
-                }
-    } else {
-        if ( ! $NOOK ) { show_ok_box(); print "The 'python' binary exists and is available for use: ${CYAN}$python${ENDC}\n" }
+        if ( $main::python !~ m{.*/python3} ) {
+            show_crit_box();
+            print "Unable to locate the python3 binary. This script requires python to determine the Operating and Version.\n";
+            show_info_box(); print "${YELLOW}To fix this make sure the python or python3 package is installed.${ENDC}\n";
+            exit;
+        }
     }
+    if ( ! $NOOK ) { show_ok_box(); print "The 'python' binary exists and is available for use: ${CYAN}${main::python}${ENDC}\n" }
 
 
 
