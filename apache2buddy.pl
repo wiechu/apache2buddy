@@ -1130,49 +1130,33 @@ sub get_apache_version {
 
 # this will us ps to determine the Apache uptime. it returns an array
 sub get_apache_uptime {
-    my ( $pid ) = @_;
+    my ($pid) = @_;
 
-    # this will return the running time for the given pid in the format
+    # this will return the running time for the given pid in the format [[DD-]hh:]mm:ss
     # "days-hours:minutes:seconds"
     my $uptime = `ps -eo \"\%p \%t\" | grep \"^[[:space:]]*$pid \" | awk \'{ print \$2 }\'`;
     chomp($uptime);
 
-    print "VERBOSE: PID passed to uptime function: $pid\n" if $main::VERBOSE;
-    print "VERBOSE: Raw uptime: $uptime\n" if $main::VERBOSE;
+    print "VERBOSE: PID passed to uptime function: $pid\n" if $VERBOSE;
+    print "VERBOSE: Raw uptime: $uptime\n"                 if $VERBOSE;
 
     # check to see if we've been running for multiple days
-    my ($days, $hours, $minutes, $seconds);
-    if ( $uptime =~ m/^.*-.*:.*:.*$/ ) {
-        $days = $uptime;
-        $days =~ s/([0-9]*)-.*/$1/;
-
-        # trim the days off of our uptime value
-        $uptime =~ s/.*-(.*)/$1/;
-
-        ($hours, $minutes, $seconds) = split(':', $uptime);
+    my ( $days, $hours, $minutes, $seconds ) = ( 0, 0, 0, 0 );
+    if ( $uptime =~ m/^(\d+)-(\d+):(\d+):(\d+)$/ ) {
+        ( $days, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
     }
-    elsif ( $uptime =~ m/^.*:.*:.*/ ) {
-        $days = 0;
-        ($hours, $minutes, $seconds) = split(':', $uptime);
+    elsif ( $uptime =~ m/^(\d+):(\d+):(\d+)$/ ) {
+        ( $hours, $minutes, $seconds ) = ( $1, $2, $3 );
     }
-    elsif ( $uptime =~ m/^.*:.*/) {
-        $days = 0;
-        $hours = 0;
-        ($minutes, $seconds) = split(':', $uptime);
+    elsif ( $uptime =~ m/^(\d+):(\d+)$/ ) {
+        ( $minutes, $seconds ) = ( $1, $2 );
     }
     else {
-        $days = 0;
-        $hours = 0;
-        $minutes = 00;
-        $seconds = 00;
+        # Nothing to do
     }
 
     # push everything into an array to pass back
-    my @apache_uptime = ( $days, $hours, $minutes, $seconds );
-
-
-
-    return @apache_uptime;
+    return ( $days, $hours, $minutes, $seconds );
 }
 
 # return the global value for a PHP setting
