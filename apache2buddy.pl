@@ -377,11 +377,11 @@ sub check_os_support {
         # be entertained for unsupported or EOL OS releaases.
         if (exists($dol{$distro})) {
             my @debian_version = split('\.', $version);
-                        if ( $VERBOSE ) {
-                                foreach my $item (@debian_version) {
-                                        print "VERBOSE: ".  $item . "\n";
-                                }
-                        }
+            if ( $VERBOSE ) {
+                foreach my $item (@debian_version) {
+                    print "VERBOSE: $item\n";
+                }
+            }
             my $major_debian_version = $debian_version[0];
             if (exists($dsv{$major_debian_version})) {
                 if ( ! $NOOK ) { show_ok_box(); print "This distro version is supported by apache2buddy.pl.\n" }
@@ -404,15 +404,15 @@ sub check_os_support {
             # for red hat versions is not so clinical regarding the specific versions, however we need to be mindful of EOL versions eg RHEL 3, 4, 5
             # get major version from version string. note that redhatm centos and scientifc are al rebuilds of the same sources, variables therefore
             # use the generic 'redhat' reference.
-            if ( $VERBOSE ) { print "VERBOSE -> RedHat Version: ". $version . "\n"}
             my @redhat_version = split('\.', $version);
             if ( $VERBOSE ) {
+                print "VERBOSE -> RedHat Version: $version\n";
                 foreach my $item (@redhat_version) {
-                    print "VERBOSE: ".  $item . "\n";
+                    print "VERBOSE: $item\n";
                 }
-                }
+            }
             my $major_redhat_version = $redhat_version[0];
-            if ( $VERBOSE ) { print "VERBOSE -> Major RedHat Version Detected ". $major_redhat_version . "\n"}
+            print "VERBOSE -> Major RedHat Version Detected $major_redhat_version\n" if $VERBOSE;
             if ($major_redhat_version lt 6 ) {
                 show_crit_box(); print "${RED}This distro version (${CYAN}$version${ENDC}${RED}) is not supported by apache2buddy.pl.${ENDC}\n";
                 exit;
@@ -422,15 +422,15 @@ sub check_os_support {
         } elsif (exists($suseol{$distro})) {
             # for SUSE versions is not so clinical regarding the specific versions, however we need to be mindful of EOL versions eg SLES 12, 15, ...
             # get major version from version string.
-            if ( $VERBOSE ) { print "VERBOSE -> SUSE Version: ". $version . "\n"}
             my @suse_version = split('\.', $version);
             if ( $VERBOSE ) {
+                print "VERBOSE -> SUSE Version: $version\n";
                 foreach my $item (@suse_version) {
-                    print "VERBOSE: ".  $item . "\n";
+                    print "VERBOSE: $item\n";
                 }
                 }
             my $major_suse_version = $suse_version[0];
-            if ( $VERBOSE ) { print "VERBOSE -> Major SUSE Version Detected ". $major_suse_version . "\n"}
+            print "VERBOSE -> Major SUSE Version Detected $major_suse_version\n" if $VERBOSE;
             if ($major_suse_version lt 12 ) {
                 show_crit_box(); print "${RED}This distro version (${CYAN}$version${ENDC}${RED}) is not supported by apache2buddy.pl.${ENDC}\n";
                 exit;
@@ -536,10 +536,10 @@ sub find_included_files {
     while ( $count > 0 ) {
         my $file = $$find_includes_in[0];
 
-        print "VERBOSE: Processing ".$file."\n" if $VERBOSE;
+        print "VERBOSE: Processing $file\n" if $VERBOSE;
 
         if(-d $file && $file !~ /\*$/) {
-            print "VERBOSE: Adding glob to ".$file.", is a directory\n" if $VERBOSE;
+            print "VERBOSE: Adding glob to $file, is a directory\n" if $VERBOSE;
             $file .= "/" if($file !~ /\/$/);
             $file .= "*";
         }
@@ -717,7 +717,7 @@ sub find_master_value {
         $ignore_model3 = "itk";
     }
 
-    print "VERBOSE: Searching Apache configuration for the ".$config_element." directive\n" if $VERBOSE;
+    print "VERBOSE: Searching Apache configuration for the $config_element directive\n" if $VERBOSE;
 
     # search for the string in the configuration array
     foreach (@$config_array) {
@@ -777,7 +777,7 @@ sub find_master_value {
     # workaround for that behavior.
     if ( $config_element =~ m/[users|group|pidfile]/i && $result =~ m/^\$/i ) {
         if ( -e "/etc/debian_version" && -e "/etc/apache2/envvars") {
-            print "VERBOSE: Using Ubuntu workaround for: ".$config_element."\n" if $VERBOSE;
+            print "VERBOSE: Using Ubuntu workaround for: $config_element\n" if $VERBOSE;
             print "VERBOSE: Processing /etc/apache2/envvars\n" if $VERBOSE;
 
             open(ENVVARS,"/etc/apache2/envvars") || die "Could not open file: /etc/apache2/envvars\n";
@@ -812,7 +812,7 @@ sub get_memory_usage {
 
     my (@proc_mem_usages, $result);
 
-    print "VERBOSE: Get '".$search_type."' memory usage\n" if $VERBOSE;
+    print "VERBOSE: Get '$search_type' memory usage\n" if $VERBOSE;
 
     # get a list of the pid's for apache running as the appropriate user
     my @pids = `ps aux | grep $process_name | grep -v root | grep $apache_user | awk \'{ print \$2 }\'`;
@@ -979,7 +979,7 @@ sub get_pid {
         $pid = 0;
     }
 
-    print "VERBOSE: Returning a PID of ".$pid."\n" if $VERBOSE;
+    print "VERBOSE: Returning a PID of $pid\n" if $VERBOSE;
 
     return $pid;
 }
@@ -988,13 +988,13 @@ sub get_pid {
 sub get_process_name {
     my ( $pid ) = @_;
 
-    print "VERBOSE: Finding process running with a PID of ".$pid."\n" if $VERBOSE;
+    print "VERBOSE: Finding process running with a PID of $pid\n" if $VERBOSE;
 
     # based on the process name, we can figure out where the binary lives
     my $process_name = `ps ax | grep "\^[[:space:]]*$pid\[[:space:]]" | awk \'{print \$5 }\'`;
     chomp($process_name);
 
-    print "VERBOSE: Found process ".$process_name."\n" if $VERBOSE;
+    print "VERBOSE: Found process $process_name\n" if $VERBOSE;
 
     # return the process name, or 0 if there is no name found
     if ( $process_name eq '' ) {
@@ -1072,32 +1072,32 @@ sub get_apache_model {
                 # differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
                 $model = `apache2ctl -M 2>&1 | egrep "worker|prefork|event|itk"`;
                 # if we detect itk module, we need to stop immediately:
-                if ($VERBOSE) { print "VERBOSE: $model" }
-                if ($VERBOSE) { print "VERBOSE: ITK DETECTTOR STARTED\n" }
+                print "VERBOSE: $model" if $VERBOSE;
+                print "VERBOSE: ITK DETECTTOR STARTED\n" if $VERBOSE;
                 itk_detect($model);
-                if ($VERBOSE) { print "VERBOSE: ITK DETECTTOR PASSED\n" }
-                if ($VERBOSE) { print "VERBOSE: $model" }
+                print "VERBOSE: ITK DETECTTOR PASSED\n" if $VERBOSE;
+                print "VERBOSE: $model" if $VERBOSE;
                 chomp($model);
-                if ($VERBOSE) { print "VERBOSE: $model\n" }
-                if ($VERBOSE) { print "VERBOSE: REGEX Filter started.\n" }
+                print "VERBOSE: $model\n" if $VERBOSE;
+                print "VERBOSE: REGEX Filter started.\n" if $VERBOSE;
                 $model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
-                if ($VERBOSE) { print "VERBOSE: REGEX Filter finished.\n" }
-                if ($VERBOSE) { print "VERBOSE: $model\n" }
-                if ($VERBOSE) { print "VERBOSE: Return Value: $model\n" }
+                print "VERBOSE: REGEX Filter finished.\n" if $VERBOSE;
+                print "VERBOSE: $model\n" if $VERBOSE;
+                print "VERBOSE: Return Value: $model\n" if $VERBOSE;
                 return $model;
         } else {
                 $model = `apachectl -M 2>&1 | egrep "worker|prefork|event|itk"`;
-                if ($VERBOSE) { print "VERBOSE: $model" }
-                if ($VERBOSE) { print "VERBOSE: ITK DETECTOR STARTED\n" }
+                print "VERBOSE: $model" if $VERBOSE;
+                print "VERBOSE: ITK DETECTOR STARTED\n" if $VERBOSE;
                 itk_detect($model);
-                if ($VERBOSE) { print "VERBOSE: ITK DETECTOR PASSED\n" }
+                print "VERBOSE: ITK DETECTOR PASSED\n" if $VERBOSE;
                 chomp($model);
-                if ($VERBOSE) { print "VERBOSE: $model\n" }
-                if ($VERBOSE) { print "VERBOSE: REGEX Filter started.\n" }
+                print "VERBOSE: $model\n" if $VERBOSE;
+                print "VERBOSE: REGEX Filter started.\n" if $VERBOSE;
                 $model =~ s/\s*mpm_(.*)_module\s*\S*/$1/;
-                if ($VERBOSE) { print "VERBOSE: REGEX Filter finished.\n" }
-                if ($VERBOSE) { print "VERBOSE: $model\n" }
-                if ($VERBOSE) { print "VERBOSE: Return Value: $model\n" }
+                print "VERBOSE: REGEX Filter finished.\n" if $VERBOSE;
+                print "VERBOSE: $model\n" if $VERBOSE;
+                print "VERBOSE: Return Value: $model\n" if $VERBOSE;
                 return $model;
         }
 }
@@ -1170,10 +1170,10 @@ sub get_php_setting {
     # sanity check if we are using cli or apache
     my $config = `php -r "phpinfo(1);" | grep -i config | grep -i loaded`;
     chomp ($config);
-    if ($VERBOSE) { print "VERBOSE: PHP: $config\n" }
+    print "VERBOSE: PHP: $config\n" if $VERBOSE;
 
     if ( $config =~ /cli/ ) {
-        if ($VERBOSE) { print "VERBOSE: PHP: Attempting to find real apache php.ini file...\n" }
+        print "VERBOSE: PHP: Attempting to find real apache php.ini file...\n" if $VERBOSE;
         # try to find the apache2 one
         if ( -f "/etc/php5/apache2/php.ini" ) {
             our $real_config = "/etc/php5/apache2/php.ini";
@@ -1192,7 +1192,7 @@ sub get_php_setting {
         }
 
         our $real_config;
-        if ($VERBOSE) { print "VERBOSE: PHP: Real apache php.ini file is $real_config, using that...\n" }
+        print "VERBOSE: PHP: Real apache php.ini file is $real_config, using that...\n" if $VERBOSE;
         our @php_config_array = `php -c $real_config -r "phpinfo(4);"`;
     } else {
         our @php_config_array = `php -r "phpinfo(4);"`;
@@ -1473,7 +1473,7 @@ sub preflight_checks {
     my $uid = `id -u`;
     chomp($uid);
 
-    print "VERBOSE: UID of user is: ".$uid."\n" if $VERBOSE;
+    print "VERBOSE: UID of user is: $uid\n" if $VERBOSE;
 
     if ( $uid ne '0' ) {
         show_crit_box();
@@ -1660,7 +1660,7 @@ sub preflight_checks {
         our $pid = get_pid($port);
     }
 
-    print "VERBOSE: PID is ".$pid."\n" if $VERBOSE;
+    print "VERBOSE: PID is $pid\n" if $VERBOSE;
 
     if ( $pid eq 0 ) {
         if ( ! $NOWARN ) {
@@ -1739,12 +1739,12 @@ sub preflight_checks {
     # find the apache root
     our $process_name;
     our $apache_root = get_apache_root($process_name);
-    print "VERBOSE: The Apache root is: ".$apache_root."\n" if $VERBOSE;
+    print "VERBOSE: The Apache root is: $apache_root\n" if $VERBOSE;
 
     # check 10
     # find the apache configuration file (relative to the apache root)
     our $apache_conf_file = get_apache_conf_file($process_name);
-    print "VERBOSE: The Apache config file is: ".$apache_conf_file."\n" if $VERBOSE;
+    print "VERBOSE: The Apache config file is: $apache_conf_file\n" if $VERBOSE;
 
     # check 11
     # piece together the full path to the configuration file, if a server
@@ -1810,11 +1810,11 @@ sub preflight_checks {
     # otherwise we can start guessing based on common relative paths.
     #  Fix for Issue #222 strip any quotes from returned string
     #  "/var/run/httpd.pid" becomes /var/run/httpd.pid
-    if ($VERBOSE) { print "VERBOSE: Stripping any quotes from string ...\n" }
-    if ($VERBOSE) { print "VERBOSE: BEFORE ($pidfile_cfv).\n" }
+    print "VERBOSE: Stripping any quotes from string ...\n" if $VERBOSE;
+    print "VERBOSE: BEFORE ($pidfile_cfv).\n" if $VERBOSE;
     $pidfile_cfv =~ s/^"(.*)"$/$1/;
     $pidfile_cfv =~ s/^'(.*)'$/$1/;
-    if ($VERBOSE) { print "VERBOSE: AFTER ($pidfile_cfv).\n" }
+    print "VERBOSE: AFTER ($pidfile_cfv).\n" if $VERBOSE;
     if ( -f $pidfile_cfv ) {
         our $pidfile =$pidfile_cfv;
     } else {
@@ -1838,7 +1838,7 @@ sub preflight_checks {
             our $pidfile = "/var/run/apache2/apache2.pid";
         } else {
             # revert to a find command as a last ditch effort to find the pid
-            if ($VERBOSE) { print "VERBOSE: Looking for pid file ...\n" }
+            print "VERBOSE: Looking for pid file ...\n" if $VERBOSE;
             if ( -d "/var/run/apache2") {
                 our $pidguess = `find /var/run/apache2 | grep pid`;
             } elsif ( -d "/run/httpd") {
@@ -1855,7 +1855,7 @@ sub preflight_checks {
             chomp($pidguess);
             if ( -f $pidguess ) {
                 our $pidfile = $pidguess;
-                if ($VERBOSE) { print "VERBOSE: Located pidfile at $pidfile.\n" }
+                print "VERBOSE: Located pidfile at $pidfile.\n" if $VERBOSE;
             } else {
                 show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n";
                 exit;
@@ -1876,7 +1876,7 @@ sub preflight_checks {
     chomp($parent_pid);
     if ( ! $NOINFO ) { show_info_box; print "Parent PID: ${CYAN}$parent_pid${ENDC}.\n" }
     if ( ! $NOCHKPID) {
-        if ($VERBOSE) { print "VERBOSE: output of 'pmap' is different depending on distro!\n" }
+        print "VERBOSE: output of 'pmap' is different depending on distro!\n" if $VERBOSE;
         my $ppid_mem_usage;
         if (ucfirst($distro) eq "SUSE Linux Enterprise Server" ) {
             $ppid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $parent_pid | egrep "writable-private" | awk \'{ print \$1 }\'`;
@@ -2397,20 +2397,20 @@ sub get_service_memory_usage_mbytes {
 
 
 sub detect_additional_services {
-    if ($VERBOSE) { print "VERBOSE: Begin detecting additional services...\n" }
+    print "VERBOSE: Begin detecting additional services...\n" if $VERBOSE;
     our $servicefound_flag = 0; # we need this to give a message  if nothing was found, otherwise it looks silly.
     # Detect Mysql
     our $mysql_detected = 0;
     our $mysql_detected = `ps -C mysqld -o rss | grep -v RSS`;
     if ( $mysql_detected ) {
-        if ($VERBOSE) { print "VERBOSE: MySQL Detected\n" }
+        print "VERBOSE: MySQL Detected\n" if $VERBOSE;
         our $servicefound_flag = 1;
         if ( ! $NOINFO ) { show_info_box(); print "${CYAN}MySQL${ENDC} Detected => " }
         # Get MySQL Memory Usage
         our $mysql_memory_usage_mbytes = get_service_memory_usage_mbytes("mysqld");
         if ( ! $NOINFO ) { print "Using ${CYAN}$mysql_memory_usage_mbytes MB${ENDC} of memory.\n" }
     } else {
-        if ($VERBOSE) { print "VERBOSE: MySQL NOT Detected\n" }
+        print "VERBOSE: MySQL NOT Detected\n" if $VERBOSE;
         our $mysql_memory_usage_mbytes = 0;
     }
 
@@ -2418,13 +2418,13 @@ sub detect_additional_services {
     our $java_detected = 0;
     $java_detected = `ps -C java -o rss | grep -v RSS`;
     if ( $java_detected ) {
-        if ($VERBOSE) { print "VERBOSE: Java Detected\n" }
+        print "VERBOSE: Java Detected\n" if $VERBOSE;
         our $servicefound_flag = 1;
         if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Java${ENDC} Detected => " }
         our $java_memory_usage_mbytes = get_service_memory_usage_mbytes("java");
         if ( ! $NOINFO ) { print "Using ${CYAN}$java_memory_usage_mbytes MB${ENDC} of memory.\n" }
     } else {
-        if ($VERBOSE) { print "VERBOSE: Java NOT Detected\n" }
+        print "VERBOSE: Java NOT Detected\n" if $VERBOSE;
         our $java_memory_usage_mbytes = 0;
     }
 
@@ -2432,14 +2432,14 @@ sub detect_additional_services {
     our $varnish_detected = 0;
     $varnish_detected = `ps -C varnishd -o rss | grep -v RSS`;
     if ( $varnish_detected ) {
-        if ($VERBOSE) { print "VERBOSE: Varnish Detected\n" }
+        print "VERBOSE: Varnish Detected\n" if $VERBOSE;
         our $servicefound_flag = 1;
         if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Varnish${ENDC} Detected => " }
         # Get varnish Memory Usage
         our $varnish_memory_usage_mbytes = get_service_memory_usage_mbytes("varnishd");
         if ( ! $NOINFO ) { print "Using ${CYAN}$varnish_memory_usage_mbytes MB${ENDC} of memory.\n" }
     } else {
-        if ($VERBOSE) { print "VERBOSE: Varnish NOT Detected\n" }
+        print "VERBOSE: Varnish NOT Detected\n" if $VERBOSE;
         our $varnish_memory_usage_mbytes = 0;
     }
 
@@ -2447,14 +2447,14 @@ sub detect_additional_services {
     our $redis_detected = 0;
     $redis_detected = `ps -C redis-server -o rss | grep -v RSS`;
     if ( $redis_detected ) {
-        if ($VERBOSE) { print "VERBOSE: Redis Detected\n" }
+        print "VERBOSE: Redis Detected\n" if $VERBOSE;
         our $servicefound_flag = 1;
         if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Redis${ENDC} Detected => " }
         # Get Redis Memory Usage
         our $redis_memory_usage_mbytes = get_service_memory_usage_mbytes("redis-server");
         if ( ! $NOINFO ) { print "Using ${CYAN}$redis_memory_usage_mbytes MB${ENDC} of memory.\n" }
     } else {
-        if ($VERBOSE) { print "VERBOSE: Redis NOT Detected\n" }
+        print "VERBOSE: Redis NOT Detected\n" if $VERBOSE;
         our $redis_memory_usage_mbytes = 0;
     }
 
@@ -2462,14 +2462,14 @@ sub detect_additional_services {
     our $memcache_detected = 0;
     $memcache_detected = `ps -C memcached -o rss | grep -v RSS`;
     if ( $memcache_detected ) {
-        if ($VERBOSE) { print "VERBOSE: Memcache Detected\n" }
+        print "VERBOSE: Memcache Detected\n" if $VERBOSE;
         our $servicefound_flag = 1;
         if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Memcache${ENDC} Detected => " }
         # Get Memcache Memory Usage
         our $memcache_memory_usage_mbytes = get_service_memory_usage_mbytes("memcached");
         if ( ! $NOINFO ) { print "Using ${CYAN}$memcache_memory_usage_mbytes MB${ENDC} of memory.\n" }
     } else {
-        if ($VERBOSE) { print "VERBOSE: Memcache NOT Detected\n" }
+        print "VERBOSE: Memcache NOT Detected\n" if $VERBOSE;
         our $memcache_memory_usage_mbytes = 0;
     }
 
@@ -2478,7 +2478,7 @@ sub detect_additional_services {
     # Get PHP-FPM Memory Usage
     $phpfpm_detected = `ps -C php-fpm -o rss | grep -v RSS` || `ps -C php5-fpm -o rss | grep -v RSS` || 0;
     if ( $phpfpm_detected ) {
-        if ($VERBOSE) { print "VERBOSE: PHP-FPM Detected\n" }
+        print "VERBOSE: PHP-FPM Detected\n" if $VERBOSE;
         our $servicefound_flag = 1;
         # Get PHP-FPM Memory Usage
         our $phpfpm = 0;
@@ -2495,7 +2495,7 @@ sub detect_additional_services {
         our $phpfpm_memory_usage_mbytes;
         if ( ! $NOINFO ) { print "Using ${CYAN}$phpfpm_memory_usage_mbytes MB${ENDC} of memory.\n" }
     } else {
-        if ($VERBOSE) { print "VERBOSE: PHP-FPM NOT Detected\n" }
+        print "VERBOSE: PHP-FPM NOT Detected\n" if $VERBOSE;
         our $phpfpm_memory_usage_mbytes = 0;
     }
 
@@ -2503,7 +2503,7 @@ sub detect_additional_services {
     our $gluster_detected = 0;
     $gluster_detected = `ps -C glusterd -o rss | grep -v RSS`;
     if ( $gluster_detected ) {
-        if ($VERBOSE) { print "VERBOSE: Gluster Detected\n" }
+        print "VERBOSE: Gluster Detected\n" if $VERBOSE;
         our $servicefound_flag = 1;
         if ( ! $NOINFO ) { show_info_box(); print "${CYAN}Gluster${ENDC} Detected => " }
         # Get Gluster Memory Usage
@@ -2513,7 +2513,7 @@ sub detect_additional_services {
         our $gluster_memory_usage_mbytes = $glusterd_memory_usage_mbytes + $glusterfs_memory_usage_mbytes + $glusterfsd_memory_usage_mbytes;
         if ( ! $NOINFO ) { print "Using ${CYAN}$gluster_memory_usage_mbytes MB${ENDC} of memory.\n" }
     } else {
-        if ($VERBOSE) { print "VERBOSE: Gluster NOT Detected\n" }
+        print "VERBOSE: Gluster NOT Detected\n" if $VERBOSE;
         our $gluster_memory_usage_mbytes = 0;
     }
     if ( $servicefound_flag == 0 ) {
@@ -2521,7 +2521,7 @@ sub detect_additional_services {
     } else {
         print "\n"; # add a aseparator before the next section
     }
-    if ($VERBOSE) { print "VERBOSE: End detecting additional services...\n" }
+    print "VERBOSE: End detecting additional services...\n" if $VERBOSE;
 }
 
 
