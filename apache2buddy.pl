@@ -955,7 +955,7 @@ sub get_pid {
 	# might return multiple values depending on Apache's listen directives
 	my @pids = `LANGUAGE=en_GB.UTF-8 netstat -ntap | egrep "LISTEN" | grep \":$port \" | awk \'{ print \$7 }\' | cut -d / -f 1`;
 
-	print "VERBOSE: ".@pids." found listening on port 80\n" if $main::VERBOSE;
+	print "VERBOSE: ".@pids." found listening on port $port\n" if $main::VERBOSE;
 
 	# set an initial, invalid PID. 
 	my $pid = 0;;
@@ -1134,7 +1134,7 @@ sub get_apache_uptime {
 
 	# this will return the running time for the given pid in the format 
 	# "days-hours:minutes:seconds"
-	my $uptime = `ps -eo \"\%p \%t\" | grep $pid | grep -v grep | awk \'{ print \$2 }\'`;
+	my $uptime = `ps -eo \"\%p \%t\" | grep \"^[[:space:]]*$pid \" | awk \'{ print \$2 }\'`;
 	chomp($uptime);
 
 	print "VERBOSE: PID passed to uptime function: $pid\n" if $main::VERBOSE;
@@ -1240,6 +1240,16 @@ sub get_php_setting {
 
         # return the value to the main program
         return $result;
+}
+
+sub date {
+	# we can use custom date format: date($my_date_format)
+	my ($format) = @_;
+	# default format is "%Y/%m/%d %H:%M:%S"
+	$format ||= "%Y/%m/%d %H:%M:%S";
+	my $current_date = `date +"$format"`;
+	$current_date = substr($current_date,0,-1);
+	return $current_date;
 }
 
 sub generate_standard_report {
@@ -1362,12 +1372,6 @@ sub generate_standard_report {
 		}
 		# make a logfile entry at /var/log/apache2buddy.log
 		open (LOGFILE, ">>/var/log/apache2buddy.log");
-		sub date {
-	        	my $current_date = `date +"%Y/%m/%d %H:%M:%S"`;
-       			$current_date = substr($current_date,0,-1);
-       			return $current_date;
-        	}
-	
 		if ( our $apache_version =~ m/.*\s*\/2.4.*/) {
         		print LOGFILE (date()." Uptime: \"$uptime\" Model: \"Prefork\" Memory: \"$available_mem MB\" MaxRequestWorkers: \"$maxclients\" Recommended: \"$max_rec_maxclients\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\" Highest Pct Remaining RAM: \"$max_potential_usage_pct_remain%\" \($max_potential_usage_pct_avail% TOTAL RAM)\n");
 		} else {
@@ -1382,11 +1386,6 @@ sub generate_standard_report {
 			print "\tApache2buddy does not calculate maxclients for worker model.${ENDC}\n";
 			# make a logfile entry at /var/log/apache2buddy.log
 			open (LOGFILE, ">>/var/log/apache2buddy.log");
-			sub date {
-	        		my $current_date = `date +"%Y/%m/%d %H:%M:%S"`;
-       				$current_date = substr($current_date,0,-1);
-       				return $current_date;
-        		}
         		print LOGFILE (date()." Uptime: \"$uptime\"  Model: \"Worker\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"N\\A\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\"\n");
         		close(LOGFILE);
 	}	
@@ -1396,11 +1395,6 @@ sub generate_standard_report {
 			print "\tApache2buddy does not calculate maxclients for worker model.${ENDC}\n";
 			# make a logfile entry at /var/log/apache2buddy.log
 			open (LOGFILE, ">>/var/log/apache2buddy.log");
-			sub date {
-	        		my $current_date = `date +"%Y/%m/%d %H:%M:%S"`;
-       				$current_date = substr($current_date,0,-1);
-       				return $current_date;
-        		}
         		print LOGFILE (date()." Uptime: \"$uptime\"  Model: \"Event\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"N\\A\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\"\n");
         		close(LOGFILE);
 	}
