@@ -1134,7 +1134,7 @@ sub get_apache_uptime {
 
 	# this will return the running time for the given pid in the format 
 	# "days-hours:minutes:seconds"
-	my $uptime = `ps -eo \"\%p \%t\" | grep $pid | grep -v grep | awk \'{ print \$2 }\'`;
+	my $uptime = `ps -eo \"\%p \%t\" | grep \"^[[:space:]]*$pid \" | awk \'{ print \$2 }\'`;
 	chomp($uptime);
 
 	print "VERBOSE: PID passed to uptime function: $pid\n" if $main::VERBOSE;
