@@ -2545,18 +2545,21 @@ sub get_hostname {
         }
 }
 
-
 sub get_ip {
-	our $curl = `which curl`;
-	chomp ($curl);
-	if ( $curl eq '' ) {
-	 	show_crit_box;
-		print "Cannot find the 'curl' executable.";
-		exit;
-	} else {
-		our $ip = `$curl -s myip.dnsomatic.com`;
-		return $ip;
-	}
+        our $curl = `which curl`;
+        chomp ($curl);
+        if ( $curl eq '' ) {
+                show_crit_box;
+                print "Cannot find the 'curl' executable.";
+                exit;
+        } else {
+                our $ip = `$curl -s myip.dnsomatic.com`;
+                if ($ip =~ /429 Too Many Requests/) {
+                        return "x.x.x.x";
+                } else {
+                        return $ip;
+                }
+        }
 }
 
 ########################
