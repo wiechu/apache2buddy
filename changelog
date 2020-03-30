@@ -2,6 +2,14 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-03-27	Richard Forth	Closes #319.
+                                myip.dnsomatic.com Too Many Requests, error
+				suppression. 
+
+				NOTES/ERRATA: 
+				Commit references #316, meant to be #319.
+2020-03-14	"wiechu"	Updates to the way OS Distribution is detected.
+2020-03-12      "wiechu"	Few cosmetic changes
 2020-03-12      Richard Forth /	Fixed Package management Issue - issue #312
 		"wiechu"
 2020-03-10      Mark Hyde   	PR to address backward compatibilty with
