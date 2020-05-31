@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-05-31	"pes-soft"	Add compatibility for Apache 2.4 from CentOS7
+				Software Collections #327
 2020-03-27	Richard Forth	Closes #319.
                                 myip.dnsomatic.com Too Many Requests, error
 				suppression. 
