@@ -858,7 +858,7 @@ sub get_memory_usage {
 	print "VERBOSE: Get '".$search_type."' memory usage\n" if $main::VERBOSE;
 
 	# get a list of the pid's for apache running as the appropriate user
-	my @pids = `ps aux | grep $process_name | grep "^$apache_user\s" | awk \'{ print \$2 }\'`;
+	my @pids = `ps aux | grep $process_name | grep "^$apache_user\\s" | awk \'{ print \$2 }\'`;
 
         # if length of @pids is still zero then die with an error.
 	if (@pids == 0) {
