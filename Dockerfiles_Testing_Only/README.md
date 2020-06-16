@@ -1,6 +1,6 @@
 # About Dockerfiles
 
-I should just point out to anyone that doesnt understand the purpose of dockerizing apache2buddy - its for testing only. You will still need to run the apache2buddy script on your actual servers, because apache2buddy will only see what it sees in the containers - some I'm only using them for testing and hopefully getting changes out faster.
+I should just point out to anyone that doesnt understand the purpose of dockerizing apache2buddy - its for testing only. You will still need to run the apache2buddy script on your actual servers, because apache2buddy will only see what it sees in the containers - so I'm only using them for testing and hopefully getting changes out faster.
 
 It's also useful to have a known good running script to compare against if you are having issues, that's what Docker is for here, it containerizes it in its own little bubble so it should run all the time, every time - in that container.
 
