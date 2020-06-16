@@ -2,12 +2,12 @@
 
 Build command:
 
-  $ docker build .
+	$ docker build .
 
 
 Run command:
 
-  $ docker run --cap-add SYS_PTRACE <image-id>
+	$ docker run --cap-add SYS_PTRACE <image-id>
 
 Notes:
 
@@ -17,6 +17,6 @@ If you want to pull from master instead, change staging to master on the ENTRYPO
 
 IMPORTANT: in order for apache2buddy to run properly, docker images need a capability adding at run time:
 
-  --cap-add SYS_PTRACE
+	--cap-add SYS_PTRACE
 
 Without this, apache2buddy will crash out when it runs pmap, see https://github.com/richardforth/apache2buddy/issues/329.
