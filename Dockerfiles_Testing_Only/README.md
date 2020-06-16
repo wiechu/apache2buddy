@@ -26,7 +26,7 @@ If you notice any Dockerfiles are missing, feel free to create your own and subm
 				'SuSE');
 ```
 
-Don't forget when testing on Docker, apache2budy requires that the image has a capability added at runtime:
+Don't forget when testing on Docker, apache2buddy requires that the image has a capability added at runtime:
 
 	--cap-add SYS_PTRACE
 
@@ -34,4 +34,5 @@ So for example after building your docker image from these docker files, you sho
 
 	$ docker run --cap-add SYS_PTRACE <image-id>
 
+If you do not add this capability, apache2buddy will crash out when it comes to running pmap.
 
