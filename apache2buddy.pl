@@ -858,7 +858,7 @@ sub get_memory_usage {
 	print "VERBOSE: Get '".$search_type."' memory usage\n" if $main::VERBOSE;
 
 	# get a list of the pid's for apache running as the appropriate user
-	my @pids = `ps aux | grep $process_name | grep -v root | grep $apache_user | awk \'{ print \$2 }\'`;
+	my @pids = `ps aux | grep $process_name | grep "^$apache_user\\s" | awk \'{ print \$2 }\'`;
 
         # if length of @pids is still zero then die with an error.
 	if (@pids == 0) {
@@ -1094,6 +1094,27 @@ sub get_apache_conf_file {
 	return $apache_conf_file;
 }
 
+# this will return the apache default pid file
+sub get_apache_pid_file {
+	our $apache_pid_file;
+	my ( $process_name ) = @_;
+	if ( $process_name eq "/usr/sbin/apache2") {
+		# use apache2ctl instead ...
+		$apache_pid_file = `apache2ctl -V 2>&1 | grep \"DEFAULT_PIDLOG\"`;
+		$apache_pid_file =~ s/.*=\"(.*)\"/$1/;
+		chomp($apache_pid_file);
+	} else {
+		$apache_pid_file = `$process_name -V 2>&1 | grep \"DEFAULT_PIDLOG\"`;
+		$apache_pid_file =~ s/.*=\"(.*)\"/$1/;
+		chomp($apache_pid_file);
+	}
+	# return the apache configuration file, or 0 if there is no result
+	if ( $apache_pid_file eq '' ) {
+		$apache_pid_file = 0;
+	}
+
+	return $apache_pid_file;
+}
 
 sub itk_detect {
 	my ($model) = @_;
@@ -1821,8 +1842,14 @@ sub preflight_checks {
 	$pidfile_cfv =~ s/^"(.*)"$/$1/;
 	$pidfile_cfv =~ s/^'(.*)'$/$1/;
 	if ($VERBOSE) { print "VERBOSE: AFTER ($pidfile_cfv).\n" }
+	our $pidfile_pdv = get_apache_pid_file($process_name);
+	if ( substr($pidfile_pdv, 0, 1) ne "/" ) {
+		$pidfile_pdv = $apache_root."/".$pidfile_pdv;
+	}
 	if ( -f $pidfile_cfv ) {
 		our $pidfile =$pidfile_cfv;
+	} elsif ( -f $pidfile_pdv ) {
+		our $pidfile = $pidfile_pdv;
 	} else {
 		if ($pidfile_cfv eq "run/httpd.pid") {
 			# it could be in a couple of places, so lets test!
@@ -2120,6 +2147,7 @@ sub preflight_checks {
 
 	# Check 17d : Large Logs in /var/log
 	systemcheck_large_logs("/var/log/httpd");
+	systemcheck_large_logs("/var/log/httpd24");
 	systemcheck_large_logs("/var/log/apache2");
 	systemcheck_large_logs("/var/log/php-fpm");
 	systemcheck_large_logs("/usr/local/apache/logs");
@@ -2247,6 +2275,8 @@ sub detect_php_fatal_errors {
 
 	if ($process_name eq "/usr/sbin/httpd" ) {
 		our $SCANDIR = "/var/log/httpd/";
+        } elsif ($process_name eq "/opt/rh/httpd24/root/usr/sbin/httpd" ) {
+		our $SCANDIR = "/var/log/httpd24/";
         } elsif ($process_name eq "/usr/local/apache/bin/httpd" ) {
 		our $SCANDIR = "/usr/local/apache/logs/";
         } else {
@@ -2313,6 +2343,8 @@ sub detect_maxclients_hits {
 	our $hit = 0;
 	if ($process_name eq "/usr/sbin/httpd") {
 		our $maxclients_hits = `grep -i reached /var/log/httpd/error_log | egrep -v "mod" | tail -5`;
+	} elsif ($process_name eq "/opt/rh/httpd24/root/usr/sbin/httpd") {
+		our $maxclients_hits = `grep -i reached /var/log/httpd24/error_log | egrep -v "mod" | tail -5`;
 	} elsif ($process_name eq "/usr/local/apache/bin/httpd") {
 		our $maxclients_hits = `grep -i reached /usr/local/apache/logs/error_log | egrep -v "mod" | tail -5`;
 	} elsif ($process_name eq "/opt/apache2/bin/httpd") {
