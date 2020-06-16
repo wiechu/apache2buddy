@@ -26,6 +26,8 @@ If you notice any Dockerfiles are missing, feel free to create your own and subm
 				'SuSE');
 ```
 
+Obviously Red Hat is proprietary so for testing purposes we wiill stick to CentOS and Scientific  (where base images are available).
+
 Don't forget when testing on Docker, apache2buddy requires that the image has a capability added at runtime:
 
 	--cap-add SYS_PTRACE
