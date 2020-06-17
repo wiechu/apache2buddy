@@ -407,7 +407,7 @@ sub check_os_support {
 	my %suseol = map { $_ => 1 } @suse_os_list;
 
 	# https://wiki.debian.org/DebianReleases
-	my @debian_supported_versions = ('8','9');
+	my @debian_supported_versions = ('8','9','10');
 	my %dsv = map { $_ => 1 } @debian_supported_versions;
 
 	# https://www.ubuntu.com/info/release-end-of-life

@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-06-17	Richard Forth	Added support for Debian 10.
+                                - Added 10 to list of supported debian
+				versions.
 2020-06-17	Richard Forth	Added Dockerfile for Debian10 testing.
 2020-06-16	Richard Forth	Added Dockerfile for CentOS7 testing.
 2020-05-31	"pes-soft"	Fix error getting the list of pids introduced in #327
