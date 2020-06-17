@@ -42,16 +42,16 @@ If you do not add this capability, apache2buddy will crash out when it comes to 
 
 I have uploaded a few images to docker hub:
 
-	forric/centos_6_apache2buddy_stag
-	forric/scientific_6_apache2buddy_stag
-	forric/scientific_6_apache2buddy_mas
 	forric/centos_6_apache2buddy_mas
-	forric/centos_8_apache2buddy_mas
-	forric/centos_8_apache2buddy_stag
+	forric/centos_6_apache2buddy_stag
 	forric/centos_7_apache2buddy_mas
 	forric/centos_7_apache2buddy_stag
+	forric/centos_8_apache2buddy_mas
+	forric/centos_8_apache2buddy_stag
 	forric/debian_10_apache2buddy_mas
 	forric/debian_10_apache2buddy_stag
+	forric/scientific_6_apache2buddy_mas
+	forric/scientific_6_apache2buddy_stag
 
 You can pull these with 'docker pull'. More to follow.
 
