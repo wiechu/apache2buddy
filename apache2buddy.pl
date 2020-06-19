@@ -1737,7 +1737,13 @@ sub preflight_checks {
                         if ( ! $NOINFO ) { show_info_box; print "Apache is actually listening on port ${CYAN}$real_port${ENDC}\n" }
                         if ( ! $NOINFO ) { show_info_box; print "The process running on port ${CYAN}$real_port${ENDC} is ${CYAN}$apache_version${ENDC}.\n" }
 			# Issue #252 apache 2.2 is EOL
-			if ( ! $NOINFO ) { show_crit_box; print "${YELLOW}Apache 2.2 is End Of Life. For more Information, see ${CYAN}https://httpd.apache.org/.${ENDC}" }
+			# Issue #325 bug - no sanity checking 
+			my $eol_version = "2.2";
+			if ( index($apache_version,$eol_version) != -1) {
+				# index returns -1 if the string is NOT present, if it is present, the following will be run:
+				# ie we only care if the version is detected as being 2.2 - refer to issue #325 as above mentioned.
+				if ( ! $NOINFO ) { show_crit_box; print "${YELLOW}Apache 2.2 is End Of Life. For more Information, see ${CYAN}https://httpd.apache.org/.${ENDC}" }
+			}
                 }
 	} else {	
 		# now we get the name of the process running with the specified pid

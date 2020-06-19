@@ -2,6 +2,10 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-06-19	Richard Forth	Added support for Ubuntu 20.04
+				Closes #331
+2020-06-19	Richard Forth	Added a sanity check for issue #325
+				Closes #325
 2020-06-19	Richard Forth	Added a fix up working towards apache 2.4.43
 				- issue with apachectl, first spotted in
 				Fedora 32
