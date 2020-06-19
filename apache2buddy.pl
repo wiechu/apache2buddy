@@ -2669,6 +2669,7 @@ if ( ! $NOCHKPID) {
 } else {
 	our $uptime = "SKIPPED";
 }
+our $uptime;
 our $process_name;
 our $available_mem;
 our $maxclients;
