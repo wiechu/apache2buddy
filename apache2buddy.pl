@@ -1170,7 +1170,7 @@ sub get_apache_model {
 		# Gotcha in Fedora 32  - so likely to appear in later versions of apache (circa 2.4.43)
 		# see issue #334, apachectl was our fall back but now we need to also fall back to httpd.
 		my @array_models = ('worker','prefork','event','itk'); 
-		if ! (grep $model, @array_models) { 
+		if !(grep $model, @array_models) { 
                 	if ($VERBOSE) { print "VERBOSE: model not found, falling back to 'httpd', last try..." }
                 	$model = `httpd -M 2>&1 | egrep "worker|prefork|event|itk"`;
 		}
