@@ -321,12 +321,26 @@ sub get_os_platform {
          my @py_scripts = (
                 # platform.linux_distribution() - This function is deprecated since Python 3.5
                 # and removed in Python 3.8. See alternative like the distro package.
-                'import platform; print(platform.linux_distribution())',
+                "try:
+	import platform
+	print(platform.linux_distribution())
+except AttributeError as e:
+	pass",
                 # platform.dist() -  Deprecated since version 2.6.
-                'import platform; print(platform.dist())',
+                "try:
+	import platform
+	print(platform.dist())
+except AttributeError as e:
+	pass",
                 # distro.linux_distribution() - 'distro' is not default installed package
-                'import distro; print(distro.linux_distribution())',
-        );
+                "try:
+	import distro
+	print(distro.linux_distribution())
+except AttributeError as e:
+	pass
+except ModuleNotFoundError as e:
+	pass"); # Note the pass is required because perl needs an empty result for error handling internally switching from python back to perl.
+                # We just want python to die quietly in a corner for aestehetic reasons.
 
         # Check for python (new in Debian 9 as it doesnt come with it out of the box)
         my $py_exists = 0;

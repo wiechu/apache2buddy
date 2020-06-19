@@ -2,6 +2,11 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-06-19	Richard Forth	Added a fix up working towards ubuntu 20.04
+				support.
+				- requires further testing
+				- use '--skip-os-version-check' for now.
+				- This may also fix some issues in Fedora 32. 
 2020-06-17	Richard Forth	Added support for Debian 10.
                                 - Added 10 to list of supported debian
 				versions.
