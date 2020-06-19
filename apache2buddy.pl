@@ -1148,7 +1148,7 @@ sub get_apache_model {
                 # In apache2, worker / prefork / event are no longer compiled-in.
                 # Instead, with is a loaded in module
                 # differing from httpd / httpd24u's process directly, in ubuntu we need to run apache2ctl.
-                if ($VERBOSE) { print "VERBOSE: Looking for model, first trying 'apachectl'." }
+                if ($VERBOSE) { print "VERBOSE: Looking for model, first trying 'apachectl'.\n" }
                 $model = `apache2ctl -M 2>&1 | egrep "worker|prefork|event|itk"`;
                 # if we detect itk module, we need to stop immediately:
                 if ($VERBOSE) { print "VERBOSE: $model" }
@@ -1165,13 +1165,13 @@ sub get_apache_model {
                 if ($VERBOSE) { print "VERBOSE: Return Value: $model\n" }
                 return $model;
         } else {
-                if ($VERBOSE) { print "VERBOSE: model not found, falling back to 'apachectl'." }
+                if ($VERBOSE) { print "VERBOSE: model not found, falling back to 'apachectl'.\n" }
                 $model = `apachectl -M 2>&1 | egrep "worker|prefork|event|itk"`;
 		# Gotcha in Fedora 32  - so likely to appear in later versions of apache (circa 2.4.43)
 		# see issue #334, apachectl was our fall back but now we need to also fall back to httpd.
 		my @array_models = ('worker','prefork','event','itk'); 
 		if (!(grep $model, @array_models)) { 
-                	if ($VERBOSE) { print "VERBOSE: model not found, falling back to 'httpd', last try..." }
+                	if ($VERBOSE) { print "VERBOSE: model not found, falling back to 'httpd', last try...\n" }
                 	$model = `httpd -M 2>&1 | egrep "worker|prefork|event|itk"`;
 		}
 		our $model;
