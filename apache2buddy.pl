@@ -1967,19 +1967,25 @@ sub preflight_checks {
 				if ( ! $NOOK ) { show_ok_box; print "Memory usage of parent PID is less than 50MB: ${CYAN}$ppid_mem_usage Kilobytes${ENDC}.\n" }
 			}
 		}
+	} else {
+		if ( ! $NOINFO ) { show_info_box; print "Parent PID checks skipped because --no-check-pid option used.{ENDC}.\n" }
 	}
 
 	# Check 13.2
 	# determine the Apache uptime
-	our $parent_pid;
-	our @apache_uptime = get_apache_uptime($parent_pid);
-	
-	if ( ! $NOINFO ) { show_info_box(); print "Apache has been running ${CYAN}$apache_uptime[0]${ENDC}d ${CYAN}$apache_uptime[1]${ENDC}h ${CYAN}$apache_uptime[2]${ENDC}m ${CYAN}$apache_uptime[3]${ENDC}s.\n" }
-	if ( $apache_uptime[0] == "0" ) { 
-		if ( ! $NOWARN ) { 
-			show_crit_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
-			show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n";
+	if ( ! $NOCHKPID) {
+		our $parent_pid;
+		our @apache_uptime = get_apache_uptime($parent_pid);
+		
+		if ( ! $NOINFO ) { show_info_box(); print "Apache has been running ${CYAN}$apache_uptime[0]${ENDC}d ${CYAN}$apache_uptime[1]${ENDC}h ${CYAN}$apache_uptime[2]${ENDC}m ${CYAN}$apache_uptime[3]${ENDC}s.\n" }
+		if ( $apache_uptime[0] == "0" ) { 
+			if ( ! $NOWARN ) { 
+				show_crit_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
+				show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n";
+			}
 		}
+	} else {
+		if ( ! $NOINFO ) { show_info_box; print "Uptime checks skipped because --no-check-pid option used.{ENDC}.\n" }
 	}
 
 	# check 13.3
