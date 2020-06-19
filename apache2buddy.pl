@@ -1865,103 +1865,107 @@ sub preflight_checks {
 	# Check 13.1
 	# Determine the size of the parent process
 	# Bug Out if greater than 50MB
-	our $pidfile_cfv = find_master_value(\@config_array, $model, 'pidfile');
-	if ( ! $NOINFO ) { show_info_box; print "pidfile setting is ${CYAN}$pidfile_cfv${ENDC}.\n" } 
-	# addressing issue #84, I realised this whole block of code is guessing, I understand why, but its not sane.
-	# for example what we need to do is first check if the path is a relative path or absolute path.
-	# If it is an absolute path, lets check that first, which will cut out a lot of unnecessary code, 
-	# otherwise we can start guessing based on common relative paths.
-	#  Fix for Issue #222 strip any quotes from returned string
-	#  "/var/run/httpd.pid" becomes /var/run/httpd.pid
-	if ($VERBOSE) { print "VERBOSE: Stripping any quotes from string ...\n" }
-	if ($VERBOSE) { print "VERBOSE: BEFORE ($pidfile_cfv).\n" }
-	$pidfile_cfv =~ s/^"(.*)"$/$1/;
-	$pidfile_cfv =~ s/^'(.*)'$/$1/;
-	if ($VERBOSE) { print "VERBOSE: AFTER ($pidfile_cfv).\n" }
-	our $pidfile_pdv = get_apache_pid_file($process_name);
-	if ( substr($pidfile_pdv, 0, 1) ne "/" ) {
-		$pidfile_pdv = $apache_root."/".$pidfile_pdv;
-	}
-	if ( -f $pidfile_cfv ) {
-		our $pidfile =$pidfile_cfv;
-	} elsif ( -f $pidfile_pdv ) {
-		our $pidfile = $pidfile_pdv;
-	} else {
-		if ($pidfile_cfv eq "run/httpd.pid") {
-			# it could be in a couple of places, so lets test!
-			if (-f "/var/run/httpd/httpd.pid") {
-				our $pidfile = "/var/run/httpd/httpd.pid";
-			} elsif (-f "/run/httpd/httpd.pid") {
-				our $pidfile = "/run/httpd/httpd.pid";
-			} elsif (-f "/var/run/httpd.pid") {
-				our $pidfile = "/var/run/httpd.pid";
-			} else {
-				if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n" } 
-				exit;
-			}
-		} elsif ($pidfile_cfv eq "/var/run/apache2/apache2\$SUFFIX.pid") {
-			our $pidfile = "/var/run/apache2/apache2.pid";
-		} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX.pid") {
-			our $pidfile = "/var/run/apache2.pid";
-		} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX/apache2.pid") {
-			our $pidfile = "/var/run/apache2/apache2.pid";
-		} else {
-			# revert to a find command as a last ditch effort to find the pid
-			if ($VERBOSE) { print "VERBOSE: Looking for pid file ...\n" }
-			if ( -d "/var/run/apache2") {
-				our $pidguess = `find /var/run/apache2 | grep pid`;
-			} elsif ( -d "/run/httpd") {
-				our $pidguess = `find /run/httpd | grep pid`;
-			} elsif ( -d "/var/run/httpd") {
-				our $pidguess = `find /var/run/httpd | grep pid`;
-			} elsif ( -d "/opt/apache2/run") {
-				our $pidguess = `find /opt/apache2/run | grep pid`;
-			} else {
-				show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n";
-				exit;
-			}
-			our $pidguess;
-			chomp($pidguess);
-			if ( -f $pidguess ) {
-				our $pidfile = $pidguess;
-				if ($VERBOSE) { print "VERBOSE: Located pidfile at $pidfile.\n" }
-			} else {
-				show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n";
-				exit;
-			}
-		}
-	}
-	
-	our $pidfile;
-	if (-f $pidfile) {
-		if ( ! $NOINFO ) { show_info_box; print "Actual pidfile is ${CYAN}$pidfile${ENDC}.\n" } 
-	} else {
-		if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to open pid file $pidfile${ENDC}. Exiting.\n" } 
-		exit;
-	}
-	# get pid
-	our $pidfile;
-	our $parent_pid = `cat $pidfile`;
-	chomp($parent_pid);
-	if ( ! $NOINFO ) { show_info_box; print "Parent PID: ${CYAN}$parent_pid${ENDC}.\n" }
+	# Issue #309 encapsulate check 13.1 as a whole
+	# to respect the --no-check-pid option 
 	if ( ! $NOCHKPID) {
-		if ($VERBOSE) { print "VERBOSE: output of 'pmap' is different depending on distro!\n" }
-		my $ppid_mem_usage;
-		if (ucfirst($distro) eq "SUSE Linux Enterprise Server" ) {
-			$ppid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $parent_pid | egrep "writable-private" | awk \'{ print \$1 }\'`;
-		} else {
-			$ppid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $parent_pid | egrep "writeable/private" | awk \'{ print \$4 }\'`;
+		our $pidfile_cfv = find_master_value(\@config_array, $model, 'pidfile');
+		if ( ! $NOINFO ) { show_info_box; print "pidfile setting is ${CYAN}$pidfile_cfv${ENDC}.\n" } 
+		# addressing issue #84, I realised this whole block of code is guessing, I understand why, but its not sane.
+		# for example what we need to do is first check if the path is a relative path or absolute path.
+		# If it is an absolute path, lets check that first, which will cut out a lot of unnecessary code, 
+		# otherwise we can start guessing based on common relative paths.
+		#  Fix for Issue #222 strip any quotes from returned string
+		#  "/var/run/httpd.pid" becomes /var/run/httpd.pid
+		if ($VERBOSE) { print "VERBOSE: Stripping any quotes from string ...\n" }
+		if ($VERBOSE) { print "VERBOSE: BEFORE ($pidfile_cfv).\n" }
+		$pidfile_cfv =~ s/^"(.*)"$/$1/;
+		$pidfile_cfv =~ s/^'(.*)'$/$1/;
+		if ($VERBOSE) { print "VERBOSE: AFTER ($pidfile_cfv).\n" }
+		our $pidfile_pdv = get_apache_pid_file($process_name);
+		if ( substr($pidfile_pdv, 0, 1) ne "/" ) {
+			$pidfile_pdv = $apache_root."/".$pidfile_pdv;
 		}
-		$ppid_mem_usage =~ s/K//;
-		chomp($ppid_mem_usage);
-		if ($ppid_mem_usage > 50000) {
-			show_crit_box; print "${RED}Memory usage of parent PID is greater than 50MB: $ppid_mem_usage Kilobytes${ENDC}.\n";
-			show_advisory_box; print "${YELLOW}For more information, see ${CYAN}https://github.com/richardforth/apache2buddy/wiki/50MB-Parent-PID-Issue${ENDC}\n";
-			show_advisory_box; print "${YELLOW}If you are desperate, try ${CYAN}-P${YELLOW} or ${CYAN}--no-check-pid${ENDC}${YELLOW}.${ENDC}\n";
-			show_info_box; print "Exiting.\n";
-			exit;
+		if ( -f $pidfile_cfv ) {
+			our $pidfile =$pidfile_cfv;
+		} elsif ( -f $pidfile_pdv ) {
+			our $pidfile = $pidfile_pdv;
 		} else {
-			if ( ! $NOOK ) { show_ok_box; print "Memory usage of parent PID is less than 50MB: ${CYAN}$ppid_mem_usage Kilobytes${ENDC}.\n" }
+			if ($pidfile_cfv eq "run/httpd.pid") {
+				# it could be in a couple of places, so lets test!
+				if (-f "/var/run/httpd/httpd.pid") {
+					our $pidfile = "/var/run/httpd/httpd.pid";
+				} elsif (-f "/run/httpd/httpd.pid") {
+					our $pidfile = "/run/httpd/httpd.pid";
+				} elsif (-f "/var/run/httpd.pid") {
+					our $pidfile = "/var/run/httpd.pid";
+				} else {
+					if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n" } 
+					exit;
+				}
+			} elsif ($pidfile_cfv eq "/var/run/apache2/apache2\$SUFFIX.pid") {
+				our $pidfile = "/var/run/apache2/apache2.pid";
+			} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX.pid") {
+				our $pidfile = "/var/run/apache2.pid";
+			} elsif ($pidfile_cfv eq "/var/run/apache2\$SUFFIX/apache2.pid") {
+				our $pidfile = "/var/run/apache2/apache2.pid";
+			} else {
+				# revert to a find command as a last ditch effort to find the pid
+				if ($VERBOSE) { print "VERBOSE: Looking for pid file ...\n" }
+				if ( -d "/var/run/apache2") {
+					our $pidguess = `find /var/run/apache2 | grep pid`;
+				} elsif ( -d "/run/httpd") {
+					our $pidguess = `find /run/httpd | grep pid`;
+				} elsif ( -d "/var/run/httpd") {
+					our $pidguess = `find /var/run/httpd | grep pid`;
+				} elsif ( -d "/opt/apache2/run") {
+					our $pidguess = `find /opt/apache2/run | grep pid`;
+				} else {
+					show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n";
+					exit;
+				}
+				our $pidguess;
+				chomp($pidguess);
+				if ( -f $pidguess ) {
+					our $pidfile = $pidguess;
+					if ($VERBOSE) { print "VERBOSE: Located pidfile at $pidfile.\n" }
+				} else {
+					show_crit_box; print "${RED}Unable to locate pid file${ENDC}. Exiting.\n";
+					exit;
+				}
+			}
+		}
+
+		our $pidfile;
+		if (-f $pidfile) {
+			if ( ! $NOINFO ) { show_info_box; print "Actual pidfile is ${CYAN}$pidfile${ENDC}.\n" } 
+		} else {
+			if ( ! $NOINFO ) { show_crit_box; print "${RED}Unable to open pid file $pidfile${ENDC}. Exiting.\n" } 
+			exit;
+		}
+		# get pid
+		our $pidfile;
+		our $parent_pid = `cat $pidfile`;
+		chomp($parent_pid);
+		if ( ! $NOINFO ) { show_info_box; print "Parent PID: ${CYAN}$parent_pid${ENDC}.\n" }
+		if ( ! $NOCHKPID) {
+			if ($VERBOSE) { print "VERBOSE: output of 'pmap' is different depending on distro!\n" }
+			my $ppid_mem_usage;
+			if (ucfirst($distro) eq "SUSE Linux Enterprise Server" ) {
+				$ppid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $parent_pid | egrep "writable-private" | awk \'{ print \$1 }\'`;
+			} else {
+				$ppid_mem_usage = `LANGUAGE=en_GB.UTF-8 pmap -d $parent_pid | egrep "writeable/private" | awk \'{ print \$4 }\'`;
+			}
+			$ppid_mem_usage =~ s/K//;
+			chomp($ppid_mem_usage);
+			if ($ppid_mem_usage > 50000) {
+				show_crit_box; print "${RED}Memory usage of parent PID is greater than 50MB: $ppid_mem_usage Kilobytes${ENDC}.\n";
+				show_advisory_box; print "${YELLOW}For more information, see ${CYAN}https://github.com/richardforth/apache2buddy/wiki/50MB-Parent-PID-Issue${ENDC}\n";
+				show_advisory_box; print "${YELLOW}If you are desperate, try ${CYAN}-P${YELLOW} or ${CYAN}--no-check-pid${ENDC}${YELLOW}.${ENDC}\n";
+				show_info_box; print "Exiting.\n";
+				exit;
+			} else {
+				if ( ! $NOOK ) { show_ok_box; print "Memory usage of parent PID is less than 50MB: ${CYAN}$ppid_mem_usage Kilobytes${ENDC}.\n" }
+			}
 		}
 	}
 

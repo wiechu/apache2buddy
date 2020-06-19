@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-06-19	Richard Forth	Forced apache2buddy to respect the
+				--no-check-pid option.
+				Closes #309
 2020-06-19	Richard Forth	Added support for Ubuntu 20.04
 				Closes #331
 2020-06-19	Richard Forth	Added a sanity check for issue #325
