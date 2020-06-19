@@ -1968,7 +1968,7 @@ sub preflight_checks {
 			}
 		}
 	} else {
-		if ( ! $NOINFO ) { show_info_box; print "Parent PID checks skipped because --no-check-pid option used.{ENDC}.\n" }
+		if ( ! $NOINFO ) { show_info_box; print "Parent PID checks skipped because --no-check-pid option used.{$ENDC}.\n" }
 	}
 
 	# Check 13.2
@@ -1985,7 +1985,7 @@ sub preflight_checks {
 			}
 		}
 	} else {
-		if ( ! $NOINFO ) { show_info_box; print "Uptime checks skipped because --no-check-pid option used.{ENDC}.\n" }
+		if ( ! $NOINFO ) { show_info_box; print "Uptime checks skipped because --no-check-pid option used.{$ENDC}.\n" }
 	}
 
 	# check 13.3
@@ -2664,7 +2664,9 @@ our @config_array;
 our $apache_user;
 our $model;
 our @apache_uptime;
-our $uptime = "$apache_uptime[0]d $apache_uptime[1]h $apache_uptime[2]m $apache_uptime[3]s";
+if ( ! $NOCHKPID) {
+	our $uptime = "$apache_uptime[0]d $apache_uptime[1]h $apache_uptime[2]m $apache_uptime[3]s";
+}
 our $process_name;
 our $available_mem;
 our $maxclients;
