@@ -1174,6 +1174,7 @@ sub get_apache_model {
                 	if ($VERBOSE) { print "VERBOSE: model not found, falling back to 'httpd', last try..." }
                 	$model = `httpd -M 2>&1 | egrep "worker|prefork|event|itk"`;
 		}
+		our $model;
                 if ($VERBOSE) { print "VERBOSE: $model" }
                 if ($VERBOSE) { print "VERBOSE: ITK DETECTOR STARTED\n" }
                 itk_detect($model);
