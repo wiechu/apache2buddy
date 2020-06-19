@@ -1378,13 +1378,14 @@ sub generate_standard_report {
 	print "Apache2buddy.pl report for server: ${CYAN}$servername${ENDC} \(${CYAN}$public_ip_address${ENDC}\):\n";
 	# show what we're going to use to generate our numbers
 	print "\nSettings considered for this report:\n"; # exempt from NOINFO directive. 
-	if ( $apache_uptime[0] == "0" ) { 
-		if ( ! $NOWARN ) {
-			show_crit_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
-			show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n\n";
+	if ( ! $NOCHKPID) {
+		if ( $apache_uptime[0] == "0" ) { 
+			if ( ! $NOWARN ) {
+				show_crit_box(); print "${RED}*** LOW UPTIME ***${ENDC}.\n"; 
+				show_advisory_box(); print "${YELLOW}The following recommendations may be misleading - apache has been restarted within the last 24 hours.${ENDC}\n\n";
+			}
 		}
 	}
-
 	printf ("%-62s ${CYAN}%d %2s${CYAN}\n",   "\tYour server's physical RAM:", $available_mem, "MB"); # exempt from NOINFO directive.
 	my $memory_remaining = $available_mem - $mysql_memory_usage_mbytes - $java_memory_usage_mbytes - $redis_memory_usage_mbytes - $memcache_memory_usage_mbytes - $varnish_memory_usage_mbytes - $phpfpm_memory_usage_mbytes- $gluster_memory_usage_mbytes;
 	printf ("${BOLD}%-62s${ENDC} ${CYAN}%d %2s${ENDC}\n",   "\tRemaining Memory after other services considered:", $memory_remaining, "MB"); # exempt from NOINFO directive.
