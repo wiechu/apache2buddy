@@ -2666,6 +2666,8 @@ our $model;
 our @apache_uptime;
 if ( ! $NOCHKPID) {
 	our $uptime = "$apache_uptime[0]d $apache_uptime[1]h $apache_uptime[2]m $apache_uptime[3]s";
+} else {
+	our $uptime = "SKIPPED";
 }
 our $process_name;
 our $available_mem;
