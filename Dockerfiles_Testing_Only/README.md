@@ -63,4 +63,4 @@ You can pull these with 'docker pull'. More to follow.
  - Scientific Linux has no docker image yet for Scientific Linux 8
  - I couldnt find any Suse linux docker images
  - same with RHEL, but then CentOS is a rebuild so we are all good.
- - Most of the time if it works on CentOS 8, it will also work on RHEL and Scientific.
+ - Most of the time if it works on CentOS,  it will also work on RHEL and Scientific.
