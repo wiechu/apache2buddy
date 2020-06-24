@@ -1848,11 +1848,11 @@ sub preflight_checks {
         # account for 'apache\x{d}' strangeness
         $apache_user_config =~ s/\x{d}//;
         $apache_user_config =~ s/^\s*(.*?)\s*$/$1/;; # address issue #19, strip whitespace from both sides.
-	unless ($apache_user_config eq "apache" or $apache_user eq "www-data") {
+	unless ($apache_user_config eq "apache" or $apache_user_config eq "www-data") {
                 my $apache_config_userid = `id -u $apache_user_config`;
                 chomp($apache_config_userid);
                 # account for 'apache\x{d}' strangeness
-                $apache_config_user =~ s/\x{d}//;
+                $apache_user_config =~ s/\x{d}//;
 		show_warn_box(); print ("${RED}Non-standard apache set-up, apache is configured to run as UID: ${CYAN}$apache_config_userid${RED} (${CYAN}$apache_user_config${RED}). Expecting UID 48 ('apache' or 'www-data').${ENDC}\n");
                 
 	}
