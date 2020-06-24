@@ -1863,7 +1863,7 @@ sub preflight_checks {
 	chomp($apache_user_running);
 
 	# compare the running user with the config user:
-	if ( $apache_user_running == $apache_user_config) {
+	if ( $apache_user_running eq  $apache_user_config) {
 		if ( ! $NOOK ) { show_ok_box(); print "Running user (${CYAN}$apache_user_running${ENDC}) matches config (${CYAN}$apache_user_config${ENDC}).\n" }
 		
 	} else {
