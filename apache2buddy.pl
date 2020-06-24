@@ -865,19 +865,19 @@ sub find_master_value {
 # three different outputs: average usage across all processes, the memory usage
 # by the largest process, or the memory usage by the smallest process
 sub get_memory_usage {
-	my ($process_name, $apache_user, $search_type) = @_;
+	my ($process_name, $apache_user_running, $search_type) = @_;
 	
 	my (@proc_mem_usages, $result);
 
 	print "VERBOSE: Get '".$search_type."' memory usage\n" if $main::VERBOSE;
 
 	# get a list of the pid's for apache running as the appropriate user
-	my @pids = `ps aux | grep $process_name | grep "^$apache_user\\s" | awk \'{ print \$2 }\'`;
+	my @pids = `ps aux | grep $process_name | grep "^$apache_user_running\\s" | awk \'{ print \$2 }\'`;
 
         # if length of @pids is still zero then die with an error.
 	if (@pids == 0) {
                 show_crit_box(); print ("Error getting a list of PIDs\n");
-		print ("DEBUG -> Process Name: ".$process_name."\nDEBUG -> Apache_user: ".$apache_user."\nDEBUG -> Search Type: ".$search_type."\n\n");
+		print ("DEBUG -> Process Name: ".$process_name."\nDEBUG -> Apache_user: ".$apache_user_running."\nDEBUG -> Search Type: ".$search_type."\n\n");
 		exit 1;
 	} 
 	# figure out how much memory each process is using
@@ -1843,24 +1843,37 @@ sub preflight_checks {
 	# Check 13	
 	# get the entire config, including included files, into an array
 	our @config_array = build_config_array($full_apache_conf_file_path,$apache_root);
-	# determine what user apache runs as 
-	our $apache_user = find_master_value(\@config_array, $model, 'user');
+	# determine what user apache runs as (according to the config file)
+	our $apache_user_config = find_master_value(\@config_array, $model, 'user');
         # account for 'apache\x{d}' strangeness
-        $apache_user =~ s/\x{d}//;
-        $apache_user =~ s/^\s*(.*?)\s*$/$1/;; # address issue #19, strip whitespace from both sides.
-	unless ($apache_user eq "apache" or $apache_user eq "www-data") {
-                my $apache_userid = `id -u $apache_user`;
-                chomp($apache_userid);
+        $apache_user_config =~ s/\x{d}//;
+        $apache_user_config =~ s/^\s*(.*?)\s*$/$1/;; # address issue #19, strip whitespace from both sides.
+	unless ($apache_user_config eq "apache" or $apache_user eq "www-data") {
+                my $apache_config_userid = `id -u $apache_user_config`;
+                chomp($apache_config_userid);
                 # account for 'apache\x{d}' strangeness
-                $apache_user =~ s/\x{d}//;
-                show_warn_box(); print ("${RED}Non-standard apache set-up, apache is running as UID: ${CYAN}$apache_userid${RED} (${CYAN}$apache_user${RED}). Expecting UID 48 ('apache' or 'www-data').${ENDC}\n");
-		if ( ! $NOINFO ) { show_info_box(); print "Apache runs as ${CYAN}$apache_user${ENDC}.\n" }
-        }	
+                $apache_config_user =~ s/\x{d}//;
+		show_warn_box(); print ("${RED}Non-standard apache set-up, apache is configured to run as UID: ${CYAN}$apache_config_userid${RED} (${CYAN}$apache_user_config${RED}). Expecting UID 48 ('apache' or 'www-data').${ENDC}\n");
+                
+	}
+
+	our $process_name;
+	# determine what user apache runs as (according to the processlist)
+	$apache_user_running = `ps aux | grep $process_name | grep -v root | awk \'{ print \$1 }\' | uniq`;
+	chomp($apache_user_running);
+
+	# compare the running user with the config user:
+	if ( $apache_user_running == $apache_user_config) {
+		if ( ! $NOOK ) { show_ok_box(); print "Running user (${CYAN}$apache_user_running${ENDC}) matches config (${CYAN}$apache_user_config${ENDC}).\n" }
+		
+	else {
+		if ( ! $NOWARN ) { show_warn_box(); print "Running user (${CYAN}$apache_user_running${ENDC}) does NOT match config (${CYAN}$apache_user_config${ENDC}).\n" } 
+	}
 	
-	if (length($apache_user) > 8) {
+	if (length($apache_user_running) > 8) {
 		# Now we have to keep the first 7 characters and change the 8th character to a + sign, eg 'developer' becomes 'develop+'
-		my $original_user = $apache_user;
-		$apache_user = substr($original_user, 0, 7)."+";
+		my $original_user = $apache_user_running;
+		$apache_user_running = substr($original_user, 0, 7)."+";
 	}
 
 	# Check 13.1
@@ -2662,7 +2675,8 @@ preflight_checks();
 our $hostname;
 our $public_ip_address;
 our @config_array;
-our $apache_user;
+our $apache_user_running;
+our $apache_user_config;
 our $model;
 our @apache_uptime;
 if ( ! $NOCHKPID) {
@@ -2715,9 +2729,10 @@ if ( ! $NOINFO ) { show_info_box(); print "${CYAN}apache2${ENDC} " }
         our $apache2_memory_usage_mbytes = 0;
 }
 
-my $apache_proc_highest = get_memory_usage($process_name, $apache_user, 'high');
-my $apache_proc_lowest = get_memory_usage($process_name, $apache_user, 'low');
-my $apache_proc_average = get_memory_usage($process_name, $apache_user, 'average');
+our $apache_user_running;
+my $apache_proc_highest = get_memory_usage($process_name, $apache_user_running, 'high');
+my $apache_proc_lowest = get_memory_usage($process_name, $apache_user_running, 'low');
+my $apache_proc_average = get_memory_usage($process_name, $apache_user_running, 'average');
 
 
 if ( $model eq "prefork") {

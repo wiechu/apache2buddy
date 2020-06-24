@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-06-24	Richard Forth	Attempt to address issue #300
+				Report and compare running and configured
+				apache user.
 2020-06-19	Richard Forth	Forced apache2buddy to respect the
 				--no-check-pid option.
 				Closes #309
