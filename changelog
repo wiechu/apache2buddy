@@ -2,6 +2,9 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-07-02	Richard Forth	Addresses issue #342
+				- fix grep out root on remi installs
+				- Closes #342
 2020-06-24	Richard Forth	Attempt to address issue #300
 				Report and compare running and configured
 				apache user.

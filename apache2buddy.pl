@@ -1859,7 +1859,7 @@ sub preflight_checks {
 
 	our $process_name;
 	# determine what user apache runs as (according to the processlist)
-	our $apache_user_running = `ps aux | grep $process_name | grep -v root | awk \'{ print \$1 }\' | uniq`;
+	our $apache_user_running = `ps aux | grep $process_name | grep -v ^root | awk \'{ print \$1 }\' | uniq`;
 	chomp($apache_user_running);
 
 	# compare the running user with the config user:
