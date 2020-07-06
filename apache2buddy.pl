@@ -1299,6 +1299,10 @@ sub get_php_setting {
                         our $real_config = "/etc/php/7.2/apache2/php.ini";
 		} elsif ( -f "/etc/php/7.2/fpm/php.ini") {
 			our $real_config = "/etc/php/7.2/fpm/php.ini";
+		} elsif ( -f "/etc/php/7.3/apache2/php.ini") {
+			our $real_config = "/etc/php/7.3/apache2/php.ini";
+		} elsif ( -f "/etc/php/7.3/fpm/php.ini") {
+			our $real_config = "/etc/php/7.3/fpm/php.ini";
 		}
 
 		our $real_config;

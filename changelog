@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-07-08	Sebastien Badia	Detection support for php 7.3
+				- Closes #344
 2020-07-02	Richard Forth	Addresses issue #342
 				- fix grep out root on remi installs
 				- Closes #342
