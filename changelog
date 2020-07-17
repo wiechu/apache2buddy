@@ -2,6 +2,10 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-07-17	Richard Forth   Address issue #348
+				- Apache user not found in ubuntu installs.
+				- Checks /etc/apache2/envvars if 
+				$apache_user_config is blank.
 2020-07-17	Richard Forth   Address issue #347
                                 - snag a chomp issue as a result of fix that
 				went in. Also fixed date in changlog I forgot

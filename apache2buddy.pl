@@ -1877,6 +1877,16 @@ sub preflight_checks {
         # account for 'apache\x{d}' strangeness
         $apache_user_config =~ s/\x{d}//;
         $apache_user_config =~ s/^\s*(.*?)\s*$/$1/;; # address issue #19, strip whitespace from both sides.
+        # issue #348 sanity check for NOT FOUND on ubuntu systems
+        if ($apache_user_config eq "") {
+		if ($VERBOSE) { print "VERBOSE: Checking for envvarsfile to get apache_config_user on ubuntu systems.\n" }
+		if ( -f "/etc/apache2/envvars" && -r "/etc/apache2/envvars") {
+			 if ($VERBOSE) { print "VERBOSE: /etc/apache2/envvars exists and is readable, checking value of APACHE_RUN_USER...\n" } 
+			 $apache_user_config = `grep 'export APACHE_RUN_USER=' /etc/apache2/envvars | awk -F"=" '{PRINT $2}'`;
+			 chomp($apache_user_config);
+			 $apache_user_config =~ s/^\s*(.*?)\s*$/$1/;; # address issue #19, strip whitespace from both sides.
+		}
+	}  
 	unless ($apache_user_config eq "apache" or $apache_user_config eq "www-data") {
                 my $apache_config_userid = `id -u $apache_user_config`;
                 chomp($apache_config_userid);
