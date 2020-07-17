@@ -536,6 +536,7 @@ sub files_in_array_that_exist_and_are_readable {
   # ones exist and put those in a new array.
   my @out_array;
   foreach my $file(@in_array) {
+    chomp($file);
     # if the file exists, and we have permission to read it ( and we should, we are root after all if we got this far)
     if ( -f $file && -r $file) {
       push(@out_array,$file)

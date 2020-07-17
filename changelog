@@ -2,7 +2,11 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
-2020-07-08	Richard Forth   Address issue #347
+2020-07-17	Richard Forth   Address issue #347
+                                - snag a chomp issue as a result of fix that
+				went in. Also fixed date in changlog I forgot
+				to change when copying a line, my bad.
+2020-07-17	Richard Forth   Address issue #347
                                 - sanity check included files when building
 				config array. Requires testng and bugfixing if
 				necessary.
