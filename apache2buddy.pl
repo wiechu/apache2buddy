@@ -528,6 +528,23 @@ sub systemcheck_large_logs {
 	# silently proceed if the folder doesnt exist
 }
 
+sub files_in_array_that_exist_and_are_readable {
+  # takes an array of filenames as argument, filters out files that may cause an exception later on.
+  # see issue #347
+  my @in_array = @_;
+  # Lets programatically rip through the array and work out which
+  # ones exist and put those in a new array.
+  my @out_array;
+  foreach my $file(@in_array) {
+    # if the file exists, and we have permission to read it ( and we should, we are root after all if we got this far)
+    if ( -f $file && -r $file) {
+      push(@out_array,$file)
+    }
+  }
+  return @out_array;
+}
+
+
 # here we're going to build a list of the files included by the Apache 
 # configuration
 sub build_list_of_files {
@@ -545,7 +562,7 @@ sub build_list_of_files {
 	# to include
 	push(@master_list,$base_apache_config);
 
-	# put the main configuratino file into the list of files we need to 
+	# put the main configuration file into the list of files we need to 
 	# search for include lines
 	push(@find_includes_in,$base_apache_config);
 	
@@ -571,7 +588,7 @@ sub build_config_array {
 	# to include
 	push(@master_list,$base_apache_config);
 
-	# put the main configuratino file into the list of files we need to 
+	# put the main configuration file into the list of files we need to 
 	# search for include lines
 	push(@find_includes_in,$base_apache_config);
 
@@ -650,15 +667,18 @@ sub find_included_files {
 					# expand it and add the files
 					# to the list
 					my @new_includes = expand_included_files(\@include_files, $glob, $apache_root);
-					push(@$master_list,@new_includes);
-					push(@$find_includes_in,@new_includes);
+                                        my @sane_includes = files_in_array_that_exist_and_are_readable(@new_includes);
+					push(@$master_list,@sane_includes);
+					push(@$find_includes_in,@sane_includes);
 				}
 				else {
 					# if it is not a glob, push the 
 					# line into the configuration 
 					# array
 					push(@$master_list,$_);
+                                        @$master_list = files_in_array_that_exist_and_are_readable(@$master_list);
 					push(@$find_includes_in,$_);
+                                        @$find_includes_in = files_in_array_that_exist_and_are_readable(@$find_includes_in);
 				}
 			}
 			# This extra bit of code is required for apache 2.4's new directive "IncludeOptional"
@@ -691,15 +711,18 @@ sub find_included_files {
 					# expand it and add the files
 					# to the list
 					my @new_includes = expand_included_files(\@include_files, $glob, $apache_root);
-					push(@$master_list,@new_includes);
-					push(@$find_includes_in,@new_includes);
+                                        my @sane_includes = files_in_array_that_exist_and_are_readable(@new_includes);
+					push(@$master_list,@sane_includes);
+					push(@$find_includes_in,@sane_includes);
 				}
 				else {
 					# if it is not a glob, push the 
 					# line into the configuration 
 					# array
 					push(@$master_list,$_);
+                                        @$master_list = files_in_array_that_exist_and_are_readable(@$master_list);
 					push(@$find_includes_in,$_);
+                                        @$find_includes_in = files_in_array_that_exist_and_are_readable(@$find_includes_in);
 				}
 			}
 		}
@@ -712,6 +735,7 @@ sub find_included_files {
 	}
 
 	# return the config array with the included files attached
+	@master_config_array = files_in_array_that_exist_and_are_readable(@master_config_array);
 	return @master_config_array;
 }
 
