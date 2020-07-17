@@ -1882,7 +1882,7 @@ sub preflight_checks {
 		if ($VERBOSE) { print "VERBOSE: Checking for envvarsfile to get apache_config_user on ubuntu systems.\n" }
 		if ( -f "/etc/apache2/envvars" && -r "/etc/apache2/envvars") {
 			 if ($VERBOSE) { print "VERBOSE: /etc/apache2/envvars exists and is readable, checking value of APACHE_RUN_USER...\n" } 
-			 $apache_user_config = `grep 'export APACHE_RUN_USER=' /etc/apache2/envvars | awk -F"=" '{PRINT $2}'`;
+			 $apache_user_config = `grep 'export APACHE_RUN_USER=' /etc/apache2/envvars | awk -F"=" '{print \$2}'`;
 			 chomp($apache_user_config);
 			 $apache_user_config =~ s/^\s*(.*?)\s*$/$1/;; # address issue #19, strip whitespace from both sides.
 		}
