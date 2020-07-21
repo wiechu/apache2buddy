@@ -1507,7 +1507,7 @@ sub generate_standard_report {
 	if ($model eq "worker") {
 			print "\t${CYAN}Apache appears to be running in worker mode.\n";
 			print "\tPlease check manually for backend processes such as PHP-FPM and pm.max_children.\n";
-			print "\tApache2buddy does not calculate maxclients for worker model.${ENDC}\n";
+			print "\tApache2buddy ONLY calculates maxclients for prefork model.${ENDC}\n";
 			# make a logfile entry at /var/log/apache2buddy.log
 			open (LOGFILE, ">>/var/log/apache2buddy.log");
         		print LOGFILE (date()." Uptime: \"$uptime\"  Model: \"Worker\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"N\\A\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\"\n");
@@ -1516,7 +1516,7 @@ sub generate_standard_report {
 	if ($model eq "event") {
 			print "\t${CYAN}Apache appears to be running in event mode.\n";
 			print "\tPlease check manually for backend processes such as PHP-FPM and pm.max_children.\n";
-			print "\tApache2buddy does not calculate maxclients for worker model.${ENDC}\n";
+			print "\tApache2buddy ONLY calculates maxclients for prefork model.${ENDC}\n";
 			# make a logfile entry at /var/log/apache2buddy.log
 			open (LOGFILE, ">>/var/log/apache2buddy.log");
         		print LOGFILE (date()." Uptime: \"$uptime\"  Model: \"Event\" Memory: \"$available_mem MB\" Maxclients: \"$maxclients\" Recommended: \"N\\A\" Smallest: \"$apache_proc_smallest MB\" Avg: \"$apache_proc_average MB\" Largest: \"$apache_proc_highest MB\"\n");

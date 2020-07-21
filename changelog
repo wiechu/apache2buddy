@@ -2,6 +2,8 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-07-21	Richard Forth   Address issue #350
+                                - Change wording about worker model.
 2020-07-17	Richard Forth   Address issue #348
 				- Apache user not found in ubuntu installs.
 				- Checks /etc/apache2/envvars if 
