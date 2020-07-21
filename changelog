@@ -2,6 +2,12 @@ CHANGELOG
 
 When		Who		What
 ======================================================================================
+2020-07-21	Richard Forth   Address issue #351
+                                - Fixed applied to patch a break introduced in #347.
+				Caused the entire config to be empty.
+				In turn caused lots of CONFIG NOT FOUND, even
+				when the configuration elements existed on the
+				system.
 2020-07-21	Richard Forth   Address issue #350
                                 - Change wording about worker model.
 2020-07-17	Richard Forth   Address issue #348

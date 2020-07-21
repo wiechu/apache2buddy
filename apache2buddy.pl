@@ -736,7 +736,6 @@ sub find_included_files {
 	}
 
 	# return the config array with the included files attached
-	@master_config_array = files_in_array_that_exist_and_are_readable(@master_config_array);
 	return @master_config_array;
 }
 
